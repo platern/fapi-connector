@@ -1,0 +1,6 @@
+{
+  "trusts": [
+    "psd2:obuk",
+    "psd2:eidas"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "application_type": "web",
+  "authorization_signed_response_alg": "PS256",
+  "client_id": "CLIENT_ID",
+  "client_id_issued_at": 1665796077170,
+  "client_secret": "CLIENT_SECRET",
+  "client_secret_expires_at": 0,
+  "grant_types": [
+    "client_credentials",
+    "authorization_code",
+    "refresh_token"
+  ],
+  "id_token_signed_response_alg": "PS256",
+  "introspection_endpoint_auth_method": "private_key_jwt",
+  "introspection_endpoint_auth_signing_alg": "PS256",
+  "jwks_uri": "https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks",
+  "redirect_uris": [
+    "https://example.com/oauth/callback/"
+  ],
+  "request_object_signing_alg": "PS256",
+  "response_types": [
+    "code"
+  ],
+  "scope": "openid accounts payments",
+  "software_id": "EXAMPLE_SOFTWARE_ID",
+  "software_statement": "aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==",
+  "tls_client_auth_subject_dn": "CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ",
+  "tls_client_certificate_bound_access_tokens": true,
+  "token_endpoint_auth_method": "private_key_jwt",
+  "token_endpoint_auth_signing_alg": "PS256"
+}

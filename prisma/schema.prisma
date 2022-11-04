@@ -1,0 +1,21 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ClientRegistration {
+  id                Int      @id @default(autoincrement())
+  clientID          String   @unique
+  openIDConfigUrl   String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  metadata           Bytes
+}

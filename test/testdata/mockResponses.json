@@ -1,0 +1,141 @@
+{
+  "/": {
+    "data": {
+      "self": "/",
+      "kind": "Root",
+      "specificationsLink": "/specifications",
+      "providersLink": "/providers",
+      "operationsLink": "/operations",
+      "trustsLink": "/trusts",
+      "productsLink": "/products"
+    }
+  },
+  "/providers/XXX": {
+    "data": {
+      "id": "XXX",
+      "self": "/providers/XXX",
+      "kind": "Provider",
+      "name": "ABC Bank",
+      "depth": 1,
+      "logoUrl": "https://logo.clearbit.com/abcbank.com",
+      "devPortalUrl": "https://developer.abcbank.com",
+      "accesses": [
+        {
+          "trusts": [
+            "psd2:obuk"
+          ],
+          "openIDConfigUrl": "https://auth.abcbank.com/.well-known/openid-configuration",
+          "authMethodsSupported": [
+            "private_key_jwt",
+            "tls_client_auth"
+          ],
+          "scopes_supported": [
+            "openid",
+            "accounts",
+            "payments"
+          ],
+          "locales": [
+            "GB"
+          ],
+          "products": [
+            "openbanking:business-savings-account",
+            "openbanking:business-transaction-account",
+            "openbanking:retail-savings-account",
+            "openbanking:retail-transaction-account"
+          ]
+        }
+      ],
+      "apis": [
+        {
+          "specification": "obieAis",
+          "baseURL": "https://api.abcbank.com/open-banking/v3.10"
+        }
+      ],
+      "extras": {
+        "externalAud": "0010000000abCD123"
+      },
+      "apiLinks": [
+        "/apis/AAAAAA"
+      ],
+      "specificationLinks": [
+        "/specifications/obieProduct"
+      ],
+      "parentLink": "/providers/WWWWWW",
+      "childrenLinks": [
+        "/providers/XXX1",
+        "/providers/XXX2",
+        "/providers/XXX3",
+        "/providers/XXX4"
+      ]
+    }
+  },
+  "/providers/YYY": {
+    "data": {
+      "id": "YYY",
+      "self": "/providers/YYY",
+      "kind": "Provider",
+      "name": "ABC Bank",
+      "depth": 1,
+      "logoUrl": "https://logo.clearbit.com/abcbank.com",
+      "devPortalUrl": "https://developer.abcbank.com",
+      "accesses": [
+        {
+          "trusts": [
+            "psd2:obuk"
+          ],
+          "openIDConfigUrl": "https://auth.abcbank.com/.well-known/openid-configuration",
+          "authMethodsSupported": [
+            "private_key_jwt",
+            "tls_client_auth"
+          ],
+          "scopes_supported": [
+            "openid",
+            "accounts",
+            "payments"
+          ],
+          "locales": [
+            "GB"
+          ],
+          "products": [
+            "openbanking:business-savings-account",
+            "openbanking:business-transaction-account",
+            "openbanking:retail-savings-account",
+            "openbanking:retail-transaction-account"
+          ]
+        }
+      ],
+      "apis": [
+        {
+          "specification": "obieAis",
+          "baseURL": "https://api.abcbank.com/open-banking/v3.10"
+        }
+      ],
+      "extras": {
+        "externalAud": "0010000000abCD123"
+      },
+      "apiLinks": [
+        "/apis/AAAAAA"
+      ],
+      "specificationLinks": [
+        "/specifications/obieProduct"
+      ],
+      "parentLink": "/providers/WWWWWW",
+      "childrenLinks": [
+        "/providers/YYY1",
+        "/providers/YYY2",
+        "/providers/YYY3",
+        "/providers/YYY4"
+      ]
+    }
+  },
+  "/providers/missing-provider": {
+    "status": 404
+  },
+  "https://api.abcbank.com/open-banking/v3.10/account-access-consents": {
+    "data": {
+      "Data": {
+        "ConsentId": "CUSTOMER_ACCOUNT_CONSENT"
+      }
+    }
+  }
+}

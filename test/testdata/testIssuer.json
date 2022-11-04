@@ -1,0 +1,20 @@
+{
+  "issuer": "http://server.example.com",
+  "jwks_uri": "https://keystore.ca.com/testIssuer.jwks",
+  "authorization_endpoint": "https://auth.abcbank.com/authorize",
+  "registration_endpoint": "https://auth.abcbank.com/register",
+  "token_endpoint": "https://auth.abcbank.com/token",
+  "scopes_supported": [
+    "openid",
+    "accounts",
+    "payments"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "private_key_jwt",
+    "tls_client_auth"
+  ],
+  "token_endpoint_auth_signing_alg_values_supported": [
+    "ES256",
+    "PS256"
+  ]
+}

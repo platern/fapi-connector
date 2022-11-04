@@ -1,0 +1,1377 @@
+openapi: 3.0.3
+info:
+  title: Financial-grade API Connector
+  description: >-
+    Use this companion service to register with and call OpenID providers.
+
+
+    Optionally, it can be used in conjunction with the [Platern
+    Directory](https://platern.com) in [Open
+    Banking](https://opendata.substack.com/p/an-overview-of-open-banking)
+    applications.
+
+
+    This service uses a forked, open-source [Node OpenID
+    Client](https://github.com/dextersjab/node-openid-client).
+
+
+    Similarly, it uses the MIT licence, allowing the most open usage possible,
+    whether for:
+
+    - making modifications
+
+    - commercial purposes
+
+    - private usage
+
+    - distributing
+        
+    Learn more:
+
+    - [Platern](https://platern.com)
+
+    - [GitHub](https://github.com/platern/fapi-connector)
+
+
+    Feel free to raise issues
+    [here](https://github.com/platern/fapi-connector/issues).
+  termsOfService: 'https://platern.com/terms'
+  contact:
+    email: hello@platern.com
+  license:
+    name: MIT
+    url: 'https://github.com/platern/openid-client/LICENCE'
+  version: '0.1'
+paths:
+  '/registrations/{clientID}':
+    put:
+      description: Create or update a client registration with an API provider.
+      summary: Create or update a client registration with an API provider.
+      tags:
+        - Client registrations
+      parameters:
+        - name: clientID
+          description: >-
+            Use any unique identifier for the API provider.
+
+
+            If you're using Platern Web, we recommend using the `providerID`
+            from the Providers API.
+
+
+            Warning: registering with the same `clientID` will override any
+            previous registrations.
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            '200':
+              summary: 200 Updated (w/ Platern Web)
+              value: XXX
+            '201':
+              summary: 201 Created (w/ Platern Web)
+              value: YYY
+            x-201.WithOIDD:
+              summary: 201 Created (w/ OpenID Discovery URL)
+              value: YYY
+            x-201.WithOverrides:
+              summary: 201 Created (w/ provider-specific overrides)
+              value: YYY
+            x-400.NoProviderIdentifiers:
+              summary: 400 No valid provider identifiers
+              value: nonexistent-provider
+            x-400.ProviderNotFound:
+              summary: 400 ProviderID not found
+              value: nonexistent-provider
+        - name: specification
+          in: query
+          required: true
+          schema:
+            type: string
+          examples:
+            '200':
+              summary: 200 Updated (w/ Platern Web)
+              value: obieAis
+            '201':
+              summary: 201 Created (w/ Platern Web)
+              value: obieAis
+            x-201.WithOIDD:
+              summary: 201 Created (w/ OpenID Discovery URL)
+              value: obieAis
+            x-201.WithOverrides:
+              summary: 201 Created (w/ provider-specific overrides)
+              value: obieAis
+            x-400.NoProviderIdentifiers:
+              summary: 400 No valid provider identifiers
+              value: obieAis
+            x-400.ProviderNotFound:
+              summary: 400 ProviderID not found
+              value: obieAis
+      operationId: updateClientRegistrations
+      requestBody:
+        description: Create or update a client registration.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  description: A provider ID obtained from Platern Web.
+                  type: string
+                openIDConfigUrl:
+                  description: A provider's OpenID Discovery URL (aka well-known endpoint).
+                  type: string
+                externalAud:
+                  description: Used to override the `aud` claim in special cases (OBIE).
+                  type: string
+                overrides:
+                  description: On-the-fly configuration override options.
+                  type: object
+                  properties:
+                    scopes:
+                      type: array
+                      items:
+                        type: string
+                    grantTypes:
+                      type: array
+                      items:
+                        type: string
+                    authMethod:
+                      type: string
+            examples:
+              '200':
+                summary: 200 Updated (w/ Platern Web)
+                value:
+                  provider: XXX
+              '201':
+                summary: 201 Created (w/ Platern Web)
+                value:
+                  provider: YYY
+              x-201.WithOIDD:
+                summary: 201 Created (w/ OpenID Discovery URL)
+                value:
+                  openIDConfigUrl: 'https://auth.abcbank.com/.well-known/openid-configuration'
+                  externalAud: 0015800001041RHAAY
+              x-201.WithOverrides:
+                summary: 201 Created (w/ provider-specific overrides)
+                value:
+                  provider: YYY
+                  overrides:
+                    authMethod: tls_client_auth
+              x-400.NoProviderIdentifiers:
+                summary: 400 No valid provider identifiers
+                value:
+                  badKey: inconsequential value
+              x-400.ProviderNotFound:
+                summary: 400 ProviderID not found
+                value:
+                  provider: nonexistent-provider
+        required: true
+      responses:
+        '200':
+          description: 200 Updated (w/ Platern Web)
+          content:
+            application/json:
+              schema: &ref_0
+                type: object
+                properties:
+                  kind:
+                    type: string
+                  self:
+                    type: string
+                  openIDConfigUrl:
+                    type: string
+                  metadata: &ref_6
+                    type: object
+                    properties:
+                      redirect_uris:
+                        description: >-
+                          Array of Redirection URI values used by the Client.
+                          One of these registered Redirection URI values MUST
+                          exactly match the redirect_uri parameter value used in
+                          each Authorization Request, with the matching
+                          performed as described in Section 6.2.1 of [RFC3986]
+                          (Simple String Comparison).
+                        type: array
+                        items:
+                          type: string
+                          format: uri
+                      response_types:
+                        description: >-
+                          JSON array containing a list of the OAuth 2.0
+                          response_type values that the Client is declaring that
+                          it will restrict itself to using. If omitted, the
+                          default is that the Client will use only the code
+                          Response Type.
+                        type: array
+                        items:
+                          type: string
+                      grant_types:
+                        description: >-
+                          JSON array containing a list of the OAuth 2.0 Grant
+                          Types that the Client is declaring that it will
+                          restrict itself to using. The Grant Type values used
+                          by OpenID Connect are:
+                            - authorization_code: The Authorization Code Grant Type described in OAuth 2.0 Section 4.1.
+                            - implicit: The Implicit Grant Type described in OAuth 2.0 Section 4.2.
+                            - refresh_token: The Refresh Token Grant Type described in OAuth 2.0 Section 6.
+                          The following table lists the correspondence between
+                          response_type values that the Client will use and
+                          grant_type values that MUST be included in the
+                          registered grant_types list:
+                            - code: authorization_code
+                            - id_token: implicit
+                            - token id_token: implicit
+                            - code id_token: authorization_code, implicit
+                            - code token: authorization_code, implicit
+                            - code token id_token: authorization_code, implicit
+                          If omitted, the default is that the Client will use
+                          only the authorization_code Grant Type.
+                        type: array
+                        items:
+                          type: string
+                      application_type:
+                        description: >-
+                          Kind of the application. The default, if omitted, is
+                          web. The defined values are native or web. Web Clients
+                          using the OAuth Implicit Grant Type MUST only register
+                          URLs using the https scheme as redirect_uris; they
+                          MUST NOT use localhost as the hostname. Native Clients
+                          MUST only register redirect_uris using custom URI
+                          schemes or URLs using the http: scheme with localhost
+                          as the hostname. Authorization Servers MAY place
+                          additional constraints on Native Clients.
+                          Authorization Servers MAY reject Redirection URI
+                          values using the http scheme, other than the localhost
+                          case for Native Clients. The Authorization Server MUST
+                          verify that all the registered redirect_uris conform
+                          to these constraints. This prevents sharing a Client
+                          ID across different types of Clients.
+                        type: string
+                      contacts:
+                        description: >-
+                          Array of e-mail addresses of people responsible for
+                          this Client. This might be used by some providers to
+                          enable a Web user interface to modify the Client
+                          information.
+                        type: array
+                        items:
+                          type: string
+                      client_name:
+                        type: string
+                        description: >-
+                          Name of the Client to be presented to the End-User. If
+                          desired, representation of  this Claim in different
+                          languages and scripts is represented as described in
+                          Section 2.1 (Metadata Languages and Scripts).
+                      logo_uri:
+                        type: string
+                        description: >-
+                          URL that references a logo for the Client application.
+                          If present, the server SHOULD display this image to
+                          the End-User during approval. The value of this field
+                          MUST point to a valid image file. If desired,
+                          representation of  this Claim in different languages
+                          and scripts is represented as described in Section 2.1
+                          (Metadata Languages and Scripts).
+                      client_uri:
+                        type: string
+                        description: >-
+                          URL of the home page of the Client.
+
+                          The value of this field MUST point to a valid Web
+                          page. If present,
+
+                          the server SHOULD display this URL to the End-User in
+                          a followable fashion.
+
+                          If desired, representation of  this Claim in different
+                          languages and
+
+                          scripts is represented as described in Section 2.1
+                          (Metadata Languages
+
+                          and Scripts).
+                      policy_uri:
+                        type: string
+                        description: >-
+                          URL that the Relying Party Client provides to the
+                          End-User to read
+
+                          about the how the profile data will be used.
+
+                          The value of this field MUST point to a valid web
+                          page.
+
+                          The OpenID Provider SHOULD display this URL to the
+                          End-User if it is
+
+                          given. If desired, representation of  this Claim in
+                          different languages
+
+                          and scripts is represented as described in Section 2.1
+                          (Metadata Languages
+
+                          and Scripts).
+                      tos_uri:
+                        type: string
+                        description: >-
+                          URL that the Relying  Party
+
+                          Client provides to the End-User to read about the
+                          Relying Party's terms
+
+                          of service. The value of this field MUST point to a
+                          valid web page.
+
+                          The OpenID Provider SHOULD display this URL to the
+                          End-User if it is
+
+                          given. If desired, representation of  this Claim in
+                          different languages
+
+                          and scripts is represented as described in Section 2.1
+                          (Metadata Languages
+
+                          and Scripts).
+                      jwks_uri:
+                        type: string
+                        description: >-
+                          URL for the Client's JSON Web Key
+
+                          Set [JWK] (Jones, M., “JSON Web Key (JWK),” July
+                          2014.) document. If the
+
+                          Client signs requests to the Server, it contains the
+                          signing key(s) the
+
+                          Server uses to validate signatures from the Client.
+                          The JWK Set MAY also
+
+                          contain the Client's encryption keys(s), which are
+                          used by the Server to
+
+                          encrypt responses to the Client. When both signing and
+                          encryption keys
+
+                          are made available, a use (Key Use) parameter value is
+                          REQUIRED
+
+                          for all keys in the referenced JWK Set to indicate
+                          each key's intended
+
+                          usage. Although some algorithms allow the same key to
+                          be used for both
+
+                          signatures and encryption, doing so is NOT
+                          RECOMMENDED, as it is less secure.
+
+                          The JWK x5c parameter MAY be used to provide X.509
+                          representations
+
+                          of keys provided.  When used, the bare key values MUST
+                          still be present
+
+                          and MUST match those in the certificate.
+                      jwks:
+                        type: string
+                        description: >-
+                          Client's JSON Web Key Set [JWK] (Jones,
+
+                          M., “JSON Web Key (JWK),” July 2014.) document, passed
+                          by value. The semantics
+
+                          of the jwks parameter are the same as the jwks_uri
+                          parameter, other than
+
+                          that the JWK Set is passed by value, rather than by
+                          reference. This
+
+                          parameter is intended only to be used by Clients that,
+                          for some reason, are
+
+                          unable to use the jwks_uri parameter, for instance, by
+                          native applications
+
+                          that might not have a location to host the contents of
+                          the JWK Set.
+
+                          If a Client can use jwks_uri, it MUST NOT use jwks.
+                          One significant
+
+                          downside of jwks is that it does not enable key
+                          rotation (which
+
+                          jwks_uri does, as described in Section 10 of OpenID
+                          Connect Core 1.0 (Sakimura,
+
+                          N., Bradley, J., Jones, M., de Medeiros, B., and C.
+                          Mortimore, “OpenID Connect
+
+                          Core 1.0,” November 2014.) [OpenID.Core]). The
+                          jwks_uri and jwks parameters
+
+                          MUST NOT be used together.
+                      sector_identifier_uri:
+                        type: string
+                        description: >-
+                          URL using the https scheme to be
+
+                          used in calculating Pseudonymous Identifiers by the
+                          OP. The URL references
+
+                          a file with a single JSON array of redirect_uri
+                          values. Please see
+
+                          Section 5 (\sector_identifier_uri\ Validation).
+                          Providers that use pairwise
+
+                          sub (subject) values SHOULD utilize the
+                          sector_identifier_uri value
+
+                          provided in the Subject Identifier calculation for
+                          pairwise identifiers.
+                      subject_type:
+                        type: string
+                        description: >-
+                          subject_type requested for  responses
+
+                          to this Client. The subject_types_supported Discovery
+                          parameter contains
+
+                          a list of the supported subject_type values for this
+                          server. Valid types
+
+                          include pairwise and public.
+                      id_token_signed_response_alg:
+                        type: string
+                        description: >-
+                          JWS alg algorithm [JWA] (Jones,
+
+                          M., “JSON Web Algorithms (JWA),” July 2014.) REQUIRED
+                          for signing the ID Token
+
+                          issued to this Client. The value none MUST NOT be used
+                          as the
+
+                          ID Token alg value unless the Client uses only
+                          Response Types that return
+
+                          no ID Token from the Authorization Endpoint (such as
+                          when only using
+
+                          the Authorization Code Flow). The default, if omitted,
+                          is RS256. The
+
+                          public key for validating the signature is provided by
+                          retrieving the  JWK
+
+                          Set referenced by the jwks_uri element from OpenID
+                          Connect Discovery
+
+                          1.0 (Sakimura, N., Bradley, J., Jones, M., and E. Jay,
+                          “OpenID Connect Discovery
+
+                          1.0,” November 2014.) [OpenID.Discovery].
+                      id_token_encrypted_response_alg:
+                        type: string
+                        description: >-
+                          JWE alg algorithm [JWA] (Jones,
+
+                          M., “JSON Web Algorithms (JWA),” July 2014.) REQUIRED
+                          for encrypting the ID Token
+
+                          issued to this Client. If this is requested, the
+                          response will be signed
+
+                          then encrypted, with the result being a Nested JWT, as
+                          defined in [JWT]
+
+                          (Jones, M., Bradley, J., and N. Sakimura, “JSON Web
+                          Token (JWT),” July 2014.).
+
+                          The default, if omitted, is that no encryption is
+                          performed.
+                      id_token_encrypted_response_enc:
+                        type: string
+                        description: >-
+                          JWE enc algorithm [JWA] (Jones,
+
+                          M., “JSON Web Algorithms (JWA),” July 2014.) REQUIRED
+                          for encrypting the ID Token
+
+                          issued to this Client.  If
+                          id_token_encrypted_response_alg is specified,
+
+                          the default for this value is A128CBC-HS256. When
+                          id_token_encrypted_response_enc
+
+                          is included, id_token_encrypted_response_alg MUST also
+                          be provided.
+                      userinfo_signed_response_alg:
+                        type: string
+                        description: >-
+                          JWS alg algorithm [JWA] (Jones,
+
+                          M., “JSON Web Algorithms (JWA),” July 2014.) REQUIRED
+                          for signing UserInfo Responses.
+
+                          If this is specified, the response will be  JWT
+                          (Jones, M., Bradley,
+
+                          J., and N. Sakimura, “JSON Web Token (JWT),” July
+                          2014.) [JWT] serialized, and
+
+                          signed using JWS. The default, if omitted, is for the
+                          UserInfo Response
+
+                          to return the Claims as a UTF-8 encoded JSON object
+                          using the application/json
+
+                          content-type.
+                      userinfo_encrypted_response_alg:
+                        type: string
+                        description: >-
+                          JWE (Jones, M., Rescorla, E., and
+
+                          J. Hildebrand, “JSON Web Encryption (JWE),” July
+                          2014.) [JWE] alg  algorithm
+
+                          [JWA] (Jones, M., “JSON Web Algorithms (JWA),” July
+                          2014.) REQUIRED for encrypting
+
+                          UserInfo Responses.  If both signing and encryption
+                          are requested,
+
+                          the response will be signed then encrypted, with the
+                          result being a
+
+                          Nested JWT, as defined in [JWT] (Jones, M., Bradley,
+                          J., and N. Sakimura, “JSON
+
+                          Web Token (JWT),” July 2014.). The default, if
+                          omitted, is that no encryption
+
+                          is performed.
+                      userinfo_encrypted_response_enc:
+                        type: string
+                        description: >-
+                          JWE enc algorithm [JWA] (Jones,
+
+                          M., “JSON Web Algorithms (JWA),” July 2014.) REQUIRED
+                          for encrypting UserInfo
+
+                          Responses. If userinfo_encrypted_response_alg is
+                          specified, the
+
+                          default for this value is A128CBC-HS256. When
+                          userinfo_encrypted_response_enc
+
+                          is included, userinfo_encrypted_response_alg MUST also
+                          be provided.
+                      request_object_signing_alg:
+                        type: string
+                        description: >-
+                          JWS (Jones, M., Bradley, J., and
+
+                          N. Sakimura, “JSON Web Signature (JWS),” July 2014.)
+                          [JWS] alg algorithm
+
+                          [JWA] (Jones, M., “JSON Web Algorithms (JWA),” July
+                          2014.) that MUST be used for
+
+                          signing Request Objects sent to the OP. All Request
+                          Objects from
+
+                          this Client MUST be rejected, if not signed with this
+                          algorithm.
+
+                          Request Objects are described in Section 6.1 of OpenID
+                          Connect Core
+
+                          1.0 (Sakimura, N., Bradley, J., Jones, M., de
+                          Medeiros, B., and C. Mortimore,
+
+                          “OpenID Connect Core 1.0,” November 2014.)
+                          [OpenID.Core]. This algorithm
+
+                          MUST be used both when the Request Object is passed by
+                          value (using the
+
+                          request parameter) and when it is passed by reference
+                          (using the
+
+                          request_uri parameter). Servers SHOULD support RS256.
+                          The value
+
+                          none MAY be used. The default, if omitted, is that any
+                          algorithm supported
+
+                          by the OP and the RP MAY be used.
+                      request_object_encryption_alg:
+                        type: string
+                        description: >-
+                          JWE (Jones, M., Rescorla, E., and
+
+                          J. Hildebrand, “JSON Web Encryption (JWE),” July
+                          2014.) [JWE] alg  algorithm
+
+                          [JWA] (Jones, M., “JSON Web Algorithms (JWA),” July
+                          2014.) the RP is declaring
+
+                          that it may use for encrypting Request Objects sent to
+                          the OP. This
+
+                          parameter SHOULD be included when symmetric encryption
+                          will be used, since
+
+                          this signals to the OP that a client_secret value
+                          needs to be returned
+
+                          from which the symmetric key will be derived, that
+                          might not otherwise
+
+                          be returned. The RP MAY still use other supported
+                          encryption algorithms
+
+                          or send unencrypted Request Objects, even when this
+                          parameter is present.
+
+                          If both signing and encryption are requested, the
+                          Request Object will
+
+                          be signed then encrypted, with the result being a
+                          Nested JWT, as defined
+
+                          in [JWT] (Jones, M., Bradley, J., and N. Sakimura,
+                          “JSON Web Token (JWT),” July 2014.).
+
+                          The default, if omitted, is that the RP is not
+                          declaring whether it
+
+                          might encrypt any Request Objects.
+                      request_object_encryption_enc:
+                        type: string
+                        description: >-
+                          JWE enc algorithm [JWA] (Jones,
+
+                          M., “JSON Web Algorithms (JWA),” July 2014.) the RP is
+                          declaring that it may use
+
+                          for encrypting Request Objects sent to the OP. If
+                          request_object_encryption_alg
+
+                          is specified, the default for this value is
+                          A128CBC-HS256. When
+
+                          request_object_encryption_enc is included,
+                          request_object_encryption_alg
+
+                          MUST also be provided.
+                      token_endpoint_auth_method:
+                        type: string
+                        description: >-
+                          Requested Client Authentication method
+
+                          for the Token Endpoint. The options are 
+                          client_secret_post,
+
+                          client_secret_basic,  client_secret_jwt, 
+                          private_key_jwt,
+
+                          and none, as described in Section 9 of OpenID Connect
+                          Core 1.0 (Sakimura,
+
+                          N., Bradley, J., Jones, M., de Medeiros, B., and C.
+                          Mortimore, “OpenID Connect
+
+                          Core 1.0,” November 2014.) [OpenID.Core]. Other
+                          authentication methods
+
+                          MAY be defined by extensions. If omitted, the default
+                          is client_secret_basic
+
+                          -- the HTTP Basic Authentication Scheme specified in
+                          Section 2.3.1
+
+                          of OAuth 2.0 (Hardt, D., “The OAuth 2.0 Authorization
+                          Framework,” October 2012.)
+
+                          [ RFC6749 ].
+                      token_endpoint_auth_signing_alg:
+                        type: string
+                        description: >-
+                          JWS (Jones, M., Bradley, J., and
+
+                          N. Sakimura, “JSON Web Signature (JWS),” July 2014.)
+                          [JWS] alg algorithm
+
+                          [JWA] (Jones, M., “JSON Web Algorithms (JWA),” July
+                          2014.) that MUST be used for
+
+                          signing the JWT [JWT] (Jones, M., Bradley, J., and N.
+                          Sakimura, “JSON Web
+
+                          Token (JWT),” July 2014.) used to authenticate the
+                          Client at the Token
+
+                          Endpoint for the private_key_jwt  and
+                          client_secret_jwt authentication
+
+                          methods. All Token Requests using these authentication
+                          methods from
+
+                          this Client MUST be rejected, if the JWT is not signed
+                          with this algorithm.
+
+                          Servers SHOULD support RS256. The value none MUST NOT
+                          be used.
+
+                          The default, if omitted, is that any algorithm
+                          supported by the OP
+
+                          and the RP MAY be used.
+                      default_max_age:
+                        type: string
+                        description: >-
+                          Default Maximum Authentication Age.
+
+                          Specifies that the End-User MUST be actively
+                          authenticated if the End-User
+
+                          was authenticated longer ago than the specified number
+                          of seconds. The
+
+                          max_age request parameter overrides this default
+                          value. If omitted,
+
+                          no default Maximum Authentication Age is specified.
+                      require_auth_time:
+                        type: string
+                        description: >-
+                          Boolean value specifying whether
+
+                          the auth_time  Claim in the ID Token is REQUIRED. It
+                          is REQUIRED
+
+                          when the value is true. (If this is false, the
+                          auth_time Claim can
+
+                          still be dynamically requested as an individual Claim
+                          for the ID Token
+
+                          using the claims request parameter described in
+                          Section 5.5.1 of OpenID
+
+                          Connect Core 1.0 (Sakimura, N., Bradley, J., Jones,
+                          M., de Medeiros, B., and C.
+
+                          Mortimore, “OpenID Connect Core 1.0,” November 2014.)
+                          [OpenID.Core].) If
+
+                          omitted, the default value is false.
+                      default_acr_values:
+                        type: string
+                        description: >-
+                          Default requested Authentication
+
+                          Context Class Reference values.  Array of strings
+                          that  specifies
+
+                          the default acr values that the OP is being requested
+                          to use  for
+
+                          processing requests from this Client, with the values
+                          appearing in order
+
+                          of preference. The Authentication Context Class
+                          satisfied by the authentication
+
+                          performed is returned as the acr Claim Value in the
+                          issued ID Token.
+
+                          The acr Claim is requested as a Voluntary Claim by
+                          this parameter.
+
+                          The acr_values_supported discovery element  contains a
+                          list of the
+
+                          supported acr values supported by this server. Values
+                          specified
+
+                          in the acr_values request parameter or an individual
+                          acr Claim request
+
+                          override these default values.
+                      initiate_login_uri:
+                        type: string
+                        description: >-
+                          URI using the https scheme that
+
+                          a third party can use to initiate a login by the RP,
+                          as specified in
+
+                          Section 4 of OpenID Connect Core 1.0 (Sakimura, N.,
+                          Bradley, J., Jones, M.,
+
+                          de Medeiros, B., and C. Mortimore, “OpenID Connect
+                          Core 1.0,” November 2014.)
+
+                          [ OpenID.Core ]. The URI MUST accept requests via both
+                          GET and POST.
+
+                          The Client MUST understand the  login_hint and iss
+                          parameters and
+
+                          SHOULD support the target_link_uri parameter.
+                      request_uris:
+                        type: string
+                        description: >-
+                          Array of request_uri values that
+
+                          are pre-registered by the RP for use at the OP.
+                          Servers MAY cache
+
+                          the contents of the files referenced by these URIs and
+                          not retrieve them
+
+                          at the time they are used in a request. OPs can
+                          require that request_uri
+
+                          values used be pre-registered with the
+                          require_request_uri_registration
+
+                          discovery parameter. If the contents of the request
+                          file could ever change,
+
+                          these URI values SHOULD include the base64url encoded
+                          SHA-256 hash value of
+
+                          the file contents referenced by the URI as the value
+                          of the URI fragment.
+
+                          If the fragment value used for a URI changes, that
+                          signals the server
+
+                          that its cached value for that URI with the old
+                          fragment value is no
+
+                          longer valid.
+              examples:
+                '200': &ref_4
+                  value:
+                    kind: RegisteredClient
+                    self: /registrations/XXX
+                    openIDConfigUrl: 'https://auth.abcbank.com/.well-known/openid-configuration'
+                    metadata:
+                      grant_types:
+                        - client_credentials
+                        - authorization_code
+                        - refresh_token
+                      id_token_signed_response_alg: PS256
+                      authorization_signed_response_alg: PS256
+                      response_types:
+                        - code
+                      token_endpoint_auth_method: private_key_jwt
+                      tls_client_certificate_bound_access_tokens: true
+                      client_id: CLIENT_ID
+                      client_secret: CLIENT_SECRET
+                      client_id_issued_at: 1665796077170
+                      client_secret_expires_at: 0
+                      redirect_uris:
+                        - 'https://example.com/oauth/callback/'
+                      software_id: EXAMPLE_SOFTWARE_ID
+                      software_statement: aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==
+                      application_type: web
+                      tls_client_auth_subject_dn: 'CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ'
+                      jwks_uri: 'https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks'
+                      request_object_signing_alg: PS256
+                      token_endpoint_auth_signing_alg: PS256
+                      scope: openid accounts payments
+                      introspection_endpoint_auth_method: private_key_jwt
+                      introspection_endpoint_auth_signing_alg: PS256
+        '201':
+          description: 201 Created (w/ Platern Web)
+          content:
+            application/json:
+              schema: *ref_0
+              examples:
+                '201': &ref_1
+                  value:
+                    kind: RegisteredClient
+                    self: /registrations/YYY
+                    openIDConfigUrl: 'https://auth.abcbank.com/.well-known/openid-configuration'
+                    metadata:
+                      grant_types:
+                        - client_credentials
+                        - authorization_code
+                        - refresh_token
+                      id_token_signed_response_alg: PS256
+                      authorization_signed_response_alg: PS256
+                      response_types:
+                        - code
+                      token_endpoint_auth_method: private_key_jwt
+                      tls_client_certificate_bound_access_tokens: true
+                      client_id: CLIENT_ID
+                      client_secret: CLIENT_SECRET
+                      client_id_issued_at: 1665796077170
+                      client_secret_expires_at: 0
+                      redirect_uris:
+                        - 'https://example.com/oauth/callback/'
+                      software_id: EXAMPLE_SOFTWARE_ID
+                      software_statement: aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==
+                      application_type: web
+                      tls_client_auth_subject_dn: 'CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ'
+                      jwks_uri: 'https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks'
+                      request_object_signing_alg: PS256
+                      token_endpoint_auth_signing_alg: PS256
+                      scope: openid accounts payments
+                      introspection_endpoint_auth_method: private_key_jwt
+                      introspection_endpoint_auth_signing_alg: PS256
+        x-201.WithOIDD:
+          description: 201 Created (w/ OpenID Discovery URL)
+          content:
+            application/json:
+              schema: &ref_2
+                type: object
+                properties:
+                  self:
+                    type: string
+                example:
+                  self:
+                    - XXX
+                  registration: {}
+              examples:
+                x-201.WithOIDD: *ref_1
+        x-201.WithOverrides:
+          description: 201 Created (w/ provider-specific overrides)
+          content:
+            application/json:
+              schema: *ref_2
+              examples:
+                x-201.WithOverrides: *ref_1
+        x-400.NoProviderIdentifiers:
+          description: Bad Request
+          content:
+            application/json:
+              schema: &ref_3
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              examples:
+                x-400.NoProviderIdentifiers: &ref_13
+                  value:
+                    error: Bad Request
+                    message: >-
+                      payload must include either a valid Platern `provider` or
+                      OpenID discovery URL (`openIDConfigUrl`)
+        x-400.ProviderNotFound:
+          description: Bad Request
+          content:
+            application/json:
+              schema: *ref_3
+              examples:
+                x-400.ProviderNotFound: &ref_14
+                  value:
+                    error: Bad Request
+                    message: 'provider doesn''t exist: nonexistent-provider'
+    get:
+      description: Get a client registered with a provider.
+      summary: Get a client registered with a provider.
+      tags:
+        - Client registrations
+      parameters:
+        - name: clientID
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            '200':
+              value: XXX
+            x-404.MissingProvider:
+              value: nonexistent-provider
+            x-404.MissingRegistration:
+              value: EXAMPLE_SOFTWARE_ID
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_0
+              examples:
+                '200': *ref_4
+        x-404.MissingRegistration:
+          description: Not Found
+          content:
+            application/json:
+              schema: *ref_3
+              examples:
+                x-404.MissingRegistration: &ref_5
+                  value:
+                    error: Not Found
+                    message: client not found
+        x-404.MissingProvider:
+          description: Not Found
+          content:
+            application/json:
+              schema: *ref_3
+              examples:
+                x-404.MissingProvider: *ref_5
+  /registrations:
+    get:
+      tags:
+        - Client registrations
+      description: Get `registrationID` values for all providers.
+      summary: Get `registrationID` values for all providers.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_7
+                type: object
+                properties:
+                  kind:
+                    type: string
+                  self:
+                    type: string
+                  registrations:
+                    type: array
+                    items:
+                      type: string
+              examples:
+                '200':
+                  value:
+                    kind: Collection
+                    self: /registrations
+                    registrations:
+                      - XXX
+                      - YYY
+  /authorization:
+    get:
+      tags:
+        - Authorization
+      description: |-
+        Generate an authorization URL for the data owner to grant access.
+
+        The query parameters you need to send to this endpoint depend on
+        how you're using *fapi-connector*.
+
+        If you're using Platern Web, use:
+          - `providerID`
+
+        If you're connecting without Platern Web (e.g. to Open Banking), use:
+          - `oauth2Grant`
+          - `oauth2GrantRequest`
+      summary: Generate an authorization URL for the data owner to grant access.
+      parameters:
+        - in: query
+          description: Use the `clientID` registered with your API provider.
+          name: client
+          required: true
+          schema:
+            type: string
+          examples:
+            '200':
+              value: XXX
+        - in: query
+          description: 'If you''re using Platern Web, pass the `provider`.'
+          name: provider
+          schema:
+            type: string
+          examples:
+            '200':
+              value: XXX
+        - in: query
+          description: |-
+            Currently supports the following Open Banking UK specifications:
+              - `obieAis`
+              - `obieCof`
+              - `obieDcr`
+              - `obieEvent`
+              - `obiePis`
+              - `obieProduct`
+          name: specification
+          required: true
+          schema:
+            type: string
+          examples:
+            '200':
+              value: obieAis
+        - in: query
+          description: |-
+            #### OAuth2: `state`
+
+            RECOMMENDED.  An opaque value used by the client to maintain
+                     state between the request and callback.  The authorization
+                     server includes this value when redirecting the user-agent back
+                     to the client.  The parameter SHOULD be used for preventing
+                     cross-site request forgery as described in [RFC 6749 Section 10.12](https://www.rfc-editor.org/rfc/rfc6749#section-10.12).
+          name: oauth2State
+          required: true
+          schema:
+            type: string
+          examples:
+            '200':
+              value: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
+        - in: query
+          name: openIDNonce
+          required: true
+          schema:
+            type: string
+          examples:
+            '200':
+              value: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
+        - in: query
+          description: >-
+            Required for Open Banking UK. Usually has a path ending with
+            `/account-access-consents`.
+
+
+            Also see [FAPI Grant Management extension to
+            OAuth2](https://openid.net/specs/fapi-grant-management-01.html).
+          name: oauth2GrantUrl
+          schema:
+            type: string
+          examples:
+            '200':
+              summary: 200 Ozone Sandbox
+              value: >-
+                https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/account-access-consents
+        - in: query
+          description: >-
+            Base64-encoded grant request payload.
+
+            Required for Open Banking UK. Usually has a path ending with
+            `/account-access-consents`.
+
+
+            Also see [FAPI Grant Management extension to
+            OAuth2](https://openid.net/specs/fapi-grant-management-01.html).
+          name: oauth2GrantRequest
+          schema:
+            type: string
+          examples:
+            '200':
+              value: >-
+                eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ==
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_9
+                type: object
+                properties:
+                  url:
+                    type: string
+                required:
+                  - url
+              examples:
+                '200':
+                  value:
+                    url: >-
+                      https://auth.abcbank.com/authorize?client_id=CLIENT_ID&scope=openid&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Foauth%2Fcallback%2F&request=eyJhbGciOiJQUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QifQ.eyJzY29wZSI6ImFjY291bnQiLCJzdGF0ZSI6IjgxMDVlYWFkLTY4MzktNGZkMC05MWZhLTAzMThlZTYyZGE5YiIsIm5vbmNlIjoiOTAxMjlkYzAtOWNiNy00ZmMzLTk2ZmQtMzQ4ZjNiMWIxMzgzIiwibWF4X2FnZSI6ODY0MDAsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vb2F1dGgvY2FsbGJhY2svIiwiY2xhaW1zIjp7InVzZXJpbmZvIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJ2YWx1ZSI6IkNVU1RPTUVSX0FDQ09VTlRfQ09OU0VOVCIsImVzc2VudGlhbCI6dHJ1ZX19LCJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJDVVNUT01FUl9BQ0NPVU5UX0NPTlNFTlQiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZXMiOlsidXJuOm9wZW5iYW5raW5nOnBzZDI6c2NhIiwidXJuOm9wZW5iYW5raW5nOnBzZDI6Y2EiXX19fSwiaXNzIjoiQ0xJRU5UX0lEIiwiY2xpZW50X2lkIjoiQ0xJRU5UX0lEIiwianRpIjoiNW9HQzd1UUZsRndDQWEwZFFBbHg1a0xwbEx2RjJ6aGlMbjMxQVVhVHFYYyIsImlhdCI6MTY2NjE2MzAzNSwiZXhwIjoxNjY2MTYzMzM1LCJuYmYiOjE2NjYxNjMwMzV9.RYHl8EbDPddwOnA_dNRvjprd5eVn2v5E4Db7q5JHhaULYGXHhShsDfBGbJrKieZgAm3IHk6borr-Pl5P2qK8gBsuPLAGYONT2ZABD5ktAEksprWBmt0SMDBB8URWnabuBgYYmErLk2k8_QpVhVtDEwl_q-8CQfH1rn8-k7M3xPF7egZY7nLd7sIOw8-EOEWglUzO_irrdRplZIyFMA91pvDBQuPSjMvFTTfOcXXOkWKngQHdVPdw3JJuHgF3kmMNA0b0sFlPvYFobnCPEDDEc2MMqJ9RmdAZ0ENiFopLs_3V8_pWXo4c3OcmlD36-qxEgkLhKSCpBfo464rb3MaYXw
+  /token:
+    description: >-
+      Proxy service to perform an OAuth2 token request with an API provider for
+      an access token.
+    post:
+      tags:
+        - Authorization
+      description: >-
+        Make an OAuth2 [token
+        request](https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3) to get
+        access credentials.
+      summary: Access token request.
+      parameters:
+        - in: query
+          description: Use the `clientID` registered with your API provider.
+          name: client
+          schema:
+            type: string
+          examples:
+            '200':
+              value: XXX
+      requestBody:
+        content:
+          application/json:
+            schema: &ref_10
+              type: object
+              properties:
+                oauth2State:
+                  description: OAuth2 state
+                  type: string
+                oauth2Code:
+                  description: OAuth2 code
+                  type: string
+                openIDNonce:
+                  description: OpenID nonce
+                  type: string
+            examples:
+              '200':
+                summary: 200 (w/ Platern Web)
+                value:
+                  oauth2State: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
+                  oauth2Code: 295f8dfa-11f1-4424-9c8a-c498e0e6b8cd
+                  openIDNonce: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
+              x-200.WithOIDD:
+                summary: 200 (w/ OpenID Discovery URL)
+                value:
+                  oauth2State: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
+                  oauth2Code: 295f8dfa-11f1-4424-9c8a-c498e0e6b8cd
+                  openIDNonce: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: &ref_11
+                type: object
+                properties:
+                  oauth2TokenSet: &ref_12
+                    title: OAuth2 Token Response
+                    type: object
+                    properties:
+                      access_token:
+                        description: The access token issued by the authorization server.
+                        type: string
+                      expires_in:
+                        description: >-
+                          RECOMMENDED.  The lifetime in seconds of the access
+                          token.  For
+
+                          example, the value "3600" denotes that the access
+                          token will
+
+                          expire in one hour from the time the response was
+                          generated.
+
+                          If omitted, the authorization server SHOULD provide
+                          the
+
+                          expiration time via other means or document the
+                          default value.
+                        type: integer
+                      refresh_token:
+                        description: >-
+                          Can be used to obtain new access tokens using the same
+
+                          authorization grant as described in Section 6 of RFC
+                          6749.
+                        type: string
+                      scope:
+                        description: >-
+                          The authorization server uses the "scope" response
+                          parameter to
+
+                          inform the client of the scope of the access token
+                          issued.
+
+
+                          The value of the scope parameter is expressed as a
+                          list of space-
+
+                          delimited, case-sensitive strings.  The strings are
+                          defined by the
+
+                          authorization server.  If the value contains multiple
+                          space-delimited
+
+                          strings, their order does not matter, and each string
+                          adds an
+
+                          additional access range to the requested scope.
+                        type: string
+                      token_type:
+                        description: |-
+                          The type of the token issued as described in
+                          Section 7.1.  Value is case insensitive.
+                        type: string
+                      state:
+                        description: >-
+                          REQUIRED if the "state" parameter was present in the
+                          client
+                                   authorization request.  The exact value received from the
+                                   client.
+                        type: string
+                    required:
+                      - access_token
+                      - expires_in
+                      - token_type
+                required:
+                  - oauth2AccessToken
+              examples:
+                '200':
+                  value:
+                    tokenSet: null
+  /resource:
+    description: Access a resource.
+components:
+  schemas:
+    Client: *ref_0
+    DcrClientMetadata: *ref_6
+    NewRegistrationUpdates: *ref_2
+    RegistrationRequest: &ref_8
+      description: >-
+        Requires either the Platern Web `provider` or the API provider's
+
+        OpenID Discovery endpoint (`openIDConfigUrl`).
+
+
+        Optionally, you can override various
+        [configuration](config/clients.json)
+
+        values on the fly.
+      type: object
+      properties:
+        provider:
+          type: string
+        openIDConfigUrl:
+          type: string
+        overrides:
+          type: object
+          properties:
+            scopes:
+              type: array
+              items:
+                type: string
+            grantTypes:
+              type: array
+              items:
+                type: string
+            authMethod:
+              type: string
+    Registrations: *ref_7
+    Registration:
+      type: object
+      properties:
+        self:
+          type: string
+        kind:
+          type: string
+        ID:
+          type: string
+        completed: *ref_8
+        failed: *ref_8
+        pending: *ref_8
+    AuthzUrl: *ref_9
+    TokenRequest: *ref_10
+    TokenResponse: *ref_11
+    OAuth2Token: *ref_12
+    StandardError: *ref_3
+  examples:
+    ClientUpdated: *ref_4
+    ClientCreated: *ref_1
+    Registration404RegistrationIDNotFound:
+      value:
+        error: Not Found
+        message: 'registration ID not found: nonexistent-registration'
+    Registration400NoProviderIDs: *ref_13
+    Registration400ProviderNotFound: *ref_14
+    Client404: *ref_5

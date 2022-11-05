@@ -1,17 +1,12 @@
-import {NextFunction, Request, Response, Router as rout} from "express";
 import {RegistrationService} from "../service/registration/registrationService";
-import {Config} from "../util/config/config";
+import {RegistrationsResponse} from "../httpmodel/modelRegistrationsResponse";
+import {RegistrationResponse} from "../httpmodel/modelRegistrationResponse";
+import {NextFunction, Request, Response, Router as rout} from "express";
 import {Validator} from "express-json-validator-middleware";
-import {
-  getQueryParamsSchema, getRequestBodySchema,
-} from "../util/openapiUtils";
+import {Config} from "../util/config/config";
 import {Route} from "../app";
-import {ClientResponse} from "../httpmodel/modelClientResponse";
-import {
-  badRequestError,
-  notFoundError,
-  unknownError,
-} from "../service/error";
+import {badRequestError, notFoundError, unknownError} from "../service/error";
+import {getQueryParamsSchema, getRequestBodySchema} from "../util/openapiUtils";
 import {isProviderValid} from "./utils";
 
 const router = rout();
@@ -33,7 +28,7 @@ const handleGetAll = (registerService: RegistrationService, path: string) => {
         next(unknownError(`failed to get registrations`));
         return;
       }
-      const content: RegistrationResponse = {
+      const content: RegistrationsResponse = {
         self: path,
         kind: "Collection",
         registrations: data,
@@ -52,7 +47,7 @@ const handleGet = (registerService: RegistrationService, path: string) => {
         next(notFoundError(`client not found`));
         return;
       }
-      const content: ClientResponse = {
+      const content: RegistrationResponse = {
         self: Route.Registration.replace(":clientID", clientID),
         kind: "RegisteredClient",
         openIDConfigUrl: data.openIDConfigUrl,
@@ -88,7 +83,7 @@ const handlePut = (registerService: RegistrationService, path: string) => {
         next(unknownError(`failed to create or update registrations`));
         return;
       }
-      const content: ClientResponse = {
+      const content: RegistrationResponse = {
         self: Route.Registration.replace(":clientID", clientID),
         kind: "RegisteredClient",
         openIDConfigUrl: data.openIDConfigUrl,

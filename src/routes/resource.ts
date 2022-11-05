@@ -5,7 +5,6 @@ import {Route} from "../app";
 
 const router = rout();
 
-/* GET users listing. */
 export const resource = (config: Config): rout => {
   const resourceService = new ResourceService(config);
   router.get(Route.Resource, function (req: Request, resp: Response, next: NextFunction) {

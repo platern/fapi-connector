@@ -6,7 +6,7 @@ import {
   Issuer,
   TokenSet,
 } from "@dextersjab/openid-client";
-import {OBReadConsent1Data} from "../../httpmodel/oBReadConsent1Data";
+import {OBReadConsent1Data} from "../../httpmodel/modelOBReadConsent1Data";
 import {operationMap, Specification} from "../operationMap";
 import axios from "axios";
 import {Agent} from "https";

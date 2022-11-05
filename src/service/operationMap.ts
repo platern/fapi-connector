@@ -13,7 +13,7 @@ type Operation = {
   path: string
 }
 
-export const opScopeMappings: OperationMapping = {
+export const operationMap: OperationMapping = {
   [Specification.ObieAis]: {
     method: 'POST',
     path: '/account-access-consents',

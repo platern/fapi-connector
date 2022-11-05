@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Financial-grade API Connector
   description: |-
-    Use this companion service to register with and call OpenID providers.
+    Use this companion service to register with and call OpenID providers, built to accommodate many the peculiarities of Open Banking implementations.
     
     Optionally, it can be used in conjunction with the [Platern Directory](https://platern.com) in [Open Banking](https://opendata.substack.com/p/an-overview-of-open-banking) applications.
     
@@ -37,11 +37,11 @@ paths:
       parameters:
         - name: clientID
           description: |-
-            Use any unique identifier for the API provider.
+            Choose a unique identifier for the `clientID` to register a new client with an API provider.
             
             If you're using Platern Web, we recommend using the `providerID` from the Providers API.
             
-            Warning: registering with the same `clientID` will override any previous registrations.
+            Warning: currently, registering with the same `clientID` will override any previous registrations.
           in: path
           required: true
           schema:

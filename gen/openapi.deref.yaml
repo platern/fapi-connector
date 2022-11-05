@@ -2,7 +2,8 @@ openapi: 3.0.3
 info:
   title: Financial-grade API Connector
   description: >-
-    Use this companion service to register with and call OpenID providers.
+    Use this companion service to register with and call OpenID providers, built
+    to accommodate many the peculiarities of Open Banking implementations.
 
 
     Optionally, it can be used in conjunction with the [Platern

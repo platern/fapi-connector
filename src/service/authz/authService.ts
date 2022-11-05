@@ -7,7 +7,7 @@ import {
   TokenSet,
 } from '@dextersjab/openid-client'
 import {OBReadConsent1Data} from '../../httpmodel/oBReadConsent1Data'
-import {opScopeMappings, Specification} from './operations';
+import {operationMap, Specification} from '../operationMap';
 import axios from 'axios';
 import {Agent} from 'https';
 import {createPrivateKey, KeyObject} from 'crypto';
@@ -67,7 +67,7 @@ export class AuthService {
       // let openIDConfigUrl = openIDConfigUrl
       let grantURL = grantUrl
 
-      if (!Object.prototype.hasOwnProperty.call(opScopeMappings, specificationID)) {
+      if (!Object.prototype.hasOwnProperty.call(operationMap, specificationID)) {
         next(badRequestError(`specification not supported by authz: ${specificationID}`))
         return undefined
       }

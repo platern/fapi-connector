@@ -12,6 +12,6 @@ export type Config =
   & DataCredentials
   & ClientsConfig
   & PlaternWebConfig
-const config: Config = {...obukCredentials, ...platernWebCredentials, ...dataCredentials, ...configVars}
+const config: Config = {...obukCredentials, ...platernWebCredentials, ...dataCredentials, ...configVars};
 
-export default config
+export default config;

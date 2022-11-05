@@ -15,7 +15,7 @@ type Operation = {
 
 export const operationMap: OperationMapping = {
   [Specification.ObieAis]: {
-    method: 'POST',
-    path: '/account-access-consents',
+    method: "POST",
+    path: "/account-access-consents",
   },
-}
+};

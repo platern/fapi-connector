@@ -7,7 +7,7 @@ export interface PlaternWebCredentials {
 }
 
 export const platernWebCredentials: PlaternWebCredentials = {
-  platernApiKeyHeaderKey: getEnvVar('PLATERN_WEB_HEADER_KEY'),
-  platernApiKeyHeaderValue: getEnvVar('PLATERN_WEB_HEADER_VALUE'),
-  platernWebBaseURL: getEnvVar('PLATERN_WEB_BASE_URL'),
-}
+  platernApiKeyHeaderKey: getEnvVar("PLATERN_WEB_HEADER_KEY"),
+  platernApiKeyHeaderValue: getEnvVar("PLATERN_WEB_HEADER_VALUE"),
+  platernWebBaseURL: getEnvVar("PLATERN_WEB_BASE_URL"),
+};

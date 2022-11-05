@@ -6,6 +6,6 @@ export interface DataCredentials {
 }
 
 export const dataCredentials: DataCredentials = {
-  aesKey: getEnvVar('AES_KEY'),
-  aesIv: getEnvVar('AES_IV'),
-}
+  aesKey: getEnvVar("AES_KEY"),
+  aesIv: getEnvVar("AES_IV"),
+};

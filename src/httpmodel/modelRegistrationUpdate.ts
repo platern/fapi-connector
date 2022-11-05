@@ -1,4 +1,4 @@
 interface RegisteredClient {
-  registration?: string
-  self: string
+  registration?: string;
+  self: string;
 }

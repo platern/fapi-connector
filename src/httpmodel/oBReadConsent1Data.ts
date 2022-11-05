@@ -13,7 +13,7 @@
 // import { RequestFile } from './models';
 
 export class OBReadConsent1Data {
-  'permissions': Array<PermissionsEnum>;
+  "permissions": Array<PermissionsEnum>;
   /**
    * Specified date and time the permissions will expire.
    * If this is not populated, the permissions will be open ended.
@@ -22,7 +22,7 @@ export class OBReadConsent1Data {
    * All date-time fields in responses must include the timezone.
    * An example is below: 2017-04-05T10:43:07+00:00
    */
-  'expirationDateTime'?: Date;
+  "expirationDateTime"?: Date;
   /**
    * Specified start date and time for the transaction query period.
    * If this is not populated, the start date will be open ended,
@@ -32,7 +32,7 @@ export class OBReadConsent1Data {
    * All date-time fields in responses must include the timezone.
    * An example is below: 2017-04-05T10:43:07+00:00
    */
-  'transactionFromDateTime'?: Date;
+  "transactionFromDateTime"?: Date;
   /**
    * Specified end date and time for the transaction query period.
    * If this is not populated, the end date will be open ended,
@@ -42,30 +42,30 @@ export class OBReadConsent1Data {
    * All date-time fields in responses must include the timezone.
    * An example is below: 2017-04-05T10:43:07+00:00
    */
-  'transactionToDateTime'?: Date;
+  "transactionToDateTime"?: Date;
 
   static discriminator: string | undefined = undefined;
 
   static attributeTypeMap: Array<{ name: string, baseName: string, type: string }> = [
     {
-      'name': 'permissions',
-      'baseName': 'Permissions',
-      'type': 'Array<OBReadConsent1Data.PermissionsEnum>',
+      "name": "permissions",
+      "baseName": "Permissions",
+      "type": "Array<OBReadConsent1Data.PermissionsEnum>",
     },
     {
-      'name': 'expirationDateTime',
-      'baseName': 'ExpirationDateTime',
-      'type': 'Date',
+      "name": "expirationDateTime",
+      "baseName": "ExpirationDateTime",
+      "type": "Date",
     },
     {
-      'name': 'transactionFromDateTime',
-      'baseName': 'TransactionFromDateTime',
-      'type': 'Date',
+      "name": "transactionFromDateTime",
+      "baseName": "TransactionFromDateTime",
+      "type": "Date",
     },
     {
-      'name': 'transactionToDateTime',
-      'baseName': 'TransactionToDateTime',
-      'type': 'Date',
+      "name": "transactionToDateTime",
+      "baseName": "TransactionToDateTime",
+      "type": "Date",
     }];
 
   static getAttributeTypeMap() {
@@ -74,25 +74,25 @@ export class OBReadConsent1Data {
 }
 
 export enum PermissionsEnum {
-  ReadAccountsBasic = 'ReadAccountsBasic',
-  ReadAccountsDetail = 'ReadAccountsDetail',
-  ReadBalances = 'ReadBalances',
-  ReadBeneficiariesBasic = 'ReadBeneficiariesBasic',
-  ReadBeneficiariesDetail = 'ReadBeneficiariesDetail',
-  ReadDirectDebits = 'ReadDirectDebits',
-  ReadOffers = 'ReadOffers',
-  ReadPan = 'ReadPAN',
-  ReadParty = 'ReadParty',
-  ReadPartyPsu = 'ReadPartyPSU',
-  ReadProducts = 'ReadProducts',
-  ReadScheduledPaymentsBasic = 'ReadScheduledPaymentsBasic',
-  ReadScheduledPaymentsDetail = 'ReadScheduledPaymentsDetail',
-  ReadStandingOrdersBasic = 'ReadStandingOrdersBasic',
-  ReadStandingOrdersDetail = 'ReadStandingOrdersDetail',
-  ReadStatementsBasic = 'ReadStatementsBasic',
-  ReadStatementsDetail = 'ReadStatementsDetail',
-  ReadTransactionsBasic = 'ReadTransactionsBasic',
-  ReadTransactionsCredits = 'ReadTransactionsCredits',
-  ReadTransactionsDebits = 'ReadTransactionsDebits',
-  ReadTransactionsDetail = 'ReadTransactionsDetail'
+  ReadAccountsBasic = "ReadAccountsBasic",
+  ReadAccountsDetail = "ReadAccountsDetail",
+  ReadBalances = "ReadBalances",
+  ReadBeneficiariesBasic = "ReadBeneficiariesBasic",
+  ReadBeneficiariesDetail = "ReadBeneficiariesDetail",
+  ReadDirectDebits = "ReadDirectDebits",
+  ReadOffers = "ReadOffers",
+  ReadPan = "ReadPAN",
+  ReadParty = "ReadParty",
+  ReadPartyPsu = "ReadPartyPSU",
+  ReadProducts = "ReadProducts",
+  ReadScheduledPaymentsBasic = "ReadScheduledPaymentsBasic",
+  ReadScheduledPaymentsDetail = "ReadScheduledPaymentsDetail",
+  ReadStandingOrdersBasic = "ReadStandingOrdersBasic",
+  ReadStandingOrdersDetail = "ReadStandingOrdersDetail",
+  ReadStatementsBasic = "ReadStatementsBasic",
+  ReadStatementsDetail = "ReadStatementsDetail",
+  ReadTransactionsBasic = "ReadTransactionsBasic",
+  ReadTransactionsCredits = "ReadTransactionsCredits",
+  ReadTransactionsDebits = "ReadTransactionsDebits",
+  ReadTransactionsDetail = "ReadTransactionsDetail"
 }

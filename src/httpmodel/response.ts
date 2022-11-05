@@ -1,4 +1,4 @@
 interface BaseResponse {
-  self: string
-  kind: string
+  self: string;
+  kind: string;
 }

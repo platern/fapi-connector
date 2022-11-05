@@ -5,16 +5,16 @@ import {Config} from "../util/config/config";
 
 export const resolveProviderID = (
   providerID: string | undefined,
-  openIDConfigUrl: string | undefined
+  openIDConfigUrl: string | undefined,
 ) => {
-  if (!providerID && !openIDConfigUrl) throw new Error('one of `providerID` and `openIDConfigUrl` must to be valid')
-  if (providerID && openIDConfigUrl) throw new Error('only one of `providerID` and `openIDConfigUrl` must be valid')
-  return (providerID ? providerID : openIDConfigUrl) as string
-}
+  if (!providerID && !openIDConfigUrl) throw new Error("one of `providerID` and `openIDConfigUrl` must to be valid");
+  if (providerID && openIDConfigUrl) throw new Error("only one of `providerID` and `openIDConfigUrl` must be valid");
+  return (providerID ? providerID : openIDConfigUrl) as string;
+};
 
 export interface ProviderDetails {
-  externalAud: string
-  openIDConfigUrl: string
+  externalAud: string;
+  openIDConfigUrl: string;
 }
 
 /**
@@ -30,33 +30,33 @@ export const providerRegFromPlaternWeb = async (providerID: string,
     headers: {
       [config.platernApiKeyHeaderKey]: config.platernApiKeyHeaderValue,
     },
-  })
-  const root = rootResp.data
-  const providerLink = `${root.providersLink}/${providerID}`
+  });
+  const root = rootResp.data;
+  const providerLink = `${root.providersLink}/${providerID}`;
   const providerResp = await axios.get(providerLink, {
     headers: {
       [config.platernApiKeyHeaderKey]: config.platernApiKeyHeaderValue,
     },
-  })
+  });
   if (providerResp.status < 200 || providerResp.status > 299) {
-    next(badRequestError(`provider doesn't exist: ${providerID}`))
-    return undefined
+    next(badRequestError(`provider doesn't exist: ${providerID}`));
+    return undefined;
   }
-  const provider = providerResp.data
+  const provider = providerResp.data;
   if (!provider.accesses) {
-    next(badRequestError(`Provider doesn't support registration: ${providerID}`))
-    return undefined
+    next(badRequestError(`Provider doesn't support registration: ${providerID}`));
+    return undefined;
   }
   const openIDConfigUrl = provider.accesses.find((access: any) => {
-    return config.trusts?.some(trust => access.trusts.includes(trust))
-  })?.openIDConfigUrl
+    return config.trusts?.some(trust => access.trusts.includes(trust));
+  })?.openIDConfigUrl;
   if (!openIDConfigUrl) {
-    next(badRequestError(`trust types not supported by provider: [${config.trusts?.join(', ')}]`))
-    return undefined
+    next(badRequestError(`trust types not supported by provider: [${config.trusts?.join(", ")}]`));
+    return undefined;
   }
-  const externalAud = provider.extras.externalAud
+  const externalAud = provider.extras.externalAud;
   return {
     openIDConfigUrl: openIDConfigUrl,
     externalAud: externalAud,
-  }
-}
+  };
+};

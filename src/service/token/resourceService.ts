@@ -1,9 +1,10 @@
 import {Config} from "../../util/config/config";
 import axios from "axios";
-import {Agent} from 'https';
+import {Agent} from "https";
 
 export class ResourceService {
-  config: Config
+  config: Config;
+
   constructor(config: Config) {
     this.config = config;
   }
@@ -16,7 +17,7 @@ export class ResourceService {
         method: method,
         url: url,
         headers: {
-          authorization: `Bearer ${accessToken}`
+          authorization: `Bearer ${accessToken}`,
         },
         httpsAgent: new Agent({
           cert: this.config.obTransportCert,
@@ -27,11 +28,11 @@ export class ResourceService {
           ],
           passphrase: this.config.obTransportPass,
           rejectUnauthorized: this.config.rejectUnauthorized,
-        })
-      })
-      return res?.data
+        }),
+      });
+      return res?.data;
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
-  }
+  };
 }

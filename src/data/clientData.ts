@@ -1,14 +1,14 @@
-import {PrismaClient} from '@prisma/client'
+import {PrismaClient} from "@prisma/client";
 import {ClientMetadata} from "@dextersjab/openid-client";
-import {AES, enc} from "crypto-js"
+import {AES, enc} from "crypto-js";
 import {dataCredentials} from "../util/config/credentials/data";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export interface ClientRecord {
-  clientID: string
-  openIDConfigUrl: string
-  metadata: ClientMetadata
+  clientID: string;
+  openIDConfigUrl: string;
+  metadata: ClientMetadata;
 }
 
 class ClientData {
@@ -19,7 +19,7 @@ class ClientData {
     const encrypted = AES.encrypt(JSON.stringify(clientMetadata),
       dataCredentials.aesKey,
       {iv: enc.Hex.parse(dataCredentials.aesIv)},
-    )
+    );
     await prisma.clientRegistration.create({
       data: {
         clientID: clientID,
@@ -28,9 +28,9 @@ class ClientData {
         updatedAt: new Date(),
         metadata: Buffer.from(encrypted.toString()),
       },
-    })
-    return true
-  }
+    });
+    return true;
+  };
 
   updateClient = async (clientID: string,
                         openIDConfigUrl: string,
@@ -38,7 +38,7 @@ class ClientData {
     const encrypted = AES.encrypt(JSON.stringify(clientMetadata),
       dataCredentials.aesKey,
       {iv: enc.Hex.parse(dataCredentials.aesIv)},
-    )
+    );
     await prisma.clientRegistration.update({
       where: {
         clientID: clientID,
@@ -47,19 +47,19 @@ class ClientData {
         openIDConfigUrl: openIDConfigUrl,
         metadata: Buffer.from(encrypted.toString()),
       },
-    })
-    return true
+    });
+    return true;
 
-  }
+  };
 
   getClientIDs = async (): Promise<string[]> => {
     const clientRegistrationArr = await prisma.clientRegistration.findMany({
       select: {
         clientID: true,
       },
-    })
-    return clientRegistrationArr.map(d => d.clientID)
-  }
+    });
+    return clientRegistrationArr.map(d => d.clientID);
+  };
 
   clientExists = async (clientID: string): Promise<boolean> => {
     const count = await prisma.clientRegistration.count({
@@ -69,9 +69,9 @@ class ClientData {
       select: {
         metadata: true,
       },
-    })
-    return count.metadata > 0
-  }
+    });
+    return count.metadata > 0;
+  };
 
   getClient = async (clientID: string): Promise<ClientRecord | undefined> => {
     const clientRegistration = await prisma.clientRegistration.findFirst({
@@ -80,28 +80,28 @@ class ClientData {
       },
       select: {
         metadata: true,
-        openIDConfigUrl: true
+        openIDConfigUrl: true,
       },
-    })
-    if (!clientRegistration) return undefined
+    });
+    if (!clientRegistration) return undefined;
     return {
       clientID: clientID,
       openIDConfigUrl: clientRegistration.openIDConfigUrl,
-      metadata: decryptMetadata(clientRegistration) as ClientMetadata
-    }
-  }
+      metadata: decryptMetadata(clientRegistration) as ClientMetadata,
+    };
+  };
 }
 
 const decryptMetadata = (clientRegistration: any): ClientMetadata | undefined => {
-  if (!clientRegistration.metadata) return undefined
+  if (!clientRegistration.metadata) return undefined;
   const decrypted = AES.decrypt(
     clientRegistration.metadata.toString(),
     dataCredentials.aesKey,
     {iv: enc.Hex.parse(dataCredentials.aesIv)},
-  )
-  return JSON.parse(decrypted.toString(enc.Utf8)) as ClientMetadata
-}
+  );
+  return JSON.parse(decrypted.toString(enc.Utf8)) as ClientMetadata;
+};
 
-const clientData = new ClientData()
+const clientData = new ClientData();
 
-export default clientData
+export default clientData;

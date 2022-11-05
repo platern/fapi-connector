@@ -16,8 +16,8 @@ tool is still in active development.**
 
 ### Prerequisites
 
-You will need to have installed:
-- Node to run the server (Dockerisation is also in progress)
+To run the server, you'll need:
+- Node (v16+)
 - Postgres
 
 ### Setup

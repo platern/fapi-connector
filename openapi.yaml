@@ -48,10 +48,10 @@ paths:
             type: string
           examples:
             200:
-              summary: 200 Updated (w/ Platern Web)
+              summary: 200 Updated (w/ provider ID)
               value: XXX
             201:
-              summary: 201 Created (w/ Platern Web)
+              summary: 201 Created (w/ provider ID)
               value: YYY
             x-201.WithOIDD:
               summary: 201 Created (w/ OpenID Discovery URL)
@@ -72,10 +72,10 @@ paths:
             type: string
           examples:
             200:
-              summary: 200 Updated (w/ Platern Web)
+              summary: 200 Updated (w/ provider ID)
               value: obieAis
             201:
-              summary: 201 Created (w/ Platern Web)
+              summary: 201 Created (w/ provider ID)
               value: obieAis
             x-201.WithOIDD:
               summary: 201 Created (w/ OpenID Discovery URL)
@@ -122,13 +122,13 @@ paths:
                       type: string
             examples:
               200:
-                summary: 200 Updated (w/ Platern Web)
+                summary: 200 Updated (w/ provider ID)
                 value:
                   {
                     provider: 'XXX'
                   }
               201:
-                summary: 201 Created (w/ Platern Web)
+                summary: 201 Created (w/ provider ID)
                 value:
                   {
                     provider: 'YYY'
@@ -164,7 +164,7 @@ paths:
         required: true
       responses:
         '200':
-          description: 200 Updated (w/ Platern Web)
+          description: 200 Updated (w/ provider ID)
           content:
             application/json:
               schema:
@@ -173,7 +173,7 @@ paths:
                 200:
                   $ref: '#/components/examples/ClientUpdated'
         '201':
-          description: 201 Created (w/ Platern Web)
+          description: 201 Created (w/ provider ID)
           content:
             application/json:
               schema:
@@ -430,7 +430,7 @@ paths:
                 '#/components/schemas/TokenRequest'
             examples:
               200:
-                summary: 200 (w/ Platern Web)
+                summary: 200 (w/ provider ID)
                 value:
                   {
                     oauth2State: 'cd444cb3-68b8-42b4-a9dd-aa3c75ccade2',

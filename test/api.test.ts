@@ -109,7 +109,7 @@ describe("API requests and responses", () => {
       : operationSchema.path
     return (request(app) as any)[operationSchema.method](formattedPath)
       .query(operationSchema.exampleQueryParams)
-      .send(operationSchema.exampleRequest ? operationSchema.exampleRequest : undefined)
+      .send(operationSchema.exampleRequest)
       .then((resp: any) => {
         console.log(`response: ${JSON.stringify(resp.body)}`)
         expect(resp.statusCode).toBe(operationSchema.code)

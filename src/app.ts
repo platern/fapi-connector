@@ -1,25 +1,23 @@
-import * as express from "express";
-import {NextFunction, Request, Response} from "express";
-import {ValidationError} from "express-json-validator-middleware";
-import * as createError from "http-errors";
-import * as path from "path";
-import * as cors from "cors";
-import * as logger from "morgan";
-import {router as indexRouter} from "./routes";
-
-import {registrations} from "./routes/registrations";
 import {config as dotenvConfig} from "dotenv";
-import config from "./util/config/config";
-import {badRequestError, HttpException, unknownError} from "./service/error";
-import {authz} from "./routes/authz";
-import {tokenRequest} from "./routes/token";
-import {resource} from "./routes/resource";
-
 dotenvConfig({path: `.env.${(process.env.NODE_ENV as string) === "test" ? "test" : ""}`});
 
 import * as swaggerUi from "swagger-ui-express";
+import * as createError from "http-errors";
+import * as express from "express";
+import * as logger from "morgan";
 import * as yaml from "js-yaml";
+import * as path from "path";
+import * as cors from "cors";
 import * as fs from "fs";
+import {badRequestError, HttpException, unknownError} from "./service/error";
+import {ValidationError} from "express-json-validator-middleware";
+import {NextFunction, Request, Response} from "express";
+import {registrations} from "./routes/registrations";
+import {router as indexRouter} from "./routes";
+import {tokenRequest} from "./routes/token";
+import {resource} from "./routes/resource";
+import config from "./util/config/config";
+import {authz} from "./routes/authz";
 
 export const app = express();
 

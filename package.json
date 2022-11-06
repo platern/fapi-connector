@@ -6,7 +6,7 @@
     "lint": "eslint --ext .js,.ts .",
     "lint:fix": "eslint --fix --ext .js,.ts .",
     "serve": "NODE_ENV=production yarn run build",
-    "start": "yarn build && node lib/server.js",
+    "start": "yarn build && node lib/src/server.js",
     "test": "yarn build && ENV_FILE=/.config/.env.test jest --detectOpenHandles"
   },
   "prisma": {

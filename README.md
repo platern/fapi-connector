@@ -39,6 +39,20 @@ To run the server, you'll need:
 
 ### Running the server locally
 
+#### Setup
+
+With yarn:
+```shell
+yarn install
+```
+
+With npm:
+```shell
+npm install
+```
+
+#### Run
+
 With yarn:
 ```shell
 yarn start

@@ -1,0 +1,739 @@
+{
+	"info": {
+		"_postman_id": "f6d3da8b-bd1c-431c-9b31-ce95ba764ec9",
+		"name": "FAPI Connector",
+		"description": "Use this companion service to register with and call OpenID providers, built to accommodate many the peculiarities of Open Banking implementations.\n\nOptionally, it can be used in conjunction with the [Platern Directory](https://platern.com) in [Open Banking](https://opendata.substack.com/p/an-overview-of-open-banking) applications.\n\nThis service uses a forked, open-source [Node OpenID Client](https://github.com/dextersjab/node-openid-client).\n\nSimilarly, it uses the MIT licence, allowing the most open usage possible, whether for:\n- making modifications\n- commercial purposes\n- private usage\n- distributing\n    \nLearn more:\n- [Platern](https://platern.com)\n- [GitHub](https://github.com/platern/fapi-connector)\n\nFeel free to raise issues [here](https://github.com/platern/fapi-connector/issues).\n\nContact Support:\n Email: hello@platern.com",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3423787"
+	},
+	"item": [
+		{
+			"name": "Create or update a client registration with an API provider.",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"openIDConfigUrl\": \"{{openIDConfigUrl}}\",\n  \"externalAud\": \"{{externalAud}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/registrations/:clientID?specification={{specification}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"registrations",
+						":clientID"
+					],
+					"query": [
+						{
+							"key": "specification",
+							"value": "{{specification}}",
+							"description": "(Required) "
+						}
+					],
+					"variable": [
+						{
+							"key": "clientID",
+							"value": "{{client}}",
+							"description": "(Required) Choose a unique identifier for the `clientID` to register a new client with an API provider.\n\nIf you're using Platern Web, we recommend using the `providerID` from the Providers API.\n\nWarning: currently, registering with the same `clientID` will override any previous registrations."
+						}
+					]
+				},
+				"description": "Create or update a client registration with an API provider."
+			},
+			"response": [
+				{
+					"name": "200 Updated (w/ provider ID)",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"provider\": \"XXX\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/registrations/:clientID?specification=obieAis",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations",
+								":clientID"
+							],
+							"query": [
+								{
+									"key": "specification",
+									"value": "obieAis"
+								}
+							],
+							"variable": [
+								{
+									"key": "clientID",
+									"value": "XXX",
+									"description": "(Required) Choose a unique identifier for the `clientID` to register a new client with an API provider.\n\nIf you're using Platern Web, we recommend using the `providerID` from the Providers API.\n\nWarning: currently, registering with the same `clientID` will override any previous registrations."
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"kind\": \"RegisteredClient\",\n  \"self\": \"/registrations/XXX\",\n  \"openIDConfigUrl\": \"https://auth.abcbank.com/.well-known/openid-configuration\",\n  \"metadata\": {\n    \"grant_types\": [\n      \"client_credentials\",\n      \"authorization_code\",\n      \"refresh_token\"\n    ],\n    \"id_token_signed_response_alg\": \"PS256\",\n    \"authorization_signed_response_alg\": \"PS256\",\n    \"response_types\": [\n      \"code\"\n    ],\n    \"token_endpoint_auth_method\": \"private_key_jwt\",\n    \"tls_client_certificate_bound_access_tokens\": true,\n    \"client_id\": \"CLIENT_ID\",\n    \"client_secret\": \"CLIENT_SECRET\",\n    \"client_id_issued_at\": 1665796077170,\n    \"client_secret_expires_at\": 0,\n    \"redirect_uris\": [\n      \"https://example.com/oauth/callback/\"\n    ],\n    \"software_id\": \"EXAMPLE_SOFTWARE_ID\",\n    \"software_statement\": \"aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==\",\n    \"application_type\": \"web\",\n    \"tls_client_auth_subject_dn\": \"CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ\",\n    \"jwks_uri\": \"https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks\",\n    \"request_object_signing_alg\": \"PS256\",\n    \"token_endpoint_auth_signing_alg\": \"PS256\",\n    \"scope\": \"openid accounts payments\",\n    \"introspection_endpoint_auth_method\": \"private_key_jwt\",\n    \"introspection_endpoint_auth_signing_alg\": \"PS256\"\n  }\n}"
+				},
+				{
+					"name": "201 Created (w/ provider ID)",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"provider\": \"XXX\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/registrations/:clientID?specification=obieAis",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations",
+								":clientID"
+							],
+							"query": [
+								{
+									"key": "specification",
+									"value": "obieAis"
+								}
+							],
+							"variable": [
+								{
+									"key": "clientID",
+									"value": "XXX",
+									"description": "(Required) Choose a unique identifier for the `clientID` to register a new client with an API provider.\n\nIf you're using Platern Web, we recommend using the `providerID` from the Providers API.\n\nWarning: currently, registering with the same `clientID` will override any previous registrations."
+								}
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"kind\": \"RegisteredClient\",\n  \"self\": \"/registrations/YYY\",\n  \"openIDConfigUrl\": \"https://auth.abcbank.com/.well-known/openid-configuration\",\n  \"metadata\": {\n    \"grant_types\": [\n      \"client_credentials\",\n      \"authorization_code\",\n      \"refresh_token\"\n    ],\n    \"id_token_signed_response_alg\": \"PS256\",\n    \"authorization_signed_response_alg\": \"PS256\",\n    \"response_types\": [\n      \"code\"\n    ],\n    \"token_endpoint_auth_method\": \"private_key_jwt\",\n    \"tls_client_certificate_bound_access_tokens\": true,\n    \"client_id\": \"CLIENT_ID\",\n    \"client_secret\": \"CLIENT_SECRET\",\n    \"client_id_issued_at\": 1665796077170,\n    \"client_secret_expires_at\": 0,\n    \"redirect_uris\": [\n      \"https://example.com/oauth/callback/\"\n    ],\n    \"software_id\": \"EXAMPLE_SOFTWARE_ID\",\n    \"software_statement\": \"aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==\",\n    \"application_type\": \"web\",\n    \"tls_client_auth_subject_dn\": \"CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ\",\n    \"jwks_uri\": \"https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks\",\n    \"request_object_signing_alg\": \"PS256\",\n    \"token_endpoint_auth_signing_alg\": \"PS256\",\n    \"scope\": \"openid accounts payments\",\n    \"introspection_endpoint_auth_method\": \"private_key_jwt\",\n    \"introspection_endpoint_auth_signing_alg\": \"PS256\"\n  }\n}"
+				},
+				{
+					"name": "201 Created (w/ OpenID Discovery URL)",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"provider\": \"XXX\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/registrations/:clientID?specification=obieAis",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations",
+								":clientID"
+							],
+							"query": [
+								{
+									"key": "specification",
+									"value": "obieAis"
+								}
+							],
+							"variable": [
+								{
+									"key": "clientID",
+									"value": "XXX",
+									"description": "(Required) Choose a unique identifier for the `clientID` to register a new client with an API provider.\n\nIf you're using Platern Web, we recommend using the `providerID` from the Providers API.\n\nWarning: currently, registering with the same `clientID` will override any previous registrations."
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"kind\": \"RegisteredClient\",\n  \"self\": \"/registrations/YYY\",\n  \"openIDConfigUrl\": \"https://auth.abcbank.com/.well-known/openid-configuration\",\n  \"metadata\": {\n    \"grant_types\": [\n      \"client_credentials\",\n      \"authorization_code\",\n      \"refresh_token\"\n    ],\n    \"id_token_signed_response_alg\": \"PS256\",\n    \"authorization_signed_response_alg\": \"PS256\",\n    \"response_types\": [\n      \"code\"\n    ],\n    \"token_endpoint_auth_method\": \"private_key_jwt\",\n    \"tls_client_certificate_bound_access_tokens\": true,\n    \"client_id\": \"CLIENT_ID\",\n    \"client_secret\": \"CLIENT_SECRET\",\n    \"client_id_issued_at\": 1665796077170,\n    \"client_secret_expires_at\": 0,\n    \"redirect_uris\": [\n      \"https://example.com/oauth/callback/\"\n    ],\n    \"software_id\": \"EXAMPLE_SOFTWARE_ID\",\n    \"software_statement\": \"aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==\",\n    \"application_type\": \"web\",\n    \"tls_client_auth_subject_dn\": \"CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ\",\n    \"jwks_uri\": \"https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks\",\n    \"request_object_signing_alg\": \"PS256\",\n    \"token_endpoint_auth_signing_alg\": \"PS256\",\n    \"scope\": \"openid accounts payments\",\n    \"introspection_endpoint_auth_method\": \"private_key_jwt\",\n    \"introspection_endpoint_auth_signing_alg\": \"PS256\"\n  }\n}"
+				},
+				{
+					"name": "201 Created (w/ provider-specific overrides)",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"provider\": \"XXX\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/registrations/:clientID?specification=obieAis",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations",
+								":clientID"
+							],
+							"query": [
+								{
+									"key": "specification",
+									"value": "obieAis"
+								}
+							],
+							"variable": [
+								{
+									"key": "clientID",
+									"value": "XXX",
+									"description": "(Required) Choose a unique identifier for the `clientID` to register a new client with an API provider.\n\nIf you're using Platern Web, we recommend using the `providerID` from the Providers API.\n\nWarning: currently, registering with the same `clientID` will override any previous registrations."
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"kind\": \"RegisteredClient\",\n  \"self\": \"/registrations/YYY\",\n  \"openIDConfigUrl\": \"https://auth.abcbank.com/.well-known/openid-configuration\",\n  \"metadata\": {\n    \"grant_types\": [\n      \"client_credentials\",\n      \"authorization_code\",\n      \"refresh_token\"\n    ],\n    \"id_token_signed_response_alg\": \"PS256\",\n    \"authorization_signed_response_alg\": \"PS256\",\n    \"response_types\": [\n      \"code\"\n    ],\n    \"token_endpoint_auth_method\": \"private_key_jwt\",\n    \"tls_client_certificate_bound_access_tokens\": true,\n    \"client_id\": \"CLIENT_ID\",\n    \"client_secret\": \"CLIENT_SECRET\",\n    \"client_id_issued_at\": 1665796077170,\n    \"client_secret_expires_at\": 0,\n    \"redirect_uris\": [\n      \"https://example.com/oauth/callback/\"\n    ],\n    \"software_id\": \"EXAMPLE_SOFTWARE_ID\",\n    \"software_statement\": \"aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==\",\n    \"application_type\": \"web\",\n    \"tls_client_auth_subject_dn\": \"CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ\",\n    \"jwks_uri\": \"https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks\",\n    \"request_object_signing_alg\": \"PS256\",\n    \"token_endpoint_auth_signing_alg\": \"PS256\",\n    \"scope\": \"openid accounts payments\",\n    \"introspection_endpoint_auth_method\": \"private_key_jwt\",\n    \"introspection_endpoint_auth_signing_alg\": \"PS256\"\n  }\n}"
+				},
+				{
+					"name": "Bad Request",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"provider\": \"XXX\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/registrations/:clientID?specification=obieAis",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations",
+								":clientID"
+							],
+							"query": [
+								{
+									"key": "specification",
+									"value": "obieAis"
+								}
+							],
+							"variable": [
+								{
+									"key": "clientID",
+									"value": "XXX",
+									"description": "(Required) Choose a unique identifier for the `clientID` to register a new client with an API provider.\n\nIf you're using Platern Web, we recommend using the `providerID` from the Providers API.\n\nWarning: currently, registering with the same `clientID` will override any previous registrations."
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"error\": \"Bad Request\",\n  \"message\": \"payload must include either a valid Platern `provider` or OpenID discovery URL (`openIDConfigUrl`)\"\n}"
+				},
+				{
+					"name": "Bad Request",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"provider\": \"XXX\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/registrations/:clientID?specification=obieAis",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations",
+								":clientID"
+							],
+							"query": [
+								{
+									"key": "specification",
+									"value": "obieAis"
+								}
+							],
+							"variable": [
+								{
+									"key": "clientID",
+									"value": "XXX",
+									"description": "(Required) Choose a unique identifier for the `clientID` to register a new client with an API provider.\n\nIf you're using Platern Web, we recommend using the `providerID` from the Providers API.\n\nWarning: currently, registering with the same `clientID` will override any previous registrations."
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"error\": \"Bad Request\",\n  \"message\": \"provider doesn't exist: nonexistent-provider\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get a client registered with a provider.",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/registrations/:clientID",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"registrations",
+						":clientID"
+					],
+					"variable": [
+						{
+							"key": "clientID",
+							"value": "{{client}}",
+							"description": "(Required) "
+						}
+					]
+				},
+				"description": "Get a client registered with a provider."
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/registrations/:clientID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations",
+								":clientID"
+							],
+							"variable": [
+								{
+									"key": "clientID",
+									"value": "XXX",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"kind\": \"RegisteredClient\",\n  \"self\": \"/registrations/XXX\",\n  \"openIDConfigUrl\": \"https://auth.abcbank.com/.well-known/openid-configuration\",\n  \"metadata\": {\n    \"grant_types\": [\n      \"client_credentials\",\n      \"authorization_code\",\n      \"refresh_token\"\n    ],\n    \"id_token_signed_response_alg\": \"PS256\",\n    \"authorization_signed_response_alg\": \"PS256\",\n    \"response_types\": [\n      \"code\"\n    ],\n    \"token_endpoint_auth_method\": \"private_key_jwt\",\n    \"tls_client_certificate_bound_access_tokens\": true,\n    \"client_id\": \"CLIENT_ID\",\n    \"client_secret\": \"CLIENT_SECRET\",\n    \"client_id_issued_at\": 1665796077170,\n    \"client_secret_expires_at\": 0,\n    \"redirect_uris\": [\n      \"https://example.com/oauth/callback/\"\n    ],\n    \"software_id\": \"EXAMPLE_SOFTWARE_ID\",\n    \"software_statement\": \"aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==\",\n    \"application_type\": \"web\",\n    \"tls_client_auth_subject_dn\": \"CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ\",\n    \"jwks_uri\": \"https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks\",\n    \"request_object_signing_alg\": \"PS256\",\n    \"token_endpoint_auth_signing_alg\": \"PS256\",\n    \"scope\": \"openid accounts payments\",\n    \"introspection_endpoint_auth_method\": \"private_key_jwt\",\n    \"introspection_endpoint_auth_signing_alg\": \"PS256\"\n  }\n}"
+				},
+				{
+					"name": "Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/registrations/:clientID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations",
+								":clientID"
+							],
+							"variable": [
+								{
+									"key": "clientID",
+									"value": "XXX",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"error\": \"Not Found\",\n  \"message\": \"client not found\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get `clientID` values for all provider registrations.",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/registrations",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"registrations"
+					]
+				},
+				"description": "Get `clientID` values for all provider registrations."
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/registrations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"registrations"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"kind\": \"Collection\",\n  \"self\": \"/registrations\",\n  \"registrations\": [\n    \"XXX\",\n    \"YYY\"\n  ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Generate an authorization URL for the data owner to grant access.",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/authorization?client={{client}}&provider={{provider}}&specification={{specification}}&oauth2State={{oauth2State}}&openIDNonce={{openIDNonce}}&oauth2GrantUrl={{oauth2GrantUrl}}&oauth2GrantRequest={{oauth2GrantRequest}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"authorization"
+					],
+					"query": [
+						{
+							"key": "client",
+							"value": "{{client}}",
+							"description": "(Required) Use the `clientID` registered with your API provider."
+						},
+						{
+							"key": "provider",
+							"value": "{{provider}}",
+							"description": "If you're using Platern Web, pass the `provider`."
+						},
+						{
+							"key": "specification",
+							"value": "{{specification}}",
+							"description": "(Required) Currently supports the following Open Banking UK specifications:\n  - `obieAis`\n  - `obieCof`\n  - `obieDcr`\n  - `obieEvent`\n  - `obiePis`\n  - `obieProduct`"
+						},
+						{
+							"key": "oauth2State",
+							"value": "{{oauth2State}}",
+							"description": "(Required) #### OAuth2 state\n\nRECOMMENDED.  An opaque value used by the client to maintain\n         state between the request and callback.  The authorization\n         server includes this value when redirecting the user-agent back\n         to the client.  The parameter SHOULD be used for preventing\n         cross-site request forgery as described in [RFC 6749 Section 10.12](https://www.rfc-editor.org/rfc/rfc6749#section-10.12)."
+						},
+						{
+							"key": "openIDNonce",
+							"value": "{{openIDNonce}}",
+							"description": "(Required) "
+						},
+						{
+							"key": "oauth2GrantUrl",
+							"value": "{{oauth2GrantUrl}}",
+							"description": "Required for Open Banking UK. Usually has a path ending with `/account-access-consents`.\n\nAlso see [FAPI Grant Management extension to OAuth2](https://openid.net/specs/fapi-grant-management-01.html)."
+						},
+						{
+							"key": "oauth2GrantRequest",
+							"value": "{{oauth2GrantRequest}}",
+							"description": "Base64-encoded grant request payload.\nRequired for Open Banking UK. Usually has a path ending with `/account-access-consents`.\n\nAlso see [FAPI Grant Management extension to OAuth2](https://openid.net/specs/fapi-grant-management-01.html)."
+						}
+					]
+				},
+				"description": "Generate an authorization URL for the data owner to grant access.\n\nThe query parameters you need to send to this endpoint depend on\nhow you're using *fapi-connector*.\n\nIf you're using Platern Web, use:\n  - `providerID`\n\nIf you're connecting without Platern Web (e.g. to Open Banking), use:\n  - `oauth2Grant`\n  - `oauth2GrantRequest`"
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/authorization?client=XXX&provider=XXX&specification=obieAis&oauth2State=cd444cb3-68b8-42b4-a9dd-aa3c75ccade2&openIDNonce=96d3dd10-2dc7-4b93-835d-89ddd8665b06&oauth2GrantUrl=proident fugiat sint voluptate&oauth2GrantRequest=eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ==",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"authorization"
+							],
+							"query": [
+								{
+									"key": "client",
+									"value": "XXX"
+								},
+								{
+									"key": "provider",
+									"value": "XXX"
+								},
+								{
+									"key": "specification",
+									"value": "obieAis"
+								},
+								{
+									"key": "oauth2State",
+									"value": "cd444cb3-68b8-42b4-a9dd-aa3c75ccade2"
+								},
+								{
+									"key": "openIDNonce",
+									"value": "96d3dd10-2dc7-4b93-835d-89ddd8665b06"
+								},
+								{
+									"key": "oauth2GrantUrl",
+									"value": "proident fugiat sint voluptate"
+								},
+								{
+									"key": "oauth2GrantRequest",
+									"value": "eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ=="
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"url\": \"https://auth.abcbank.com/authorize?client_id=CLIENT_ID&scope=openid&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Foauth%2Fcallback%2F&request=eyJhbGciOiJQUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QifQ.eyJzY29wZSI6ImFjY291bnQiLCJzdGF0ZSI6IjgxMDVlYWFkLTY4MzktNGZkMC05MWZhLTAzMThlZTYyZGE5YiIsIm5vbmNlIjoiOTAxMjlkYzAtOWNiNy00ZmMzLTk2ZmQtMzQ4ZjNiMWIxMzgzIiwibWF4X2FnZSI6ODY0MDAsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vb2F1dGgvY2FsbGJhY2svIiwiY2xhaW1zIjp7InVzZXJpbmZvIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJ2YWx1ZSI6IkNVU1RPTUVSX0FDQ09VTlRfQ09OU0VOVCIsImVzc2VudGlhbCI6dHJ1ZX19LCJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJDVVNUT01FUl9BQ0NPVU5UX0NPTlNFTlQiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZXMiOlsidXJuOm9wZW5iYW5raW5nOnBzZDI6c2NhIiwidXJuOm9wZW5iYW5raW5nOnBzZDI6Y2EiXX19fSwiaXNzIjoiQ0xJRU5UX0lEIiwiY2xpZW50X2lkIjoiQ0xJRU5UX0lEIiwianRpIjoiNW9HQzd1UUZsRndDQWEwZFFBbHg1a0xwbEx2RjJ6aGlMbjMxQVVhVHFYYyIsImlhdCI6MTY2NjE2MzAzNSwiZXhwIjoxNjY2MTYzMzM1LCJuYmYiOjE2NjYxNjMwMzV9.RYHl8EbDPddwOnA_dNRvjprd5eVn2v5E4Db7q5JHhaULYGXHhShsDfBGbJrKieZgAm3IHk6borr-Pl5P2qK8gBsuPLAGYONT2ZABD5ktAEksprWBmt0SMDBB8URWnabuBgYYmErLk2k8_QpVhVtDEwl_q-8CQfH1rn8-k7M3xPF7egZY7nLd7sIOw8-EOEWglUzO_irrdRplZIyFMA91pvDBQuPSjMvFTTfOcXXOkWKngQHdVPdw3JJuHgF3kmMNA0b0sFlPvYFobnCPEDDEc2MMqJ9RmdAZ0ENiFopLs_3V8_pWXo4c3OcmlD36-qxEgkLhKSCpBfo464rb3MaYXw\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Access token request.",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const tokenSet = pm.response.json()",
+							"pm.environment.set(\"accessToken\", tokenSet[\"oauth2TokenSet\"][\"access_token\"]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"oauth2State\": \"{{oauth2State}}\",\n  \"oauth2Code\": \"3e11ae2e-00c9-47ba-9f5f-f1a381c7d7fa\",\n  \"openIDNonce\": \"{{openIDNonce}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/token?client={{client}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"token"
+					],
+					"query": [
+						{
+							"key": "client",
+							"value": "{{client}}",
+							"description": "Use the `clientID` registered with your API provider."
+						}
+					]
+				},
+				"description": "Make an OAuth2 [token request](https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3) to get access credentials."
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"oauth2State\": \"cd444cb3-68b8-42b4-a9dd-aa3c75ccade2\",\n  \"oauth2Code\": \"295f8dfa-11f1-4424-9c8a-c498e0e6b8cd\",\n  \"openIDNonce\": \"96d3dd10-2dc7-4b93-835d-89ddd8665b06\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/token?client=XXX",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"token"
+							],
+							"query": [
+								{
+									"key": "client",
+									"value": "XXX"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"tokenSet\": null\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "/",
+			"type": "string"
+		}
+	]
+}

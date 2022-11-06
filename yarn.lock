@@ -4237,18 +4237,6 @@ ts-node@^10.9.1:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
-ts-postgres@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/ts-postgres/-/ts-postgres-1.3.0.tgz#b58e3335545acd7d37d5821ff0aeb1146d9d37e5"
-  integrity sha512-YQY6omZM9RiMeJpzyVn36ankicZnTbSTkHaq+NTkqrLHSRYigsNW9JsPwrZXxLt1es3mV+V6/VUj0eOVcYXq1g==
-  dependencies:
-    ts-typed-events "^3.0.0"
-
-ts-typed-events@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ts-typed-events/-/ts-typed-events-3.0.0.tgz#2f9d96ff962edfc936402c859370337373880faa"
-  integrity sha512-+2FZ0XPX+UPR7PO8ZQjuvnuDMYRhzrDaCRaNHaBG1xSL//0oPa3XMU5yxgDTzW67VzkE33fQpx1YxWBdkaF7Zw==
-
 tsconfig-paths@^3.14.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"

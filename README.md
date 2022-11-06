@@ -1,13 +1,29 @@
 # Financial-grade API Connector
 
+## Overview
+
+**Alpha testing.**
+
 A proxy service for calling financial-grade authorization APIs
-(i.e. for [Open Banking](https://dextersjab.medium.com/an-overview-of-open-banking-be34e0e6800b))
+(i.e. for [open banking](https://dextersjab.medium.com/an-overview-of-open-banking-be34e0e6800b))
 without ever sending your credentials to a gateway!
+
+Optionally, it can be used in conjunction with [Platern Web](https://platern.com) in open banking applications.
+ 
+It relies on a fork of the excellent [Node OpenID Client](https://github.com/panva/node-openid-client).
+ 
+Similarly, it uses the MIT licence, allowing the most open usage possible, whether for:
+- making modifications
+- commercial purposes
+- private usage
+- distributing
+
+### Purpose
 
 Use this service to:
 
-- dynamically register clients
-- generate customer authorization URL
+- dynamically register with FAPI providers
+- generate customer authorization URLs
 - exchange access tokens
 
 ## Getting started
@@ -103,16 +119,19 @@ With npm:
 npm serve
 ```
 
-### OpenAPI / Swagger
+### Postman / Swagger UI
 
-The easiest way to interact with the service is to open the Swagger UI
-in your browser, which runs at `http://localhost:5001/docs` using the
-default port.
+Once the service is up and running, you have two UI options.
+- import the [Postman collection](/FAPI Connector.postman_collection.json)
+and environment file:
+  - `FAPI Connector.postman_collection.json`
+  - `FAPI Connector - Ozone Sandbox.postman_environment.json`
 
-See the specification at the root of the project in `openapi.yaml`,
-which contains descriptions and examples for all API operations.
+- open the [Swagger UI](http://localhost:5001/docs) in your browser.
 
 ## Upcoming enhancements
 
-See [issues](https://github.com/platern/fapi-connector/issues)
+- More tests.
+- More documentation.
+- See [issues](https://github.com/platern/fapi-connector/issues)
 for upcoming changes.

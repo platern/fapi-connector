@@ -23,7 +23,7 @@ export const registrations = (config: Config): rout => {
 
 const handleGetAll = (registerService: RegistrationService, path: string) => {
   router.get(path, (req: Request, resp: Response, next: NextFunction) => {
-    registerService.getProviderIDs().then(data => {
+    registerService.getClientIDs().then(data => {
       if (!data) {
         next(unknownError(`failed to get registrations`));
         return;
@@ -73,7 +73,7 @@ const handlePut = (registerService: RegistrationService, path: string) => {
       next(badRequestError("payload must include either a valid Platern `provider` or OpenID discovery URL (`openIDConfigUrl`)"));
       return;
     }
-    registerService.updateRegistrations(
+    registerService.register(
       clientID,
       registrationReq.provider,
       registrationReq.openIDConfigUrl,

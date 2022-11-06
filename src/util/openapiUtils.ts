@@ -9,9 +9,9 @@ enum ParamType {
 const findRequestBodySchema = (method: string,
                                path: string): object | undefined => {
   const openapi = yaml.load(fs.readFileSync("gen/openapi.deref.yaml").toString()) as any;
-  if (!openapi.paths.hasOwnProperty(path)) return undefined;
+  if (!Object.prototype.hasOwnProperty.call(openapi.paths, path)) return undefined;
   const pathObj = openapi.paths[path];
-  if (!pathObj.hasOwnProperty(method)) return undefined;
+  if (!Object.prototype.hasOwnProperty.call(pathObj, method)) return undefined;
   const opObj = pathObj[method];
   return opObj.requestBody?.content?.["application/json"]?.schema;
 };
@@ -20,9 +20,9 @@ const reduceParamsSchema = (method: string,
                             path: string,
                             paramType: ParamType): object | undefined => {
   const openapi = yaml.load(fs.readFileSync("gen/openapi.deref.yaml").toString()) as any;
-  if (!openapi.paths.hasOwnProperty(path)) return undefined;
+  if (!Object.prototype.hasOwnProperty.call(openapi.paths, path)) return undefined;
   const pathObj = openapi.paths[path];
-  if (!pathObj.hasOwnProperty(method)) return undefined;
+  if (!Object.prototype.hasOwnProperty.call(pathObj, method)) return undefined;
   const opObj = pathObj[method];
   return opObj.parameters
     ?.filter((paramObj: any) => paramObj.in === paramType)

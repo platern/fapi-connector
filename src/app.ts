@@ -1,5 +1,8 @@
 import {config as dotenvConfig} from "dotenv";
-dotenvConfig({path: `.env.${(process.env.NODE_ENV as string) === "test" ? "test" : ""}`});
+
+dotenvConfig({
+  path: `.env.${(process.env.NODE_ENV as string) === "test" ? "test" : ""}`
+});
 
 import * as swaggerUi from "swagger-ui-express";
 import * as createError from "http-errors";
@@ -21,7 +24,8 @@ import {authz} from "./routes/authz";
 
 export const app = express();
 
-const openAPIDocument = yaml.load(fs.readFileSync("./openapi.yaml").toString()) as any;
+const openAPIDocument =
+  yaml.load(fs.readFileSync("./openapi.yaml").toString()) as any;
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -63,17 +67,22 @@ app.use((err: Error,
   res.locals.error = req.app.get("env") === "development" ? err : {};
   console.error(err);
   if (err instanceof ValidationError) {
-    const errObj = err.validationErrors?.body?.[0] ?? err.validationErrors?.params?.[0] ?? err.validationErrors?.query?.[0];
+    const errObj = err.validationErrors?.body?.[0]
+      ?? err.validationErrors?.params?.[0]
+      ?? err.validationErrors?.query?.[0];
     const message: string = errObj?.message as string;
+
     // Handle the error
     res.status(400).send(badRequestError(message).response());
     next();
   } else if (err instanceof HttpException) {
+    // Handle the error
     res.status(err.status).send(err.response());
     next();
   } else {
-    // Pass error on if not a validation error
-    res.status(500).send(unknownError("unknown error occurred; check logs").response());
+    // Handle the error
+    res.status(500)
+      .send(unknownError("unknown error occurred; check logs").response());
     next(err);
   }
 });

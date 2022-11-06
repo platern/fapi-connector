@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response, Router as rout} from "express";
 import {Config} from "../util/config/config";
-import {AuthService} from "../service/authz/authservice";
+import {AuthService} from "../service/authz/authService";
 import {badRequestError, unknownError} from "../service/error";
 import {Route} from "../app";
 import {getQueryParamsSchema} from "../util/openapiUtils";

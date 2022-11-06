@@ -92,15 +92,16 @@ class ClientData {
   };
 }
 
-const decryptMetadata = (clientRegistration: any): ClientMetadata | undefined => {
-  if (!clientRegistration.metadata) return undefined;
-  const decrypted = AES.decrypt(
-    clientRegistration.metadata.toString(),
-    dataCredentials.aesKey,
-    {iv: enc.Hex.parse(dataCredentials.aesIv)},
-  );
-  return JSON.parse(decrypted.toString(enc.Utf8)) as ClientMetadata;
-};
+const decryptMetadata =
+  (clientRegistration: any): ClientMetadata | undefined => {
+    if (!clientRegistration.metadata) return undefined;
+    const decrypted = AES.decrypt(
+      clientRegistration.metadata.toString(),
+      dataCredentials.aesKey,
+      {iv: enc.Hex.parse(dataCredentials.aesIv)},
+    );
+    return JSON.parse(decrypted.toString(enc.Utf8)) as ClientMetadata;
+  };
 
 const clientData = new ClientData();
 

@@ -11,15 +11,14 @@ import {
 } from "../error";
 import {Agent} from "https";
 import {createPrivateKey, KeyObject} from "crypto";
-import {decodeJwt} from "jose";
-import {JWTPayload} from "jose/dist/types/types";
-import * as tls from "tls";
+import {decodeJwt, JWTPayload} from "jose";
 import {Config} from "../../util/config/config";
 import {v4 as uuidv4} from "uuid";
 import clientData, {ClientRecord} from "../../data/clientData";
 import {cert} from "../../util/certUtils";
 import {NextFunction} from "express";
 import {providerRegFromPlaternWeb, resolveProviderID} from "../utils";
+import * as tls from "tls";
 
 interface MyClient extends TypeOfGenericClient<Client> {
   register: typeof BaseClient.register;
@@ -29,24 +28,25 @@ const hoursInMillis = (hours: number) => {
   return hours * 60 * 60 * 1000;
 };
 
-const getSupportedAlgo = (supportedAlgos: string[], algorithm: string): string | undefined => {
-  const algorithms = [
-    "ES256",
-    "PS256",
-    "RS256",
-  ];
-  if (supportedAlgos.includes(algorithm)) {
-    return algorithm;
-  }
-  let i = 0;
-  while (i < algorithms.length) {
-    if (supportedAlgos.includes(algorithms[i])) {
-      return algorithms[i];
+const getSupportedAlgo =
+  (supportedAlgos: string[], algorithm: string): string | undefined => {
+    const algorithms = [
+      "ES256",
+      "PS256",
+      "RS256",
+    ];
+    if (supportedAlgos.includes(algorithm)) {
+      return algorithm;
     }
-    ++i;
-  }
-  return undefined;
-};
+    let i = 0;
+    while (i < algorithms.length) {
+      if (supportedAlgos.includes(algorithms[i])) {
+        return algorithms[i];
+      }
+      ++i;
+    }
+    return undefined;
+  };
 
 export interface RegistrationResult {
   openIDConfigUrl: string,

@@ -2,7 +2,8 @@
   "name": "fapi-connector",
   "version": "0.1.0",
   "scripts": {
-    "build": "tsc && scripts/dereference-apispec.js",
+    "build": "tsc && scripts/dereferenceApiSpec.js",
+    "ci": "scripts/createEnvFiles.js",
     "lint": "eslint --ext .js,.ts .",
     "lint:fix": "eslint --fix --ext .js,.ts .",
     "serve": "NODE_ENV=production yarn run build",

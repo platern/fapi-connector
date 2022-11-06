@@ -80,7 +80,7 @@ To run the server, you'll need:
 
 #### Setup
 
-#### Run
+#### Run locally
 
 With yarn:
 
@@ -92,6 +92,18 @@ With npm:
 
 ```shell
 npm start
+```
+
+#### Run in production
+
+```shell
+yarn serve
+```
+
+With npm:
+
+```shell
+npm serve
 ```
 
 ### OpenAPI / Swagger

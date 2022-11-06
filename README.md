@@ -1,8 +1,8 @@
 # Financial-grade API Connector
 
-A proxy service calling financial-grade APIs
-(i.e. [Open Banking](https://dextersjab.medium.com/an-overview-of-open-banking-be34e0e6800b))
-without ever sending your credentials!
+A proxy service for calling financial-grade authorization APIs
+(i.e. for [Open Banking](https://dextersjab.medium.com/an-overview-of-open-banking-be34e0e6800b))
+without ever sending your credentials to a gateway!
 
 Use this service to:
 
@@ -10,16 +10,16 @@ Use this service to:
 - generate customer authorization URL
 - exchange access tokens
 
-**Tests in progress.**
-
 ## Getting started
+
+Client registrations will be stored in a SQLite file at
+`prisma/clients.db`.
 
 ### Prerequisites
 
 To run the server, you'll need:
 
 - Node (v16+)
-- Postgres
 
 ### Setup (local)
 
@@ -72,9 +72,6 @@ To run the server, you'll need:
    
 5. Set up the rest of your environment variables.
    Use the comments in these files for guidance.
-
-6. Run a Postgres database instance on your configured `DATABASE_URL` in your
-   environment variables.
 
 ### Running the server
 

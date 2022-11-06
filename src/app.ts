@@ -18,21 +18,10 @@ import {NextFunction, Request, Response} from "express";
 import {registrations} from "./route/registrations";
 import {router as indexRouter} from "./route";
 import {tokenRequest} from "./route/token";
-import {resource} from "./route/resource";
 import config from "./util/config/config";
 import {authz} from "./route/authz";
 
 export const app = express();
-
-const openAPIDocument =
-  yaml.load(fs.readFileSync("./openapi.yaml").toString()) as any;
-
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-app.use(express.static(path.join(__dirname, "public")));
-app.use(cors());
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(openAPIDocument));
 
 export enum Route {
   Root = "/",
@@ -43,13 +32,21 @@ export enum Route {
   Resource = "/resource",
 }
 
+const openAPIDocument =
+  yaml.load(fs.readFileSync("./openapi.yaml").toString()) as any;
+
+app.use(logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(cors());
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(openAPIDocument));
 app.use(
   Route.Root,
   indexRouter,
   registrations(config),
   authz(config),
   tokenRequest(config),
-  resource(config),
 );
 
 // catch 404 and forward to error handler

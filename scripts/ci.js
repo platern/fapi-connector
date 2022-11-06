@@ -8,13 +8,17 @@ const envFiles = [
   '.env.test',
 ];
 
-(async function main() {
+const createEnvFiles = () => {
   envFiles.forEach(envFile => {
     fs.copyFile(templateFile, envFile, (err) => {
-      if (err) throw err;
-      console.log(`copied ${templateFile} -> ${envFile}`);
+      if (err) throw err
+      console.log(`copied ${templateFile} -> ${envFile}`)
     })
   })
+}
+
+(async function main() {
+  createEnvFiles()
 }()).catch(err => {
   console.error(err);
 });

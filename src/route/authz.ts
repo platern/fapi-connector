@@ -16,7 +16,7 @@ export const authz = (config: Config): rout => {
   const paramsSchema = getQueryParamsSchema("get", route);
   router.get(route, validate({query: paramsSchema}), (req: Request, resp: Response, next: NextFunction) => {
     // params
-    const clientID = req.query?.clientID as string;
+    const registrationID = req.query?.registrationID as string;
     const provider = req.query.provider as string;
     const grantUrl = req.query?.oauth2GrantUrl as string;
     const grantRequestB64 = req.query?.oauth2GrantRequest as string;
@@ -33,7 +33,7 @@ export const authz = (config: Config): rout => {
       return;
     }
     authService.authorisation(
-      clientID,
+      registrationID,
       provider,
       grantUrl,
       permissions,

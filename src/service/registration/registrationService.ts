@@ -85,11 +85,11 @@ export class RegistrationService {
     });
   }
 
-  updateRegistrations = async (clientID: string,
-                               providerID: string | undefined,
-                               openIDConfigUrl0: string | undefined,
-                               externalAud0: string | undefined,
-                               next: NextFunction): Promise<RegistrationResult | undefined> => {
+  register = async (registrationID: string,
+                    providerID: string | undefined,
+                    openIDConfigUrl0: string | undefined,
+                    externalAud0: string | undefined,
+                    next: NextFunction): Promise<RegistrationResult | undefined> => {
     const resolvedProviderID = resolveProviderID(providerID, openIDConfigUrl0);
     let openIDConfigUrl: string;
     let externalAud: string;
@@ -189,26 +189,26 @@ export class RegistrationService {
         next(dataError("invalid client metadata returned"));
         return undefined;
       }
-      const clientExists = await clientData.clientExists(clientID);
+      const clientExists = await clientData.clientExists(registrationID);
       if (!clientExists) {
-        await clientData.createClient(clientID, openIDConfigUrl as string, registrationResp.metadata);
+        await clientData.createClient(registrationID, openIDConfigUrl as string, registrationResp.metadata);
       } else {
-        await clientData.updateClient(clientID, openIDConfigUrl as string, registrationResp.metadata);
+        await clientData.updateClient(registrationID, openIDConfigUrl as string, registrationResp.metadata);
       }
       return {
         openIDConfigUrl: openIDConfigUrl,
         metadata: registrationResp.metadata,
         isUpdate: clientExists,
       };
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
       next(dataError("failed to save client metadata to database"));
       return undefined;
     }
   };
 
-  getProviderIDs = async (): Promise<string[]> => {
-    return await clientData.getClientIDs();
+  getRegistrationIDs = async (): Promise<string[]> => {
+    return await clientData.getRegistrationIDs();
   };
 
   getClient = async (providerID: string): Promise<ClientRecord | undefined> => {

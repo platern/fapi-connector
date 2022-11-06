@@ -25,7 +25,7 @@ export const obukCredentials: ObukCredentials = {
   obTransportKey: getEnvVar("OBUK_TRANSPORT_KEY"),
   obTransportPass: getEnvVar("OBUK_TRANSPORT_PASS"),
   rejectUnauthorized: hasEnvVar("OBUK_REJECT_UNAUTHORIZED")
-    ? getEnvVar("OBUK_REJECT_UNAUTHORIZED").toLowerCase() === "true"
-    : false,
+    ? getEnvVar("OBUK_REJECT_UNAUTHORIZED").toLowerCase() !== "false"
+    : true,
   softwareStatementAssertion: getEnvVar("OBUK_SSA_JWT"),
 };

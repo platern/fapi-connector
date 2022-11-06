@@ -31,8 +31,8 @@ export class ResourceService {
         }),
       });
       return res?.data;
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
     }
   };
 }

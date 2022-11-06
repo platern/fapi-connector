@@ -1,4 +1,4 @@
-declare global {
+declare global { //todo delete?
     namespace NodeJS {
       interface ProcessEnv {
         NODE_ENV: 'development' | 'production'

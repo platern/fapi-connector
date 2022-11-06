@@ -6,24 +6,25 @@ enum ParamType {
   Query = "query",
 }
 
-const findRequestBodySchema = (method: string,
-                               path: string): object | undefined => {
+const operationObject = (method: string,
+                         path: string,) => {
   const openapi = yaml.load(fs.readFileSync("gen/openapi.deref.yaml").toString()) as any;
   if (!Object.prototype.hasOwnProperty.call(openapi.paths, path)) return undefined;
   const pathObj = openapi.paths[path];
   if (!Object.prototype.hasOwnProperty.call(pathObj, method)) return undefined;
-  const opObj = pathObj[method];
+  return pathObj[method];
+}
+
+const findRequestBodySchema = (method: string,
+                               path: string): object | undefined => {
+  const opObj = operationObject(method, path);
   return opObj.requestBody?.content?.["application/json"]?.schema;
 };
 
 const reduceParamsSchema = (method: string,
                             path: string,
                             paramType: ParamType): object | undefined => {
-  const openapi = yaml.load(fs.readFileSync("gen/openapi.deref.yaml").toString()) as any;
-  if (!Object.prototype.hasOwnProperty.call(openapi.paths, path)) return undefined;
-  const pathObj = openapi.paths[path];
-  if (!Object.prototype.hasOwnProperty.call(pathObj, method)) return undefined;
-  const opObj = pathObj[method];
+  const opObj = operationObject(method, path);
   return opObj.parameters
     ?.filter((paramObj: any) => paramObj.in === paramType)
     .reduce((o: any, paramObj: any) => {

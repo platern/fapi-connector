@@ -17,17 +17,17 @@ export const mockDbResponses = (mockedClientData: jest.Mocked<typeof clientData>
   })
   const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync('test/testdata/testClient.json').toString()) as ClientMetadata
   const mockClientRecord: ClientRecord = {
-    clientID: "",
+    registrationID: "",
     openIDConfigUrl: "https://auth.abcbank.com/.well-known/openid-configuration",
     metadata: mockClientMetadata,
   }
-  mockedClientData.getClient = jest.fn((clientID) => {
-    return Promise.resolve(providerIDs.includes(clientID) ? mockClientRecord : undefined)
+  mockedClientData.getClient = jest.fn((registrationID) => {
+    return Promise.resolve(providerIDs.includes(registrationID) ? mockClientRecord : undefined)
   })
   mockedClientData.clientExists = jest.fn((provider) => {
     return Promise.resolve(provider === 'XXX')
   })
-  mockedClientData.getClientIDs = jest.fn(() => {
+  mockedClientData.getRegistrationIDs = jest.fn(() => {
     return Promise.resolve(['XXX', 'YYY'])
   })
 }

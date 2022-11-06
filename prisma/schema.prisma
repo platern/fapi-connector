@@ -13,7 +13,7 @@ datasource db {
 
 model ClientRegistration {
   id                Int      @id @default(autoincrement())
-  clientID          String   @unique
+  registrationID          String   @unique
   openIDConfigUrl   String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt

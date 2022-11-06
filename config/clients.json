@@ -3,5 +3,5 @@
   "clientTokenAuthMethod": "private_key_jwt",
   "clientGrantTypes": ["client_credentials", "authorization_code", "refresh_token"],
   "clientScopes": ["openid", "accounts"],
-  "clientTokenSigningAlgo": "ES256"
+  "clientTokenSigningAlgo": "PS256"
 }

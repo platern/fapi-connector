@@ -6,14 +6,14 @@ import {dataCredentials} from "../util/config/credentials/data";
 const prisma = new PrismaClient();
 
 export interface ClientRecord {
-  clientID: string;
+  registrationID: string;
   openIDConfigUrl: string;
   metadata: ClientMetadata;
 }
 
 class ClientData {
 
-  createClient = async (clientID: string,
+  createClient = async (registrationID: string,
                         openIDConfigUrl: string,
                         clientMetadata: ClientMetadata): Promise<boolean> => {
     const encrypted = AES.encrypt(JSON.stringify(clientMetadata),
@@ -22,7 +22,7 @@ class ClientData {
     );
     await prisma.clientRegistration.create({
       data: {
-        clientID: clientID,
+        registrationID: registrationID,
         openIDConfigUrl: openIDConfigUrl,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -32,7 +32,7 @@ class ClientData {
     return true;
   };
 
-  updateClient = async (clientID: string,
+  updateClient = async (registrationID: string,
                         openIDConfigUrl: string,
                         clientMetadata: ClientMetadata): Promise<boolean> => {
     const encrypted = AES.encrypt(JSON.stringify(clientMetadata),
@@ -41,7 +41,7 @@ class ClientData {
     );
     await prisma.clientRegistration.update({
       where: {
-        clientID: clientID,
+        registrationID: registrationID,
       },
       data: {
         openIDConfigUrl: openIDConfigUrl,
@@ -52,19 +52,19 @@ class ClientData {
 
   };
 
-  getClientIDs = async (): Promise<string[]> => {
+  getRegistrationIDs = async (): Promise<string[]> => {
     const clientRegistrationArr = await prisma.clientRegistration.findMany({
       select: {
-        clientID: true,
+        registrationID: true,
       },
     });
-    return clientRegistrationArr.map(d => d.clientID);
+    return clientRegistrationArr.map(d => d.registrationID);
   };
 
-  clientExists = async (clientID: string): Promise<boolean> => {
+  clientExists = async (registrationID: string): Promise<boolean> => {
     const count = await prisma.clientRegistration.count({
       where: {
-        clientID: clientID,
+        registrationID: registrationID,
       },
       select: {
         metadata: true,
@@ -73,10 +73,10 @@ class ClientData {
     return count.metadata > 0;
   };
 
-  getClient = async (clientID: string): Promise<ClientRecord | undefined> => {
+  getClient = async (registrationID: string): Promise<ClientRecord | undefined> => {
     const clientRegistration = await prisma.clientRegistration.findFirst({
       where: {
-        clientID: clientID,
+        registrationID: registrationID,
       },
       select: {
         metadata: true,
@@ -85,7 +85,7 @@ class ClientData {
     });
     if (!clientRegistration) return undefined;
     return {
-      clientID: clientID,
+      registrationID: registrationID,
       openIDConfigUrl: clientRegistration.openIDConfigUrl,
       metadata: decryptMetadata(clientRegistration) as ClientMetadata,
     };

@@ -24,15 +24,15 @@ export class TokenService {
     });
   }
 
-  exchange = async (clientID: string,
+  exchange = async (registrationID: string,
                     code: string,
                     state: string,
                     nonce: string,
                     next: NextFunction) => {
     try {
-      const clientRecord = await clientData.getClient(clientID);
+      const clientRecord = await clientData.getClient(registrationID);
       if (!clientRecord || !clientRecord.metadata) {
-        next(badRequestError(`no client was found with ID ${clientID}`));
+        next(badRequestError(`no client was found with ID ${registrationID}`));
         return undefined;
       }
       const clientMetadata = clientRecord.metadata as ClientMetadata;

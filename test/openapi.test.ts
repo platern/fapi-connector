@@ -49,7 +49,7 @@ describe("API requests and responses", () => {
   mockDbResponses(mockedClientData);
   mockAPIResponses(mockedAxios);
 
-  beforeAll(() => {
+  beforeAll(async () => {
     Date.now = jest.fn(() => new Date(Date.UTC(2022, 9, 19)).valueOf());
     mockExternalApiCalls();
   });

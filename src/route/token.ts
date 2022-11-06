@@ -13,12 +13,12 @@ export const tokenRequest = (config: Config): rout => {
   const tokenService = new TokenService(config);
   const bodySchema = getRequestBodySchema("post", Route.Token);
   router.post(Route.Token, validate({body: bodySchema}), function (req: Request, resp: Response, next: NextFunction) {
-    const clientID = req.query?.client as string;
+    const registrationID = req.query?.client as string;
     const code = req.body?.oauth2Code as string;
     const state = req.body?.oauth2State as string;
     const nonce = req.body?.openIDNonce as string;
     tokenService.exchange(
-      clientID,
+      registrationID,
       code,
       state,
       nonce,

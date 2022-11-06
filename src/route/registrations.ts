@@ -23,7 +23,7 @@ export const registrations = (config: Config): rout => {
 
 const handleGetAll = (registerService: RegistrationService, path: string) => {
   router.get(path, (req: Request, resp: Response, next: NextFunction) => {
-    registerService.getClientIDs().then(data => {
+    registerService.getRegistrationIDs().then(data => {
       if (!data) {
         next(unknownError(`failed to get registrations`));
         return;
@@ -41,14 +41,14 @@ const handleGetAll = (registerService: RegistrationService, path: string) => {
 
 const handleGet = (registerService: RegistrationService, path: string) => {
   router.get(path, (req: Request, resp: Response, next: NextFunction) => {
-    const clientID = req.params?.clientID;
-    registerService.getClient(clientID).then(data => {
+    const registrationID = req.params?.registrationID;
+    registerService.getClient(registrationID).then(data => {
       if (!data) {
         next(notFoundError(`client not found`));
         return;
       }
       const content: RegistrationResponse = {
-        self: Route.Registration.replace(":clientID", clientID),
+        self: Route.Registration.replace(":registrationID", registrationID),
         kind: "RegisteredClient",
         openIDConfigUrl: data.openIDConfigUrl,
         metadata: data.metadata,
@@ -60,21 +60,21 @@ const handleGet = (registerService: RegistrationService, path: string) => {
 };
 
 const handlePut = (registerService: RegistrationService, path: string) => {
-  const openAPIPath = path.replace(":clientID", "{clientID}");
+  const openAPIPath = path.replace(":registrationID", "{registrationID}");
   const bodySchema = getRequestBodySchema("put", openAPIPath);
   const queryParamsSchema = getQueryParamsSchema("put", openAPIPath);
   router.put(path, validate({
     body: bodySchema,
     query: queryParamsSchema,
   }), (req: Request, resp: Response, next: NextFunction) => {
-    const clientID = req.params?.clientID as string;
+    const registrationID = req.params?.registrationID as string;
     const registrationReq = req.body as RegistrationRequest;
     if (!isProviderValid(registrationReq.provider, registrationReq.openIDConfigUrl)) {
       next(badRequestError("payload must include either a valid Platern `provider` or OpenID discovery URL (`openIDConfigUrl`)"));
       return;
     }
     registerService.register(
-      clientID,
+      registrationID,
       registrationReq.provider,
       registrationReq.openIDConfigUrl,
       registrationReq.externalAud,
@@ -84,7 +84,7 @@ const handlePut = (registerService: RegistrationService, path: string) => {
         return;
       }
       const content: RegistrationResponse = {
-        self: Route.Registration.replace(":clientID", clientID),
+        self: Route.Registration.replace(":registrationID", registrationID),
         kind: "RegisteredClient",
         openIDConfigUrl: data.openIDConfigUrl,
         metadata: data.metadata,

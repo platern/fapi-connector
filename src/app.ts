@@ -15,12 +15,12 @@ import * as fs from "fs";
 import {badRequestError, HttpException, unknownError} from "./service/error";
 import {ValidationError} from "express-json-validator-middleware";
 import {NextFunction, Request, Response} from "express";
-import {registrations} from "./routes/registrations";
-import {router as indexRouter} from "./routes";
-import {tokenRequest} from "./routes/token";
-import {resource} from "./routes/resource";
+import {registrations} from "./route/registrations";
+import {router as indexRouter} from "./route";
+import {tokenRequest} from "./route/token";
+import {resource} from "./route/resource";
 import config from "./util/config/config";
-import {authz} from "./routes/authz";
+import {authz} from "./route/authz";
 
 export const app = express();
 
@@ -37,7 +37,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(openAPIDocument));
 export enum Route {
   Root = "/",
   Registrations = "/registrations",
-  Registration = "/registrations/:clientID",
+  Registration = "/registrations/:registrationID",
   Authz = "/authorization",
   Token = "/token",
   Resource = "/resource",

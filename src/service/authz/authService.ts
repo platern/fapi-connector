@@ -47,13 +47,12 @@ export class AuthService {
           config.obIssuingCA,
         ],
         passphrase: config.obTransportPass,
-        rejectUnauthorized: false,
-        // servername: 'o3bank.co.uk',
+        rejectUnauthorized: config.rejectUnauthorized,
       }),
     });
   }
 
-  authorisation = async (clientID: string,
+  authorisation = async (registrationID: string,
                          provider: string,
                          grantUrl: string | undefined,
                          permissions: OBReadConsent1Data | undefined,
@@ -62,22 +61,18 @@ export class AuthService {
                          nonce: string,
                          next: NextFunction) => {
     try {
-
-      // let openIDConfigUrl = openIDConfigUrl
       const grantURL = grantUrl;
-
       if (!Object.prototype.hasOwnProperty.call(operationMap, specificationID)) {
         next(badRequestError(`specification not supported by authz: ${specificationID}`));
         return undefined;
       }
-      const clientRecord = await clientData.getClient(clientID);
+      const clientRecord = await clientData.getClient(registrationID);
       if (!clientRecord || !clientRecord.metadata) {
-        next(badRequestError(`no client was found with ID ${clientID}`));
+        next(badRequestError(`no client was found with ID ${registrationID}`));
         return undefined;
       }
       const clientMetadata = clientRecord.metadata as ClientMetadata;
 
-      // get access token
       const issuer = await Issuer.discover(clientRecord.openIDConfigUrl);
       const client = new issuer.FAPI1Client(clientMetadata, {
         keys: [
@@ -93,10 +88,11 @@ export class AuthService {
         ],
         passphrase: this.config.obTransportPass,
         agent: new Agent({
-          // rejectUnauthorized: false,
-          // servername: 'o3bank.co.uk'
+          rejectUnauthorized: this.config.rejectUnauthorized,
         }),
       });
+
+      // authenticate client
       const tokenSet: TokenSet = await client.grant({
         grant_type: "client_credentials",
         scope: "openid accounts",
@@ -117,8 +113,7 @@ export class AuthService {
               this.config.obIssuingCA,
             ],
             passphrase: this.config.obTransportPass,
-            rejectUnauthorized: false,
-            // servername: 'o3bank.co.uk',
+            rejectUnauthorized: this.config.rejectUnauthorized,
           }),
         });
       const consentID = grantResp.data.Data.ConsentId;

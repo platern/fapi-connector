@@ -36,32 +36,32 @@ info:
 
     Feel free to raise issues
     [here](https://github.com/platern/fapi-connector/issues).
-  termsOfService: 'https://platern.com/terms'
+  termsOfService: https://platern.com/terms
   contact:
     email: hello@platern.com
   license:
     name: MIT
-    url: 'https://github.com/platern/openid-client/LICENCE'
+    url: https://github.com/platern/openid-client/LICENCE
   version: '0.1'
 paths:
-  '/registrations/{clientID}':
+  /registrations/{registrationID}:
     put:
       description: Create or update a client registration with an API provider.
       summary: Create or update a client registration with an API provider.
       tags:
         - Client registrations
       parameters:
-        - name: clientID
+        - name: registrationID
           description: >-
-            Choose a unique identifier for the `clientID` to register a new
-            client with an API provider.
+            Choose a unique identifier for the `registrationID` to register a
+            new client with an API provider.
 
 
             If you're using Platern Web, we recommend using the `providerID`
             from the Providers API.
 
 
-            Warning: currently, registering with the same `clientID` will
+            Warning: currently, registering with the same `registrationID` will
             override any previous registrations.
           in: path
           required: true
@@ -153,7 +153,7 @@ paths:
               x-201.WithOIDD:
                 summary: 201 Created (w/ OpenID Discovery URL)
                 value:
-                  openIDConfigUrl: 'https://auth.abcbank.com/.well-known/openid-configuration'
+                  openIDConfigUrl: https://auth.abcbank.com/.well-known/openid-configuration
                   externalAud: 0015800001041RHAAY
               x-201.WithOverrides:
                 summary: 201 Created (w/ provider-specific overrides)
@@ -862,11 +862,11 @@ paths:
                           longer valid.
               examples:
                 '200': &ref_4
-                  summary: 200 (w/ provider ID)
+                  summary: 200 OK
                   value:
                     kind: RegisteredClient
                     self: /registrations/XXX
-                    openIDConfigUrl: 'https://auth.abcbank.com/.well-known/openid-configuration'
+                    openIDConfigUrl: https://auth.abcbank.com/.well-known/openid-configuration
                     metadata:
                       grant_types:
                         - client_credentials
@@ -883,12 +883,12 @@ paths:
                       client_id_issued_at: 1665796077170
                       client_secret_expires_at: 0
                       redirect_uris:
-                        - 'https://example.com/oauth/callback/'
+                        - https://example.com/oauth/callback/
                       software_id: EXAMPLE_SOFTWARE_ID
                       software_statement: aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==
                       application_type: web
-                      tls_client_auth_subject_dn: 'CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ'
-                      jwks_uri: 'https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks'
+                      tls_client_auth_subject_dn: CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ
+                      jwks_uri: https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks
                       request_object_signing_alg: PS256
                       token_endpoint_auth_signing_alg: PS256
                       scope: openid accounts payments
@@ -905,7 +905,7 @@ paths:
                   value:
                     kind: RegisteredClient
                     self: /registrations/YYY
-                    openIDConfigUrl: 'https://auth.abcbank.com/.well-known/openid-configuration'
+                    openIDConfigUrl: https://auth.abcbank.com/.well-known/openid-configuration
                     metadata:
                       grant_types:
                         - client_credentials
@@ -922,12 +922,12 @@ paths:
                       client_id_issued_at: 1665796077170
                       client_secret_expires_at: 0
                       redirect_uris:
-                        - 'https://example.com/oauth/callback/'
+                        - https://example.com/oauth/callback/
                       software_id: EXAMPLE_SOFTWARE_ID
                       software_statement: aGVhZGVyCg==.cGF5bG9hZAo=.c2lnbmF0dXJlCg==
                       application_type: web
-                      tls_client_auth_subject_dn: 'CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ'
-                      jwks_uri: 'https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks'
+                      tls_client_auth_subject_dn: CN=00123,2.5.4.97=PSD2-ZZ-000123,O=EXAMPLE LTD,C=ZZ
+                      jwks_uri: https://keystore.ca.com/00123/EXAMPLE_SOFTWARE_ID.jwks
                       request_object_signing_alg: PS256
                       token_endpoint_auth_signing_alg: PS256
                       scope: openid accounts payments
@@ -989,14 +989,14 @@ paths:
       tags:
         - Client registrations
       parameters:
-        - name: clientID
+        - name: registrationID
           in: path
           required: true
           schema:
             type: string
           examples:
             '200':
-              summary: 200 (w/ provider ID)
+              summary: 200 OK
               value: XXX
             x-404.MissingRegistration:
               summary: 404 Not found
@@ -1024,8 +1024,8 @@ paths:
     get:
       tags:
         - Client registrations
-      description: Get `clientID` values for all provider registrations.
-      summary: Get `clientID` values for all provider registrations.
+      description: Get `registrationID` values for all provider registrations.
+      summary: Get `registrationID` values for all provider registrations.
       responses:
         '200':
           description: OK
@@ -1069,7 +1069,7 @@ paths:
       summary: Generate an authorization URL for the data owner to grant access.
       parameters:
         - in: query
-          description: Use the `clientID` registered with your API provider.
+          description: Use the `registrationID` registered with your API provider.
           name: client
           required: true
           schema:
@@ -1082,7 +1082,7 @@ paths:
               summary: 200 (w/ OpenID Discovery URL)
               value: XXX
         - in: query
-          description: 'If you''re using Platern Web, pass the `provider`.'
+          description: If you're using Platern Web, pass the `provider`.
           name: provider
           schema:
             type: string
@@ -1223,7 +1223,7 @@ paths:
       summary: Access token request.
       parameters:
         - in: query
-          description: Use the `clientID` registered with your API provider.
+          description: Use the `registrationID` registered with your API provider.
           name: client
           schema:
             type: string

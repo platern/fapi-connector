@@ -28,20 +28,20 @@ info:
     url: https://github.com/platern/openid-client/LICENCE
   version: '0.1'
 paths:
-  /registrations/{clientID}:
+  /registrations/{registrationID}:
     put:
       description: Create or update a client registration with an API provider.
       summary: Create or update a client registration with an API provider.
       tags:
         - Client registrations
       parameters:
-        - name: clientID
+        - name: registrationID
           description: |-
-            Choose a unique identifier for the `clientID` to register a new client with an API provider.
+            Choose a unique identifier for the `registrationID` to register a new client with an API provider.
             
             If you're using Platern Web, we recommend using the `providerID` from the Providers API.
             
-            Warning: currently, registering with the same `clientID` will override any previous registrations.
+            Warning: currently, registering with the same `registrationID` will override any previous registrations.
           in: path
           required: true
           schema:
@@ -223,14 +223,14 @@ paths:
       tags:
         - Client registrations
       parameters:
-        - name: clientID
+        - name: registrationID
           in: path
           required: true
           schema:
             type: string
           examples:
             200:
-              summary: 200 (w/ provider ID)
+              summary: 200 OK
               value: XXX
             x-404.MissingRegistration:
               summary: 404 Not found
@@ -264,8 +264,8 @@ paths:
     get:
       tags:
         - Client registrations
-      description: Get `clientID` values for all provider registrations.
-      summary: Get `clientID` values for all provider registrations.
+      description: Get `registrationID` values for all provider registrations.
+      summary: Get `registrationID` values for all provider registrations.
       responses:
         200:
           description: OK
@@ -305,7 +305,7 @@ paths:
       summary: Generate an authorization URL for the data owner to grant access.
       parameters:
         - in: query
-          description: Use the `clientID` registered with your API provider.
+          description: Use the `registrationID` registered with your API provider.
           name: client
           required: true
           schema:
@@ -445,7 +445,7 @@ paths:
       summary: Access token request.
       parameters:
         - in: query # todo move to header
-          description: Use the `clientID` registered with your API provider.
+          description: Use the `registrationID` registered with your API provider.
           name: client
           schema:
             type: string
@@ -976,7 +976,7 @@ components:
 
   examples:
     ClientUpdated:
-      summary: 200 (w/ provider ID)
+      summary: 200 OK
       value:
         {
           kind: 'RegisteredClient',

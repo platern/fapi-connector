@@ -12,7 +12,7 @@ export const mockDbResponses = (mockedClientData: jest.Mocked<typeof clientData>
     return Promise.resolve(true)
   })
 
-  mockedClientData.createClient = jest.fn((_, __, ___) => {
+  mockedClientData.updateClient = jest.fn((_, __, ___) => {
     return Promise.resolve(true)
   })
   const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync('test/testdata/testClient.json').toString()) as ClientMetadata

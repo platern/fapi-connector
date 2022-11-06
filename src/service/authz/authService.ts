@@ -1,4 +1,4 @@
-import {AxiosResponse, AxiosError, AxiosInstance} from "axios";
+import axios, {AxiosResponse, AxiosError, AxiosInstance} from "axios";
 import {v4 as uuidv4} from "uuid";
 import {
   ClientMetadata,
@@ -8,7 +8,6 @@ import {
 } from "@dextersjab/openid-client";
 import {OBReadConsent1Data} from "../../httpmodel/modelOBReadConsent1Data";
 import {operationMap, Specification} from "../operationMap";
-import axios from "axios";
 import {Agent} from "https";
 import {createPrivateKey, KeyObject} from "crypto";
 import {Config} from "../../util/config/config";
@@ -65,7 +64,7 @@ export class AuthService {
     try {
 
       // let openIDConfigUrl = openIDConfigUrl
-      let grantURL = grantUrl;
+      const grantURL = grantUrl;
 
       if (!Object.prototype.hasOwnProperty.call(operationMap, specificationID)) {
         next(badRequestError(`specification not supported by authz: ${specificationID}`));

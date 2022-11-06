@@ -4,7 +4,7 @@ info:
   description: |-
     Use this companion service to register with and call OpenID providers, built to accommodate many the peculiarities of Open Banking implementations.
     
-    Optionally, it can be used in conjunction with the [Platern Directory](https://platern.com) in [Open Banking](https://opendata.substack.com/p/an-overview-of-open-banking) applications.
+    Optionally, it can be used in conjunction with [Platern Web](https://platern.com) in [Open Banking](https://opendata.substack.com/p/an-overview-of-open-banking) applications.
     
     This service uses a forked, open-source [Node OpenID Client](https://github.com/dextersjab/node-openid-client).
     

@@ -73,7 +73,7 @@ export class TokenService {
         console.error(JSON.stringify(err.response?.status));
         console.error(JSON.stringify(err.response?.data));
         console.error(err);
-        next(externalCallError("error occurred connecting to Directory"));
+        next(externalCallError("error occurred connecting to Platern Web"));
       } else {
         console.error(err);
         next(externalCallError("error occured while trying to fetch token"));

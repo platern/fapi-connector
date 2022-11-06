@@ -9,7 +9,6 @@ module.exports = {
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
-    'google',
     'plugin:@typescript-eslint/recommended',
   ],
   parser: '@typescript-eslint/parser',
@@ -25,8 +24,6 @@ module.exports = {
     'import',
   ],
   rules: {
-    'quotes': ['warn', 'single'],
-    'semi': 'off',
     'indent': ['error', 2, {'FunctionExpression': {'parameters': 'first'}}],
     'require-jsdoc': 'off',
     'max-len': 'warn',

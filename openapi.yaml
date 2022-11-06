@@ -98,7 +98,7 @@ paths:
               type: object
               properties:
                 provider:
-                  description: A provider ID obtained from Platern Web.
+                  description: A `provider` obtained from Platern Web.
                   type: string
                 openIDConfigUrl:
                   description: A provider's OpenID Discovery URL (aka well-known endpoint).
@@ -163,7 +163,7 @@ paths:
                   }
         required: true
       responses:
-        '200':
+        200:
           description: 200 Updated (w/ provider ID)
           content:
             application/json:
@@ -172,7 +172,7 @@ paths:
               examples:
                 200:
                   $ref: '#/components/examples/ClientUpdated'
-        '201':
+        201:
           description: 201 Created (w/ provider ID)
           content:
             application/json:
@@ -181,41 +181,41 @@ paths:
               examples:
                 201:
                   $ref: '#/components/examples/ClientCreated'
-        'x-201.WithOIDD':
+        x-201.WithOIDD:
           description: 201 Created (w/ OpenID Discovery URL)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NewRegistrationUpdates'
               examples:
-                'x-201.WithOIDD':
+                x-201.WithOIDD:
                   $ref: '#/components/examples/ClientCreated'
-        'x-201.WithOverrides':
+        x-201.WithOverrides:
           description: 201 Created (w/ provider-specific overrides)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/NewRegistrationUpdates'
               examples:
-                'x-201.WithOverrides':
+                x-201.WithOverrides:
                   $ref: '#/components/examples/ClientCreated'
-        'x-400.NoProviderIdentifiers':
+        x-400.NoProviderIdentifiers:
           description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardError'
               examples:
-                'x-400.NoProviderIdentifiers':
+                x-400.NoProviderIdentifiers:
                   $ref: '#/components/examples/Registration400NoProviderIDs'
-        'x-400.ProviderNotFound':
+        x-400.ProviderNotFound:
           description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardError'
               examples:
-                'x-400.ProviderNotFound':
+                x-400.ProviderNotFound:
                   $ref: '#/components/examples/Registration400ProviderNotFound'
     get:
       description: Get a client registered with a provider.
@@ -229,56 +229,52 @@ paths:
           schema:
             type: string
           examples:
-            '200':
+            200:
+              summary: 200 (w/ provider ID)
               value: XXX
-            'x-404.MissingProvider':
-              value: nonexistent-provider # intentionally invalid
-            'x-404.MissingRegistration':
-              value: EXAMPLE_SOFTWARE_ID # intentionally valid
+            x-404.MissingRegistration:
+              summary: 404 Not found
+              value: WWW
       responses:
-        '200':
+        200:
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Client'
               examples:
-                '200':
+                200:
                   $ref: '#/components/examples/ClientUpdated'
-        'x-404.MissingRegistration':
+        x-404.MissingRegistration:
           description: Not Found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StandardError'
               examples:
-                'x-404.MissingRegistration':
-                  $ref: '#/components/examples/Client404'
-        'x-404.MissingProvider':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StandardError'
-              examples:
-                'x-404.MissingProvider':
-                  $ref: '#/components/examples/Client404'
+                x-404.MissingRegistration:
+                  summary: 404 Not found
+                  value:
+                    {
+                      error: "Not Found",
+                      message: "client not found"
+                    }
 
   /registrations:
     get:
       tags:
         - Client registrations
-      description: Get `registrationID` values for all providers.
-      summary: Get `registrationID` values for all providers.
+      description: Get `clientID` values for all provider registrations.
+      summary: Get `clientID` values for all provider registrations.
       responses:
-        '200':
+        200:
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Registrations'
               examples:
-                '200':
+                200:
                   value:
                     {
                       kind: 'Collection',
@@ -316,6 +312,10 @@ paths:
             type: string
           examples:
             200:
+              summary: 200 (w/ provider ID)
+              value: XXX
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: XXX
         - in: query
           description: |-
@@ -325,7 +325,11 @@ paths:
             type: string
           examples:
             200:
+              summary: 200 (w/ provider ID)
               value: XXX
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
+              value: ~
         - in: query
           description: |-
             Currently supports the following Open Banking UK specifications:
@@ -341,10 +345,14 @@ paths:
             type: string
           examples:
             200:
+              summary: 200 (w/ provider ID)
+              value: obieAis
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: obieAis
         - in: query
           description: |-
-            #### OAuth2: `state`
+            #### OAuth2 state
             
             RECOMMENDED.  An opaque value used by the client to maintain
                      state between the request and callback.  The authorization
@@ -357,6 +365,10 @@ paths:
             type: string
           examples:
             200:
+              summary: 200 (w/ provider ID)
+              value: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
         - in: query
           name: openIDNonce
@@ -365,6 +377,10 @@ paths:
             type: string
           examples:
             200:
+              summary: 200 (w/ provider ID)
+              value: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
         - in: query
           description: |-
@@ -376,7 +392,10 @@ paths:
             type: string
           examples:
             200:
-              summary: 200 Ozone Sandbox
+              summary: 200 (w/ provider ID)
+              value: ~
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/account-access-consents
         - in: query
           description: |-
@@ -390,16 +409,27 @@ paths:
           #  format: byte # not supported by JSON Schema
           examples:
             200:
+              summary: 200 (w/ provider ID)
+              value: eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ==
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ==
       responses:
-        '200':
+        200:
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthzUrl'
               examples:
-                '200':
+                200:
+                  summary: 200 (w/ provider ID)
+                  value:
+                    {
+                      url: 'https://auth.abcbank.com/authorize?client_id=CLIENT_ID&scope=openid&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Foauth%2Fcallback%2F&request=eyJhbGciOiJQUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QifQ.eyJzY29wZSI6ImFjY291bnQiLCJzdGF0ZSI6IjgxMDVlYWFkLTY4MzktNGZkMC05MWZhLTAzMThlZTYyZGE5YiIsIm5vbmNlIjoiOTAxMjlkYzAtOWNiNy00ZmMzLTk2ZmQtMzQ4ZjNiMWIxMzgzIiwibWF4X2FnZSI6ODY0MDAsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vb2F1dGgvY2FsbGJhY2svIiwiY2xhaW1zIjp7InVzZXJpbmZvIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJ2YWx1ZSI6IkNVU1RPTUVSX0FDQ09VTlRfQ09OU0VOVCIsImVzc2VudGlhbCI6dHJ1ZX19LCJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJDVVNUT01FUl9BQ0NPVU5UX0NPTlNFTlQiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZXMiOlsidXJuOm9wZW5iYW5raW5nOnBzZDI6c2NhIiwidXJuOm9wZW5iYW5raW5nOnBzZDI6Y2EiXX19fSwiaXNzIjoiQ0xJRU5UX0lEIiwiY2xpZW50X2lkIjoiQ0xJRU5UX0lEIiwianRpIjoiNW9HQzd1UUZsRndDQWEwZFFBbHg1a0xwbEx2RjJ6aGlMbjMxQVVhVHFYYyIsImlhdCI6MTY2NjE2MzAzNSwiZXhwIjoxNjY2MTYzMzM1LCJuYmYiOjE2NjYxNjMwMzV9.RYHl8EbDPddwOnA_dNRvjprd5eVn2v5E4Db7q5JHhaULYGXHhShsDfBGbJrKieZgAm3IHk6borr-Pl5P2qK8gBsuPLAGYONT2ZABD5ktAEksprWBmt0SMDBB8URWnabuBgYYmErLk2k8_QpVhVtDEwl_q-8CQfH1rn8-k7M3xPF7egZY7nLd7sIOw8-EOEWglUzO_irrdRplZIyFMA91pvDBQuPSjMvFTTfOcXXOkWKngQHdVPdw3JJuHgF3kmMNA0b0sFlPvYFobnCPEDDEc2MMqJ9RmdAZ0ENiFopLs_3V8_pWXo4c3OcmlD36-qxEgkLhKSCpBfo464rb3MaYXw'
+                    }
+                x-200.WithOIDD:
+                  summary: 200 (w/ OpenID Discovery URL)
                   value:
                     {
                       url: 'https://auth.abcbank.com/authorize?client_id=CLIENT_ID&scope=openid&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Foauth%2Fcallback%2F&request=eyJhbGciOiJQUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QifQ.eyJzY29wZSI6ImFjY291bnQiLCJzdGF0ZSI6IjgxMDVlYWFkLTY4MzktNGZkMC05MWZhLTAzMThlZTYyZGE5YiIsIm5vbmNlIjoiOTAxMjlkYzAtOWNiNy00ZmMzLTk2ZmQtMzQ4ZjNiMWIxMzgzIiwibWF4X2FnZSI6ODY0MDAsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vb2F1dGgvY2FsbGJhY2svIiwiY2xhaW1zIjp7InVzZXJpbmZvIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJ2YWx1ZSI6IkNVU1RPTUVSX0FDQ09VTlRfQ09OU0VOVCIsImVzc2VudGlhbCI6dHJ1ZX19LCJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJDVVNUT01FUl9BQ0NPVU5UX0NPTlNFTlQiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZXMiOlsidXJuOm9wZW5iYW5raW5nOnBzZDI6c2NhIiwidXJuOm9wZW5iYW5raW5nOnBzZDI6Y2EiXX19fSwiaXNzIjoiQ0xJRU5UX0lEIiwiY2xpZW50X2lkIjoiQ0xJRU5UX0lEIiwianRpIjoiNW9HQzd1UUZsRndDQWEwZFFBbHg1a0xwbEx2RjJ6aGlMbjMxQVVhVHFYYyIsImlhdCI6MTY2NjE2MzAzNSwiZXhwIjoxNjY2MTYzMzM1LCJuYmYiOjE2NjYxNjMwMzV9.RYHl8EbDPddwOnA_dNRvjprd5eVn2v5E4Db7q5JHhaULYGXHhShsDfBGbJrKieZgAm3IHk6borr-Pl5P2qK8gBsuPLAGYONT2ZABD5ktAEksprWBmt0SMDBB8URWnabuBgYYmErLk2k8_QpVhVtDEwl_q-8CQfH1rn8-k7M3xPF7egZY7nLd7sIOw8-EOEWglUzO_irrdRplZIyFMA91pvDBQuPSjMvFTTfOcXXOkWKngQHdVPdw3JJuHgF3kmMNA0b0sFlPvYFobnCPEDDEc2MMqJ9RmdAZ0ENiFopLs_3V8_pWXo4c3OcmlD36-qxEgkLhKSCpBfo464rb3MaYXw'
@@ -414,7 +444,7 @@ paths:
         Make an OAuth2 [token request](https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3) to get access credentials.
       summary: Access token request.
       parameters:
-        - in: query
+        - in: query # todo move to header
           description: Use the `clientID` registered with your API provider.
           name: client
           schema:
@@ -446,14 +476,14 @@ paths:
                     openIDNonce: '96d3dd10-2dc7-4b93-835d-89ddd8665b06'
                   }
       responses:
-        '200':
+        200:
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
               examples:
-                '200':
+                200:
                   value:
                     {
                       tokenSet:
@@ -946,6 +976,7 @@ components:
 
   examples:
     ClientUpdated:
+      summary: 200 (w/ provider ID)
       value:
         {
           kind: 'RegisteredClient',
@@ -984,6 +1015,7 @@ components:
           }
         }
     ClientCreated:
+      summary: 201 (w/ provider ID)
       value:
         {
           kind: 'RegisteredClient',
@@ -1021,12 +1053,6 @@ components:
             "introspection_endpoint_auth_signing_alg": "PS256"
           }
         }
-    Registration404RegistrationIDNotFound:
-      value:
-        {
-          error: "Not Found",
-          message: "registration ID not found: nonexistent-registration"
-        }
     Registration400NoProviderIDs:
       value:
         {
@@ -1038,10 +1064,4 @@ components:
         {
           error: "Bad Request",
           message: "provider doesn't exist: nonexistent-provider"
-        }
-    Client404:
-      value:
-        {
-          error: "Not Found",
-          message: "client not found"
         }

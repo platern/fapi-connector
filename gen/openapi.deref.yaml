@@ -119,7 +119,7 @@ paths:
               type: object
               properties:
                 provider:
-                  description: A provider ID obtained from Platern Web.
+                  description: A `provider` obtained from Platern Web.
                   type: string
                 openIDConfigUrl:
                   description: A provider's OpenID Discovery URL (aka well-known endpoint).
@@ -184,7 +184,7 @@ paths:
                     type: string
                   openIDConfigUrl:
                     type: string
-                  metadata: &ref_6
+                  metadata: &ref_5
                     type: object
                     properties:
                       redirect_uris:
@@ -862,6 +862,7 @@ paths:
                           longer valid.
               examples:
                 '200': &ref_4
+                  summary: 200 (w/ provider ID)
                   value:
                     kind: RegisteredClient
                     self: /registrations/XXX
@@ -900,6 +901,7 @@ paths:
               schema: *ref_0
               examples:
                 '201': &ref_1
+                  summary: 201 (w/ provider ID)
                   value:
                     kind: RegisteredClient
                     self: /registrations/YYY
@@ -965,7 +967,7 @@ paths:
                   message:
                     type: string
               examples:
-                x-400.NoProviderIdentifiers: &ref_13
+                x-400.NoProviderIdentifiers: &ref_12
                   value:
                     error: Bad Request
                     message: >-
@@ -977,7 +979,7 @@ paths:
             application/json:
               schema: *ref_3
               examples:
-                x-400.ProviderNotFound: &ref_14
+                x-400.ProviderNotFound: &ref_13
                   value:
                     error: Bad Request
                     message: 'provider doesn''t exist: nonexistent-provider'
@@ -994,11 +996,11 @@ paths:
             type: string
           examples:
             '200':
+              summary: 200 (w/ provider ID)
               value: XXX
-            x-404.MissingProvider:
-              value: nonexistent-provider
             x-404.MissingRegistration:
-              value: EXAMPLE_SOFTWARE_ID
+              summary: 404 Not found
+              value: WWW
       responses:
         '200':
           description: OK
@@ -1013,29 +1015,23 @@ paths:
             application/json:
               schema: *ref_3
               examples:
-                x-404.MissingRegistration: &ref_5
+                x-404.MissingRegistration:
+                  summary: 404 Not found
                   value:
                     error: Not Found
                     message: client not found
-        x-404.MissingProvider:
-          description: Not Found
-          content:
-            application/json:
-              schema: *ref_3
-              examples:
-                x-404.MissingProvider: *ref_5
   /registrations:
     get:
       tags:
         - Client registrations
-      description: Get `registrationID` values for all providers.
-      summary: Get `registrationID` values for all providers.
+      description: Get `clientID` values for all provider registrations.
+      summary: Get `clientID` values for all provider registrations.
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: &ref_7
+              schema: &ref_6
                 type: object
                 properties:
                   kind:
@@ -1080,6 +1076,10 @@ paths:
             type: string
           examples:
             '200':
+              summary: 200 (w/ provider ID)
+              value: XXX
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: XXX
         - in: query
           description: 'If you''re using Platern Web, pass the `provider`.'
@@ -1088,7 +1088,11 @@ paths:
             type: string
           examples:
             '200':
+              summary: 200 (w/ provider ID)
               value: XXX
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
+              value: null
         - in: query
           description: |-
             Currently supports the following Open Banking UK specifications:
@@ -1104,10 +1108,14 @@ paths:
             type: string
           examples:
             '200':
+              summary: 200 (w/ provider ID)
+              value: obieAis
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: obieAis
         - in: query
           description: |-
-            #### OAuth2: `state`
+            #### OAuth2 state
 
             RECOMMENDED.  An opaque value used by the client to maintain
                      state between the request and callback.  The authorization
@@ -1120,6 +1128,10 @@ paths:
             type: string
           examples:
             '200':
+              summary: 200 (w/ provider ID)
+              value: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
         - in: query
           name: openIDNonce
@@ -1128,6 +1140,10 @@ paths:
             type: string
           examples:
             '200':
+              summary: 200 (w/ provider ID)
+              value: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
         - in: query
           description: >-
@@ -1142,7 +1158,10 @@ paths:
             type: string
           examples:
             '200':
-              summary: 200 Ozone Sandbox
+              summary: 200 (w/ provider ID)
+              value: null
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: >-
                 https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/account-access-consents
         - in: query
@@ -1160,6 +1179,11 @@ paths:
             type: string
           examples:
             '200':
+              summary: 200 (w/ provider ID)
+              value: >-
+                eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ==
+            x-200.WithOIDD:
+              summary: 200 (w/ OpenID Discovery URL)
               value: >-
                 eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ==
       responses:
@@ -1167,7 +1191,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: &ref_9
+              schema: &ref_8
                 type: object
                 properties:
                   url:
@@ -1176,6 +1200,12 @@ paths:
                   - url
               examples:
                 '200':
+                  summary: 200 (w/ provider ID)
+                  value:
+                    url: >-
+                      https://auth.abcbank.com/authorize?client_id=CLIENT_ID&scope=openid&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Foauth%2Fcallback%2F&request=eyJhbGciOiJQUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QifQ.eyJzY29wZSI6ImFjY291bnQiLCJzdGF0ZSI6IjgxMDVlYWFkLTY4MzktNGZkMC05MWZhLTAzMThlZTYyZGE5YiIsIm5vbmNlIjoiOTAxMjlkYzAtOWNiNy00ZmMzLTk2ZmQtMzQ4ZjNiMWIxMzgzIiwibWF4X2FnZSI6ODY0MDAsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vb2F1dGgvY2FsbGJhY2svIiwiY2xhaW1zIjp7InVzZXJpbmZvIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJ2YWx1ZSI6IkNVU1RPTUVSX0FDQ09VTlRfQ09OU0VOVCIsImVzc2VudGlhbCI6dHJ1ZX19LCJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJDVVNUT01FUl9BQ0NPVU5UX0NPTlNFTlQiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZXMiOlsidXJuOm9wZW5iYW5raW5nOnBzZDI6c2NhIiwidXJuOm9wZW5iYW5raW5nOnBzZDI6Y2EiXX19fSwiaXNzIjoiQ0xJRU5UX0lEIiwiY2xpZW50X2lkIjoiQ0xJRU5UX0lEIiwianRpIjoiNW9HQzd1UUZsRndDQWEwZFFBbHg1a0xwbEx2RjJ6aGlMbjMxQVVhVHFYYyIsImlhdCI6MTY2NjE2MzAzNSwiZXhwIjoxNjY2MTYzMzM1LCJuYmYiOjE2NjYxNjMwMzV9.RYHl8EbDPddwOnA_dNRvjprd5eVn2v5E4Db7q5JHhaULYGXHhShsDfBGbJrKieZgAm3IHk6borr-Pl5P2qK8gBsuPLAGYONT2ZABD5ktAEksprWBmt0SMDBB8URWnabuBgYYmErLk2k8_QpVhVtDEwl_q-8CQfH1rn8-k7M3xPF7egZY7nLd7sIOw8-EOEWglUzO_irrdRplZIyFMA91pvDBQuPSjMvFTTfOcXXOkWKngQHdVPdw3JJuHgF3kmMNA0b0sFlPvYFobnCPEDDEc2MMqJ9RmdAZ0ENiFopLs_3V8_pWXo4c3OcmlD36-qxEgkLhKSCpBfo464rb3MaYXw
+                x-200.WithOIDD:
+                  summary: 200 (w/ OpenID Discovery URL)
                   value:
                     url: >-
                       https://auth.abcbank.com/authorize?client_id=CLIENT_ID&scope=openid&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Foauth%2Fcallback%2F&request=eyJhbGciOiJQUzI1NiIsInR5cCI6Im9hdXRoLWF1dGh6LXJlcStqd3QifQ.eyJzY29wZSI6ImFjY291bnQiLCJzdGF0ZSI6IjgxMDVlYWFkLTY4MzktNGZkMC05MWZhLTAzMThlZTYyZGE5YiIsIm5vbmNlIjoiOTAxMjlkYzAtOWNiNy00ZmMzLTk2ZmQtMzQ4ZjNiMWIxMzgzIiwibWF4X2FnZSI6ODY0MDAsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vb2F1dGgvY2FsbGJhY2svIiwiY2xhaW1zIjp7InVzZXJpbmZvIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJ2YWx1ZSI6IkNVU1RPTUVSX0FDQ09VTlRfQ09OU0VOVCIsImVzc2VudGlhbCI6dHJ1ZX19LCJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJDVVNUT01FUl9BQ0NPVU5UX0NPTlNFTlQiLCJlc3NlbnRpYWwiOnRydWV9LCJhY3IiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZXMiOlsidXJuOm9wZW5iYW5raW5nOnBzZDI6c2NhIiwidXJuOm9wZW5iYW5raW5nOnBzZDI6Y2EiXX19fSwiaXNzIjoiQ0xJRU5UX0lEIiwiY2xpZW50X2lkIjoiQ0xJRU5UX0lEIiwianRpIjoiNW9HQzd1UUZsRndDQWEwZFFBbHg1a0xwbEx2RjJ6aGlMbjMxQVVhVHFYYyIsImlhdCI6MTY2NjE2MzAzNSwiZXhwIjoxNjY2MTYzMzM1LCJuYmYiOjE2NjYxNjMwMzV9.RYHl8EbDPddwOnA_dNRvjprd5eVn2v5E4Db7q5JHhaULYGXHhShsDfBGbJrKieZgAm3IHk6borr-Pl5P2qK8gBsuPLAGYONT2ZABD5ktAEksprWBmt0SMDBB8URWnabuBgYYmErLk2k8_QpVhVtDEwl_q-8CQfH1rn8-k7M3xPF7egZY7nLd7sIOw8-EOEWglUzO_irrdRplZIyFMA91pvDBQuPSjMvFTTfOcXXOkWKngQHdVPdw3JJuHgF3kmMNA0b0sFlPvYFobnCPEDDEc2MMqJ9RmdAZ0ENiFopLs_3V8_pWXo4c3OcmlD36-qxEgkLhKSCpBfo464rb3MaYXw
@@ -1203,7 +1233,7 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: &ref_10
+            schema: &ref_9
               type: object
               properties:
                 oauth2State:
@@ -1233,10 +1263,10 @@ paths:
           description: OK
           content:
             application/json:
-              schema: &ref_11
+              schema: &ref_10
                 type: object
                 properties:
-                  oauth2TokenSet: &ref_12
+                  oauth2TokenSet: &ref_11
                     title: OAuth2 Token Response
                     type: object
                     properties:
@@ -1317,9 +1347,9 @@ paths:
 components:
   schemas:
     Client: *ref_0
-    DcrClientMetadata: *ref_6
+    DcrClientMetadata: *ref_5
     NewRegistrationUpdates: *ref_2
-    RegistrationRequest: &ref_8
+    RegistrationRequest: &ref_7
       description: >-
         Requires either the Platern Web `provider` or the API provider's
 
@@ -1349,7 +1379,7 @@ components:
                 type: string
             authMethod:
               type: string
-    Registrations: *ref_7
+    Registrations: *ref_6
     Registration:
       type: object
       properties:
@@ -1359,21 +1389,16 @@ components:
           type: string
         ID:
           type: string
-        completed: *ref_8
-        failed: *ref_8
-        pending: *ref_8
-    AuthzUrl: *ref_9
-    TokenRequest: *ref_10
-    TokenResponse: *ref_11
-    OAuth2Token: *ref_12
+        completed: *ref_7
+        failed: *ref_7
+        pending: *ref_7
+    AuthzUrl: *ref_8
+    TokenRequest: *ref_9
+    TokenResponse: *ref_10
+    OAuth2Token: *ref_11
     StandardError: *ref_3
   examples:
     ClientUpdated: *ref_4
     ClientCreated: *ref_1
-    Registration404RegistrationIDNotFound:
-      value:
-        error: Not Found
-        message: 'registration ID not found: nonexistent-registration'
-    Registration400NoProviderIDs: *ref_13
-    Registration400ProviderNotFound: *ref_14
-    Client404: *ref_5
+    Registration400NoProviderIDs: *ref_12
+    Registration400ProviderNotFound: *ref_13

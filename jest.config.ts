@@ -2,13 +2,15 @@
 import type {Config} from 'jest';
 
 const config: Config = {
-  verbose: true,
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  "moduleDirectories": [
+  moduleDirectories: [
     "<rootDir>",
     "node_modules"
-  ]
+  ],
+  preset: 'ts-jest',
+  roots: [
+    "<rootDir>/test"
+  ],
+  testEnvironment: 'node',
 };
 
 export default config;

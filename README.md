@@ -1,7 +1,8 @@
 # Financial-grade API Connector
 
-A proxy service for dealing directly with financial-grade APIs
-(i.e. [Open Banking](https://dextersjab.medium.com/an-overview-of-open-banking-be34e0e6800b)) without ever sending your credentials!
+A proxy service calling financial-grade APIs
+(i.e. [Open Banking](https://dextersjab.medium.com/an-overview-of-open-banking-be34e0e6800b))
+without ever sending your credentials!
 
 Use this service to:
 
@@ -9,9 +10,7 @@ Use this service to:
 - generate customer authorization URL
 - exchange access tokens
 
-**Note: This project was built against sandbox banks. While breaking changes
-will be kept to a minimum, please expect some breaking changes as this
-tool is still in active development.**
+**Tests in progress.**
 
 ## Getting started
 
@@ -36,7 +35,7 @@ To run the server, you'll need:
    npm ci
    ```
 
-   This will generate `.env` files for you to populate in **step 5**.
+   This will generate `.env` files for you (which you'll populate in **step 5**).
 
 2. Update `config/clients.json`:
 
@@ -48,15 +47,15 @@ To run the server, you'll need:
 | clientScopes           | [specification-specific]                                                                                       | The OAuth2 scopes of data/service your application will request access to.            |
 | clientTokenSigningAlgo | `RS256`, `PS256`, `ES256`                                                                                      | The algorithm used to sign JWS payloads (applies only to `private_key_jwt` clients).  |
 
-3. If you're using this service with Platern Web, configure the options
-   in `config/platernweb.json`:
+3. [Conditional] If you're using this service with Platern Web, configure the 
+   options in `config/platernweb.json`:
 
-| field                  | possible values                                                                                                   | description                                                                           |
-|------------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| trusts             | `trust:openbanking:obuk`, `trust:openbanking:eidas` | Pass the trust mechanisms used to filter `providers`.                                |
+| field                  | possible values                                                                                                   | description                      |
+|------------------------|-------------------------------------------------------------------------------------------------------------------|----------------------------------|
+| trusts             | `trust:openbanking:obuk`, `trust:openbanking:eidas` | Pass your desired `trust` types. |
 
-4. For the `AES_KEY` and `AES_IV` variables, securely generate and save a
-   256-bit AES key:
+4. [Recommended] To encrypt your client registrations, securely generate a
+   256-bit AES key on the command line:
 
    ```shell 
    openssl enc -aes-256-cbc -k secret -P -md sha1
@@ -68,9 +67,11 @@ To run the server, you'll need:
    key=446E54B045F5C2A0D83508FE55C825084AB5E43800E1800D7F33ED3FD4EF317E
    iv =58B8678CC7D32EED503E1430D2A6071D
    ```
-
-5. Set up your environment variables using `.env` and `.env.test` are the root
-   of this project. Use the comments in these files for guidance.
+   Use the generated `key` and `iv` values to set the `AES_KEY` and `AES_IV`
+   environment variables in `.env` and `.env.test` at the root of the project.
+   
+5. Set up the rest of your environment variables.
+   Use the comments in these files for guidance.
 
 6. Run a Postgres database instance on your configured `DATABASE_URL` in your
    environment variables.
@@ -104,6 +105,5 @@ which contains descriptions and examples for all API operations.
 
 ## Upcoming enhancements
 
-- Fix tests for `/authorization` operations
-- Fix tests for `/token` operations
-- Evaluate [express-openapi](https://github.com/kogosoftwarellc/open-api)
+See [issues](https://github.com/platern/fapi-connector/issues)
+for upcoming changes.

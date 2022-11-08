@@ -26,7 +26,8 @@ info:
     - private usage
 
     - distributing
-    
+
+
     Learn more:
 
     - [Platern](https://platern.com)
@@ -945,7 +946,7 @@ paths:
                 example:
                   self:
                     - XXX
-                  registration: { }
+                  registration: {}
               examples:
                 x-201.WithOIDD: *ref_1
         x-201.WithOverrides:
@@ -1224,7 +1225,7 @@ paths:
       parameters:
         - in: query
           description: Use the `registrationID` registered with your API provider.
-          name: client
+          name: registration
           schema:
             type: string
           examples:
@@ -1341,7 +1342,10 @@ paths:
               examples:
                 '200':
                   value:
-                    tokenSet: null
+                    oauth2TokenSet:
+                      access_token: acb9a134-a13d-4a48-8089-1ae95e19612f
+                      id_token: >-
+                        eyJraWQiOiIyaE94YjdCU2gzT0ZGeno4YWc0QmY4RFprSFA4ank4TTQzakRRV1YwbUZBIiwiYWxnIjoibm9uZSJ9.eyJub25jZSI6Ijk2ZDNkZDEwLTJkYzctNGI5My04MzVkLTg5ZGRkODY2NWIwNiIsInN1YiI6ImphbmUgZG9lIiwiYXVkIjoiQ0xJRU5UX0lEIiwiaXNzIjoiaHR0cDovL3NlcnZlci5leGFtcGxlLmNvbSIsImlhdCI6MTY2Nzg5MTA2NiwiZXhwIjoxNjY3OTE5ODY2fQ==.
   /resource:
     description: Access a resource.
 components:

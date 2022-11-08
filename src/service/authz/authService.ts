@@ -11,10 +11,11 @@ import {operationMap, Specification} from "../operationMap";
 import {Agent} from "https";
 import {createPrivateKey, KeyObject} from "crypto";
 import {Config} from "../../util/config/config";
-import {badRequestError, externalCallError, unknownError} from "../error";
+import {badRequestError, externalCallError} from "../error";
 import {NextFunction} from "express";
 import clientData from "../../data/clientData";
 import {grantURLFromPlaternWeb} from "../utils";
+import {Route} from "../../app";
 
 function getScope(specification: string) {
   let scope = "openid";
@@ -68,13 +69,10 @@ export class AuthService {
       let grantURL = grantUrlParam;
       if (provider) {
         grantURL = await grantURLFromPlaternWeb(provider, specificationID, this.config, next);
-      }
-      if (!grantURL) {
-        next(unknownError(`error occurred calling Platern Web`));
-        return undefined;
+        if (!grantURL) return undefined
       }
       if (!Object.prototype.hasOwnProperty.call(operationMap, specificationID)) {
-        next(badRequestError(`specification not supported by authz: ${specificationID}`));
+        next(badRequestError(`specification not supported by ${Route.Authz}: ${specificationID}`));
         return undefined;
       }
       const clientRecord = await clientData.getClient(registrationID);

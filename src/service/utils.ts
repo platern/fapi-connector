@@ -77,7 +77,10 @@ export const grantURLFromPlaternWeb = async (providerID: string,
       config,
       next,
     );
-    if (!providerDetails) return undefined;
+    if (!providerDetails) {
+      next(externalCallError("error occurred connecting to Platern Web"));
+      return undefined;
+    }
     const providerBaseURL = providerDetails.provider.apis.find((api: any) => {
       return api.specification === specificationID;
     })?.baseURL;
@@ -109,7 +112,10 @@ export const providerRegFromPlaternWeb = async (providerID: string,
       config,
       next,
     );
-    if (!providerDetails) return undefined;
+    if (!providerDetails) {
+      next(externalCallError("error occurred connecting to Platern Web"));
+      return undefined;
+    }
     return {
       openIDConfigUrl: providerDetails.openIDConfigUrl,
       provider: providerDetails.provider,

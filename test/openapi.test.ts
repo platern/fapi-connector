@@ -12,7 +12,6 @@ import * as request from "supertest";
 import * as fs from "fs";
 import * as yaml from "js-yaml";
 import * as nock from "nock";
-import * as jose2 from "jose2";
 import axios from "axios";
 import clientData from "../src/data/clientData";
 import config from "../src/util/config/config";
@@ -50,7 +49,7 @@ const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/test
 const mockIssuerMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testIssuer.json").toString()) as ClientMetadata;
 
 describe("API requests and responses", () => {
-  const responseTestCases = extractTestCasesFromExamples(openapi);
+  const testCases = extractTestCasesFromExamples(openapi);
   mockDbResponses(mockedClientData);
   mockAPIResponses(mockedAxios);
 
@@ -62,12 +61,6 @@ describe("API requests and responses", () => {
   console.log("******************");
   console.log("RUNNING TEST CASES");
   console.log("******************");
-
-  const testCases = responseTestCases.filter(testCase => {
-    const path = testCase[1];
-    // todo endpoints work but these tests are broken
-    return !["/token"].includes(path as string);
-  });
 
   it.each(testCases)("Operation: %s %s. Expect response: %s", (
     method,
@@ -93,22 +86,19 @@ describe("API requests and responses", () => {
   });
 });
 
-const idToken = (claims = {}) => {
-  const jwk = jose2.JWK.generateSync("RSA");
-  return jose2.JWT.sign(
-    {
-      sub_jwk: jwk.toJWK(),
-      sub: jwk.thumbprint,
-      ...claims,
-    },
-    jwk,
-    {
-      expiresIn: "8h",
-      issuer: "http://server.example.com",
-      audience: "CLIENT_ID",
-    },
-  );
-};
+const idTokenHeader = Buffer.from(JSON.stringify({
+  "kid": "2hOxb7BSh3OFFzz8ag4Bf8DZkHP8jy8M43jDQWV0mFA",
+  "alg": "none"
+})).toString("base64");
+const idTokenPayload = Buffer.from(JSON.stringify({
+  "nonce": "96d3dd10-2dc7-4b93-835d-89ddd8665b06",
+  "sub": "jane doe",
+  "aud": "CLIENT_ID",
+  "iss": "http://server.example.com",
+  "iat": 1667891066,
+  "exp": 1667919866
+})).toString("base64");
+const idToken = `${idTokenHeader}.${idTokenPayload}.`
 
 function mockExternalApiCalls() {
 
@@ -125,9 +115,10 @@ function mockExternalApiCalls() {
   nock("https://auth.abcbank.com")
     .post("/token")
     .reply(200, {
-      id_token: idToken({sub: "bar"}),
+      id_token: idToken,
       access_token: "acb9a134-a13d-4a48-8089-1ae95e19612f",
-    });
+    })
+    .persist(true);
 
   nock("https://auth.abcbank.com")
     .get("/authorize")

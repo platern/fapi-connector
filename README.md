@@ -2,7 +2,8 @@
 
 ## Overview
 
-**Alpha testing.**
+**Alpha testing. The service works but it's in active development,
+so please expect changes!**
 
 A proxy service for calling financial-grade authorization APIs
 (i.e.
@@ -33,7 +34,7 @@ Use this service to:
 
 ## Getting started
 
-Client registrations will be stored in a SQLite file at
+Client registrations are stored locally in a SQLite file at
 `prisma/clients.db`.
 
 ### Prerequisites
@@ -56,8 +57,7 @@ To run the server, you'll need:
    npm ci
    ```
 
-   This will generate `.env` files for you (which you'll populate in **step 5**)
-   .
+   This will generate `.env` files for you (which you'll populate in **step 5**).
 
 2. Update `config/clients.json`:
 
@@ -72,9 +72,9 @@ To run the server, you'll need:
 3. [Conditional] If you're using this service with Platern Web, configure the
    options in `config/platernweb.json`:
 
-| field                  | possible values                                                                                                   | description                      |
-|------------------------|-------------------------------------------------------------------------------------------------------------------|----------------------------------|
-| trusts             | `trust:openbanking:obuk`, `trust:openbanking:eidas` | Pass your desired `trust` types. |
+| field                  | possible values                                                                                                   | description                                      |
+|------------------------|-------------------------------------------------------------------------------------------------------------------|--------------------------------------------------|
+| trusts             | `trust:openbanking:obuk`, `trust:openbanking:eidas` | The `trust` types that your application can use. |
 
 4. [Recommended] To encrypt your client registrations, securely generate a
    256-bit AES key on the command line:

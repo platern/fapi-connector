@@ -3,7 +3,6 @@ FROM node:16
 # node config files
 COPY package.json .
 COPY tsconfig.json .
-COPY environment.d.ts .
 
 # Platern Clients config
 COPY config config

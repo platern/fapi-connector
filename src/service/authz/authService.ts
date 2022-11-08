@@ -69,7 +69,10 @@ export class AuthService {
       let grantURL = grantUrlParam;
       if (provider) {
         grantURL = await grantURLFromPlaternWeb(provider, specificationID, this.config, next);
-        if (!grantURL) return undefined
+        if (!grantURL) {
+          next(badRequestError(`error occurred connecting to Platern Web`));
+          return undefined;
+        }
       }
       if (!Object.prototype.hasOwnProperty.call(operationMap, specificationID)) {
         next(badRequestError(`specification not supported by ${Route.Authz}: ${specificationID}`));

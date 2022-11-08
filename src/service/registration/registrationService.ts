@@ -176,7 +176,10 @@ export class RegistrationService {
       "grant_types": resolvedGrantTypes,
       "id_token_signed_response_alg": tokenSigningAlgo,
       "request_object_signing_alg": reqObjSigningAlgo,
-      "scope": resolvedScopes.join(" "), // todo OBUK anomaly
+
+      // this is an anomaly of the Open Banking UK specification
+      "scope": resolvedScopes.join(" "),
+
       "software_statement": this.ssa,
       ...authMethodDetails,
     };

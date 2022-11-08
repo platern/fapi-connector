@@ -20,7 +20,7 @@ export const authz = (config: Config): rout => {
       next(badRequestError("invalid request: missing `registration` header"));
       return;
     }
-    const provider = req.query.provider as string;
+    const provider = req.query?.provider as string;
     const grantUrl = req.query?.oauth2GrantUrl as string;
     const grantRequestB64 = req.query?.oauth2GrantRequest as string;
     const specification = req.query?.specification as string;

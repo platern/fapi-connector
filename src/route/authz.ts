@@ -15,8 +15,11 @@ export const authz = (config: Config): rout => {
   const route = Route.Authz;
   const paramsSchema = getQueryParamsSchema("get", route);
   router.get(route, validate({query: paramsSchema}), (req: Request, resp: Response, next: NextFunction) => {
-    // params
-    const registrationID = req.query?.registration as string;
+    const registrationID = req.headers?.registration as string;
+    if (!registrationID) {
+      next(badRequestError("invalid request: missing `registration` header"));
+      return;
+    }
     const provider = req.query.provider as string;
     const grantUrl = req.query?.oauth2GrantUrl as string;
     const grantRequestB64 = req.query?.oauth2GrantRequest as string;

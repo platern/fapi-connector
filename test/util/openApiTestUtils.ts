@@ -10,10 +10,11 @@ export type SchemaExample = {
   path: string
   code: number
   method: string
-  exampleQueryParams: any
+  exampleHeaders: any
   examplePathParams: any
-  exampleRequest: any
+  exampleQueryParams: any
   exampleResponse: any
+  exampleRequest: any
 }
 
 const codeFromDetail = (codeDetail: string) => {
@@ -24,12 +25,10 @@ const codeFromDetail = (codeDetail: string) => {
   return codeDetail.startsWith("x-") ? codeDetail.slice(2, codeDetail.indexOf(".")) : codeDetail;
 };
 
-const getQueryParamsExample = (parameters: any[], codeDetail: string): WithExample => {
-  return extractExampleParams(parameters, codeDetail, "query");
-};
-
-const getPathParamsExample = (parameters: any[], codeDetail: string): WithExample => {
-  return extractExampleParams(parameters, codeDetail, "path");
+const getParamExample = (parameters: any[],
+                         codeDetail: string,
+                         paramType: string): WithExample => {
+  return extractExampleParams(parameters, codeDetail, paramType);
 };
 
 const extractExampleParams = (parameters: any[],
@@ -60,8 +59,9 @@ export const extractTestCasesFromExamples =
             path: opObj.path,
             method: opObj.method,
             code: Number.parseInt(code),
-            exampleQueryParams: getQueryParamsExample(opObj.obj.parameters, codeDetail),
-            examplePathParams: getPathParamsExample(opObj.obj.parameters, codeDetail),
+            exampleHeaders: getParamExample(opObj.obj.parameters, codeDetail, "header"),
+            exampleQueryParams: getParamExample(opObj.obj.parameters, codeDetail, "query"),
+            examplePathParams: getParamExample(opObj.obj.parameters, codeDetail, "path"),
             exampleRequest: requests?.content["application/json"].examples[codeDetail].value,
 
             // currently, every response expects to contain an example with a matching `codeDetail`

@@ -1069,7 +1069,7 @@ paths:
           - `oauth2GrantRequest`
       summary: Generate an authorization URL for the data owner to grant access.
       parameters:
-        - in: query
+        - in: header
           description: Use the `registrationID` registered with your API provider.
           name: registration
           required: true
@@ -1223,7 +1223,7 @@ paths:
         access credentials.
       summary: Access token request.
       parameters:
-        - in: query
+        - in: header
           description: Use the `registrationID` registered with your API provider.
           name: registration
           schema:
@@ -1231,6 +1231,7 @@ paths:
           examples:
             '200':
               value: XXX
+          required: true
       requestBody:
         content:
           application/json:
@@ -1346,8 +1347,6 @@ paths:
                       access_token: acb9a134-a13d-4a48-8089-1ae95e19612f
                       id_token: >-
                         eyJraWQiOiIyaE94YjdCU2gzT0ZGeno4YWc0QmY4RFprSFA4ank4TTQzakRRV1YwbUZBIiwiYWxnIjoibm9uZSJ9.eyJub25jZSI6Ijk2ZDNkZDEwLTJkYzctNGI5My04MzVkLTg5ZGRkODY2NWIwNiIsInN1YiI6ImphbmUgZG9lIiwiYXVkIjoiQ0xJRU5UX0lEIiwiaXNzIjoiaHR0cDovL3NlcnZlci5leGFtcGxlLmNvbSIsImlhdCI6MTY2Nzg5MTA2NiwiZXhwIjoxNjY3OTE5ODY2fQ==.
-  /resource:
-    description: Access a resource.
 components:
   schemas:
     Client: *ref_0

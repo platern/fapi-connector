@@ -75,7 +75,14 @@ describe("API requests and responses", () => {
           return res.replace(`{${pathParam}}`, operationSchema.examplePathParams[pathParam]);
         }, operationSchema.path)
       : operationSchema.path;
-    return (request(app) as any)[operationSchema.method](formattedPath)
+    const req = (request(app) as any)[operationSchema.method](formattedPath);
+    let reqWithHeaders = req
+    if(operationSchema.exampleHeaders) {
+      reqWithHeaders = Object.keys(operationSchema.exampleHeaders).reduce((newReq: any, key: string) => {
+        return newReq.set(key, operationSchema.exampleHeaders[key]);
+      }, req);
+    }
+    return reqWithHeaders
       .query(operationSchema.exampleQueryParams)
       .send(operationSchema.exampleRequest)
       .then((resp: any) => {
@@ -88,7 +95,7 @@ describe("API requests and responses", () => {
 
 const idTokenHeader = Buffer.from(JSON.stringify({
   "kid": "2hOxb7BSh3OFFzz8ag4Bf8DZkHP8jy8M43jDQWV0mFA",
-  "alg": "none"
+  "alg": "none",
 })).toString("base64");
 const idTokenPayload = Buffer.from(JSON.stringify({
   "nonce": "96d3dd10-2dc7-4b93-835d-89ddd8665b06",
@@ -96,9 +103,9 @@ const idTokenPayload = Buffer.from(JSON.stringify({
   "aud": "CLIENT_ID",
   "iss": "http://server.example.com",
   "iat": 1667891066,
-  "exp": 1667919866
+  "exp": 1667919866,
 })).toString("base64");
-const idToken = `${idTokenHeader}.${idTokenPayload}.`
+const idToken = `${idTokenHeader}.${idTokenPayload}.`;
 
 function mockExternalApiCalls() {
 

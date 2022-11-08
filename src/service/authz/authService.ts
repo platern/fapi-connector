@@ -77,7 +77,7 @@ export class AuthService {
       }
       const clientRecord = await clientData.getClient(registrationID);
       if (!clientRecord || !clientRecord.metadata) {
-        next(badRequestError(`no client was found with ID ${registrationID}`));
+        next(badRequestError(`no client was found with registration ID ${registrationID}`));
         return undefined;
       }
       const clientMetadata = clientRecord.metadata as ClientMetadata;

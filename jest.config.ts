@@ -1,16 +1,16 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
-import type {Config} from 'jest';
+/** @type {import("ts-jest").JestConfigWithTsJest} */
+import type {Config} from "jest";
 
 const config: Config = {
   moduleDirectories: [
     "<rootDir>",
-    "node_modules"
+    "node_modules",
   ],
-  preset: 'ts-jest',
+  preset: "ts-jest",
   roots: [
-    "<rootDir>/test"
+    "<rootDir>/test",
   ],
-  testEnvironment: 'node',
+  testEnvironment: "node",
 };
 
 export default config;

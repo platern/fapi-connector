@@ -1,7 +1,7 @@
 import {config as dotenvConfig} from "dotenv";
 
 dotenvConfig({
-  path: `.env.${(process.env.NODE_ENV as string) === "test" ? "test" : ""}`
+  path: `.env.${(process.env.NODE_ENV as string) === "test" ? "test" : ""}`,
 });
 
 import * as swaggerUi from "swagger-ui-express";

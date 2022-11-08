@@ -7,13 +7,13 @@ enum ParamType {
 }
 
 const operationObject = (method: string,
-                         path: string,) => {
+                         path: string) => {
   const openapi = yaml.load(fs.readFileSync("gen/openapi.deref.yaml").toString()) as any;
   if (!Object.prototype.hasOwnProperty.call(openapi.paths, path)) return undefined;
   const pathObj = openapi.paths[path];
   if (!Object.prototype.hasOwnProperty.call(pathObj, method)) return undefined;
   return pathObj[method];
-}
+};
 
 const findRequestBodySchema = (method: string,
                                path: string): object | undefined => {

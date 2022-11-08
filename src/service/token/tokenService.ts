@@ -14,14 +14,14 @@ import clientData from "../../data/clientData";
 
 export class TokenService {
   config: Config;
-  obSealKey: KeyObject;
+  obSigningKey: KeyObject | undefined;
 
   constructor(config: Config) {
     this.config = config;
-    this.obSealKey = createPrivateKey({
+    this.obSigningKey = this.config.obSigningKeyString ? createPrivateKey({
       key: this.config.obSigningKeyString,
       passphrase: this.config.obSigningPass,
-    });
+    }) : undefined;
   }
 
   exchange = async (registrationID: string,
@@ -37,12 +37,11 @@ export class TokenService {
       }
       const clientMetadata = clientRecord.metadata as ClientMetadata;
       const issuer = await Issuer.discover(clientRecord.openIDConfigUrl);
-      const jwk = {...this.obSealKey.export({format: "jwk"})};
-      const client = new issuer.FAPI1Client(clientMetadata, {
+      const client = new issuer.FAPI1Client(clientMetadata, this.obSigningKey ? {
         keys: [
-          jwk,
+          {...this.obSigningKey.export({format: "jwk"})},
         ],
-      });
+      } : undefined);
       client[custom.http_options] = () => ({
         cert: this.config.obTransportCert,
         key: this.config.obTransportKey,
@@ -56,7 +55,7 @@ export class TokenService {
         }),
       });
       const tokenSet: TokenSet = await client.callback(
-        clientMetadata.redirect_uris?.at(0), {
+        clientMetadata.redirect_uris?.[0], {
           code: code,
           state: state,
         }, {

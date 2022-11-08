@@ -32,7 +32,9 @@ const getPathParamsExample = (parameters: any[], codeDetail: string): WithExampl
   return extractExampleParams(parameters, codeDetail, "path");
 };
 
-const extractExampleParams = (parameters: any[], codeDetail: string, parameterType: string): WithExample => {
+const extractExampleParams = (parameters: any[],
+                              codeDetail: string,
+                              parameterType: string): WithExample => {
   return parameters
     ? parameters
       .filter(param => param.in === parameterType)
@@ -44,35 +46,36 @@ const extractExampleParams = (parameters: any[], codeDetail: string, parameterTy
     : undefined;
 };
 
-export const extractTestCasesFromExamples = (openapi: any): Array<Array<string | SchemaExample>> => {
-  const operationObjs = extractOperationObjects(openapi);
-  return operationObjs
-    .flatMap(opObj => {
-      const requests = opObj.obj.requestBody;
-      const responses = opObj.obj.responses ?? [];
-      return Object.keys(responses).map(codeDetail => {
-        const code = codeFromDetail(codeDetail);
-        console.log(`Extracting test case: ${opObj.method.toUpperCase()} ${opObj.path} ${codeDetail}`);
-        const res: SchemaExample = {
-          path: opObj.path,
-          method: opObj.method,
-          code: Number.parseInt(code),
-          exampleQueryParams: getQueryParamsExample(opObj.obj.parameters, codeDetail),
-          examplePathParams: getPathParamsExample(opObj.obj.parameters, codeDetail),
-          exampleRequest: requests?.content["application/json"].examples[codeDetail].value,
+export const extractTestCasesFromExamples =
+  (openapi: any): Array<Array<string | SchemaExample>> => {
+    const operationObjs = extractOperationObjects(openapi);
+    return operationObjs
+      .flatMap(opObj => {
+        const requests = opObj.obj.requestBody;
+        const responses = opObj.obj.responses ?? [];
+        return Object.keys(responses).map(codeDetail => {
+          const code = codeFromDetail(codeDetail);
+          console.log(`Extracting test case: ${opObj.method.toUpperCase()} ${opObj.path} ${codeDetail}`);
+          const res: SchemaExample = {
+            path: opObj.path,
+            method: opObj.method,
+            code: Number.parseInt(code),
+            exampleQueryParams: getQueryParamsExample(opObj.obj.parameters, codeDetail),
+            examplePathParams: getPathParamsExample(opObj.obj.parameters, codeDetail),
+            exampleRequest: requests?.content["application/json"].examples[codeDetail].value,
 
-          // currently, every response expects to contain an example with a matching `codeDetail`
-          exampleResponse: responses[codeDetail].content["application/json"].examples[codeDetail].value,
-        };
-        return [
-          opObj.method.toUpperCase(),
-          opObj.path,
-          codeDetail,
-          res,
-        ];
+            // currently, every response expects to contain an example with a matching `codeDetail`
+            exampleResponse: responses[codeDetail].content["application/json"].examples[codeDetail].value,
+          };
+          return [
+            opObj.method.toUpperCase(),
+            opObj.path,
+            codeDetail,
+            res,
+          ];
+        });
       });
-    });
-};
+  };
 
 const extractOperationObjects = (openapi: any) => {
   const pathObjs = Object.keys(openapi.paths).flatMap((path: string) => {
@@ -90,6 +93,5 @@ const extractOperationObjects = (openapi: any) => {
         obj: operationObj,
       };
     });
-  },
-  );
+  });
 };

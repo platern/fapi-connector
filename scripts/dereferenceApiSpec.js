@@ -7,11 +7,11 @@ const fs = require("fs");
 const yaml = require("js-yaml");
 
 (async function main() {
-    const schema = await SwaggerParser.dereference("openapi.yaml");
-    fs.writeFileSync(
-      "gen/openapi.deref.yaml",
-      yaml.dump(schema)
-    );
+  const schema = await SwaggerParser.dereference("openapi.yaml");
+  fs.writeFileSync(
+    "gen/openapi.deref.yaml",
+    yaml.dump(schema)
+  );
 }()).catch(err => {
-  console.error(err)
+  console.error(err);
 });

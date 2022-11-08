@@ -16,6 +16,10 @@ import * as jose2 from "jose2";
 import axios from "axios";
 import clientData from "../src/data/clientData";
 import config from "../src/util/config/config";
+
+config.platernWebBaseURL = "";
+config.obSigningAlgorithm = "none";
+config.obSigningKeyString = undefined;
 import {app} from "../src/app";
 import {
   mockAPIResponses,
@@ -26,8 +30,7 @@ import {
   SchemaExample,
 } from "./util/openApiTestUtils";
 import {ClientMetadata} from "@dextersjab/openid-client";
-
-config.platernWebBaseURL = "";
+import * as authService from "../src/service/authz/authService";
 
 const openApiFilePath = "./gen/openapi.deref.yaml";
 
@@ -40,6 +43,8 @@ const mockedClientData = clientData as jest.Mocked<typeof clientData>;
 jest.mock("../src/util/certUtils");
 jest.fn().mockName("cert");
 const openapi = yaml.load(fs.readFileSync(openApiFilePath).toString()) as any;
+
+jest.spyOn(authService, "generateJti").mockReturnValue("TEST-JTI");
 
 const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testClient.json").toString()) as ClientMetadata;
 const mockIssuerMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testIssuer.json").toString()) as ClientMetadata;
@@ -61,7 +66,7 @@ describe("API requests and responses", () => {
   const testCases = responseTestCases.filter(testCase => {
     const path = testCase[1];
     // todo endpoints work but these tests are broken
-    return !["/authorization", "/token"].includes(path as string);
+    return !["/token"].includes(path as string);
   });
 
   it.each(testCases)("Operation: %s %s. Expect response: %s", (
@@ -128,8 +133,8 @@ function mockExternalApiCalls() {
     .get("/authorize")
     .reply(200, {});
 
-  nock("https://api.abcbank.com")
-    .post("/open-banking/v3.10/account-access-consents")
+  nock("https://ob19-rs1.o3bank.co.uk:4501")
+    .post("/open-banking/v3.1/aisp/account-access-consents")
     .reply(201, {});
 
   nock("https://keystore.ca.com")

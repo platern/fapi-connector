@@ -16,7 +16,7 @@ export const authz = (config: Config): rout => {
   const paramsSchema = getQueryParamsSchema("get", route);
   router.get(route, validate({query: paramsSchema}), (req: Request, resp: Response, next: NextFunction) => {
     // params
-    const registrationID = req.query?.registrationID as string;
+    const registrationID = req.query?.registration as string;
     const provider = req.query.provider as string;
     const grantUrl = req.query?.oauth2GrantUrl as string;
     const grantRequestB64 = req.query?.oauth2GrantRequest as string;
@@ -27,9 +27,6 @@ export const authz = (config: Config): rout => {
     const nonce = req.query?.openIDNonce as string;
     if (grantUrl && !grantRequestB64) {
       next(badRequestError("`oauth2GrantUrl` requires `oauth2GrantRequest` to work"));
-      return;
-    } else if (!grantUrl && grantRequestB64) {
-      next(badRequestError("`oauth2GrantRequest` requires `oauth2GrantUrl` to work"));
       return;
     }
     authService.authorisation(

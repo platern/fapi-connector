@@ -2,6 +2,7 @@ import axios, {AxiosError} from "axios";
 import {badRequestError, externalCallError} from "./error";
 import {NextFunction} from "express";
 import {Config} from "../util/config/config";
+import {operationMap} from "./operationMap";
 
 export const resolveProviderID = (
   providerID: string | undefined,
@@ -13,19 +14,13 @@ export const resolveProviderID = (
 };
 
 export interface ProviderDetails {
-  externalAud: string;
+  provider: any;
   openIDConfigUrl: string;
 }
 
-/**
- * Get registration components using Platern Web.
- * @param providerID ID from the Provider API.
- * @param config The fapi-connector Config.
- * @param next This happens during a request session, so pass errors on to middleware.
- */
-export const providerRegFromPlaternWeb = async (providerID: string,
-                                                config: Config,
-                                                next: NextFunction): Promise<ProviderDetails | undefined> => {
+const fetchProviderDetails = async (providerID: string,
+                                    config: Config,
+                                    next: NextFunction): Promise<ProviderDetails | undefined> => {
   try {
     const rootResp = await axios.get(`${config.platernWebBaseURL}/`, {
       headers: {
@@ -55,10 +50,69 @@ export const providerRegFromPlaternWeb = async (providerID: string,
       next(badRequestError(`trust types not supported by provider: [${config.trusts?.join(", ")}]`));
       return undefined;
     }
-    const externalAud = provider.extras.externalAud;
     return {
+      provider: provider,
       openIDConfigUrl: openIDConfigUrl,
-      externalAud: externalAud,
+    };
+  } catch (e) {
+    next(externalCallError("error occurred connecting to Platern Web"));
+    return undefined;
+  }
+};
+
+/**
+ * Get grant URL using Platern Web.
+ * @param providerID ID from the Provider API.
+ * @param specificationID The `specification` ID.
+ * @param config The fapi-connector Config.
+ * @param next This happens during a request session, so pass errors on to middleware.
+ */
+export const grantURLFromPlaternWeb = async (providerID: string,
+                                             specificationID: string,
+                                             config: Config,
+                                             next: NextFunction): Promise<string | undefined> => {
+  try {
+    const providerDetails = await fetchProviderDetails(
+      providerID,
+      config,
+      next,
+    );
+    if (!providerDetails) return undefined;
+    const providerBaseURL = providerDetails.provider.apis.find((api: any) => {
+      return api.specification === specificationID;
+    })?.baseURL;
+    return `${providerBaseURL}${operationMap[specificationID].path}`;
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      console.error(`Axios error`);
+      console.error(JSON.stringify(err.response?.status));
+      console.error(JSON.stringify(err.response?.data));
+      console.error(err);
+      next(externalCallError("error occurred connecting to Platern Web"));
+    }
+    return undefined;
+  }
+};
+
+/**
+ * Get registration components using Platern Web.
+ * @param providerID ID from the Provider API.
+ * @param config The fapi-connector Config.
+ * @param next This happens during a request session, so pass errors on to middleware.
+ */
+export const providerRegFromPlaternWeb = async (providerID: string,
+                                                config: Config,
+                                                next: NextFunction): Promise<ProviderDetails | undefined> => {
+  try {
+    const providerDetails = await fetchProviderDetails(
+      providerID,
+      config,
+      next,
+    );
+    if (!providerDetails) return undefined;
+    return {
+      openIDConfigUrl: providerDetails.openIDConfigUrl,
+      provider: providerDetails.provider,
     };
   } catch (err) {
     if (err instanceof AxiosError) {

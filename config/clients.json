@@ -1,7 +1,14 @@
 {
   "clientName": "Example Client",
   "clientTokenAuthMethod": "private_key_jwt",
-  "clientGrantTypes": ["client_credentials", "authorization_code", "refresh_token"],
-  "clientScopes": ["openid", "accounts"],
+  "clientGrantTypes": [
+    "client_credentials",
+    "authorization_code",
+    "refresh_token"
+  ],
+  "clientScopes": [
+    "openid",
+    "accounts"
+  ],
   "clientTokenSigningAlgo": "PS256"
 }

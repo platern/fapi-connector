@@ -5,14 +5,19 @@
 **Alpha testing.**
 
 A proxy service for calling financial-grade authorization APIs
-(i.e. for [open banking](https://dextersjab.medium.com/an-overview-of-open-banking-be34e0e6800b))
+(i.e.
+for [open banking](https://dextersjab.medium.com/an-overview-of-open-banking-be34e0e6800b))
 without ever sending your credentials to a gateway!
 
-Optionally, it can be used in conjunction with [Platern Web](https://platern.com) in open banking applications.
- 
-It relies on a fork of the excellent [Node OpenID Client](https://github.com/panva/node-openid-client).
- 
-Similarly, it uses the MIT licence, allowing the most open usage possible, whether for:
+Optionally, it can be used in conjunction
+with [Platern Web](https://platern.com) in open banking applications.
+
+It relies on a fork of the
+excellent [Node OpenID Client](https://github.com/panva/node-openid-client).
+
+Similarly, it uses the MIT licence, allowing the most open usage possible,
+whether for:
+
 - making modifications
 - commercial purposes
 - private usage
@@ -51,7 +56,8 @@ To run the server, you'll need:
    npm ci
    ```
 
-   This will generate `.env` files for you (which you'll populate in **step 5**).
+   This will generate `.env` files for you (which you'll populate in **step 5**)
+   .
 
 2. Update `config/clients.json`:
 
@@ -63,7 +69,7 @@ To run the server, you'll need:
 | clientScopes           | [specification-specific]                                                                                       | The OAuth2 scopes of data/service your application will request access to.            |
 | clientTokenSigningAlgo | `RS256`, `PS256`, `ES256`                                                                                      | The algorithm used to sign JWS payloads (applies only to `private_key_jwt` clients).  |
 
-3. [Conditional] If you're using this service with Platern Web, configure the 
+3. [Conditional] If you're using this service with Platern Web, configure the
    options in `config/platernweb.json`:
 
 | field                  | possible values                                                                                                   | description                      |
@@ -85,7 +91,7 @@ To run the server, you'll need:
    ```
    Use the generated `key` and `iv` values to set the `AES_KEY` and `AES_IV`
    environment variables in `.env` and `.env.test` at the root of the project.
-   
+
 5. Set up the rest of your environment variables.
    Use the comments in these files for guidance.
 
@@ -122,10 +128,11 @@ npm serve
 ### Postman / Swagger UI
 
 Once the service is up and running, you have two UI options.
+
 - import the [Postman collection](/FAPI Connector.postman_collection.json)
-and environment file:
-  - `FAPI Connector.postman_collection.json`
-  - `FAPI Connector - Ozone Sandbox.postman_environment.json`
+  and environment file:
+    - `FAPI Connector.postman_collection.json`
+    - `FAPI Connector - Ozone Sandbox.postman_environment.json`
 
 - open the [Swagger UI](http://localhost:5001/docs) in your browser.
 
@@ -134,4 +141,4 @@ and environment file:
 - More tests.
 - More documentation.
 - See [issues](https://github.com/platern/fapi-connector/issues)
-for upcoming changes.
+  for upcoming changes.

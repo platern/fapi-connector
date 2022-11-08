@@ -10,4 +10,10 @@ export const getEnvVar = (key: string, defaultValue?: string): string => {
   return res.toString().replace(/\\n/gm, "\n");
 };
 
+export const getOptionalEnvVar = (key: string, defaultValue?: string): string | undefined => {
+  const res = process.env[key];
+  if (!res) return undefined;
+  return res.toString().replace(/\\n/gm, "\n");
+};
+
 export const hasEnvVar = (key: string): boolean => key in process.env;

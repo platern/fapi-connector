@@ -56,7 +56,7 @@ export interface RegistrationResult {
 
 export class RegistrationService {
   config: Config;
-  obSealKey: KeyObject;
+  obSigningKey: KeyObject | undefined;
   ssaDecoded: JWTPayload;
   transportCert: tls.Certificate;
   axiosClient: AxiosInstance;
@@ -64,10 +64,10 @@ export class RegistrationService {
 
   constructor(config: Config) {
     this.config = config;
-    this.obSealKey = createPrivateKey({
+    this.obSigningKey = config.obSigningKeyString ? createPrivateKey({
       key: config.obSigningKeyString,
       passphrase: config.obSigningPass,
-    });
+    }) : undefined;
     this.ssa = this.config.softwareStatementAssertion;
     this.ssaDecoded = decodeJwt(this.config.softwareStatementAssertion);
     this.transportCert = cert(config.obTransportCert);
@@ -94,10 +94,10 @@ export class RegistrationService {
     let openIDConfigUrl: string;
     let externalAud: string;
     if (providerID) {
-      const provider = await providerRegFromPlaternWeb(providerID, this.config, next);
-      if (!provider) return undefined;
-      openIDConfigUrl = provider.openIDConfigUrl;
-      externalAud = provider.externalAud;
+      const providerDetails = await providerRegFromPlaternWeb(providerID, this.config, next);
+      if (!providerDetails) return undefined;
+      openIDConfigUrl = providerDetails.openIDConfigUrl;
+      externalAud = providerDetails.provider.extras.externalAud;
     } else {
       openIDConfigUrl = openIDConfigUrl0 as string;
       externalAud = externalAud0 as string;
@@ -134,7 +134,6 @@ export class RegistrationService {
       next(openIDProviderError(`token auth by ${this.config.clientTokenAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
       return undefined;
     }
-    const jwk = {...this.obSealKey.export({format: "jwk"})};
     if (!issuer.metadata?.token_endpoint_auth_signing_alg_values_supported) {
       next(openIDProviderError(`missing \`token_endpoint_auth_signing_alg_values_supported\` for ${resolvedProviderID}`));
       return undefined;
@@ -180,11 +179,18 @@ export class RegistrationService {
       ...authMethodDetails,
     };
     try {
-      const registrationResp = await (issuer.FAPI1Client as MyClient).register(metadata, {jwks: {keys: [jwk]}}, {
-        signingKey: this.obSealKey,
-        keyId: this.config.obSigningKeyId,
-        algorithm: this.config.obSigningAlgorithm,
-      });
+      let registrationResp;
+      if (this.obSigningKey) {
+        const jwk = {...this.obSigningKey.export({format: "jwk"})};
+        const jwsOpts = {jwks: {keys: [jwk]}};
+        registrationResp = await (issuer.FAPI1Client as MyClient).register(metadata, jwsOpts, {
+          signingKey: this.obSigningKey,
+          keyId: this.config.obSigningKeyId,
+          algorithm: this.config.obSigningAlgorithm,
+        });
+      } else {
+        registrationResp = await (issuer.FAPI1Client as MyClient).register(metadata, undefined, undefined);
+      }
       if (!registrationResp.metadata) {
         next(dataError("invalid client metadata returned"));
         return undefined;

@@ -1,4 +1,4 @@
-import axios, {AxiosResponse, AxiosError, AxiosInstance} from "axios";
+import axios, {AxiosResponse, AxiosError} from "axios";
 import {v4 as uuidv4} from "uuid";
 import {
   ClientMetadata,
@@ -11,9 +11,10 @@ import {operationMap, Specification} from "../operationMap";
 import {Agent} from "https";
 import {createPrivateKey, KeyObject} from "crypto";
 import {Config} from "../../util/config/config";
-import {badRequestError, externalCallError} from "../error";
+import {badRequestError, externalCallError, unknownError} from "../error";
 import {NextFunction} from "express";
 import clientData from "../../data/clientData";
+import {grantURLFromPlaternWeb} from "../utils";
 
 function getScope(specification: string) {
   let scope = "openid";
@@ -27,41 +28,51 @@ function getScope(specification: string) {
   return scope;
 }
 
+// only exported for mocking =/
+export const generateJti = () => uuidv4();
+
 export class AuthService {
   config: Config;
-  obSigningKey: KeyObject;
-  axiosInstance: AxiosInstance;
+  obSigningKey: KeyObject | undefined;
+  httpsAgentOpts: any;
+  httpsAgent: Agent;
 
   constructor(config: Config) {
     this.config = config;
-    this.obSigningKey = createPrivateKey({
+    this.obSigningKey = config.obSigningKeyString ? createPrivateKey({
       key: config.obSigningKeyString,
       passphrase: config.obSigningPass,
-    });
-    this.axiosInstance = axios.create({
-      httpsAgent: new Agent({
-        cert: config.obTransportCert,
-        key: config.obTransportKey,
-        ca: [
-          config.obRootCA,
-          config.obIssuingCA,
-        ],
-        passphrase: config.obTransportPass,
-        rejectUnauthorized: config.rejectUnauthorized,
-      }),
-    });
+    }) : undefined;
+    this.httpsAgentOpts = {
+      cert: this.config.obTransportCert,
+      key: this.config.obTransportKey,
+      ca: [
+        this.config.obRootCA,
+        this.config.obIssuingCA,
+      ],
+      passphrase: this.config.obTransportPass,
+      rejectUnauthorized: this.config.rejectUnauthorized,
+    };
+    this.httpsAgent = new Agent(this.httpsAgentOpts);
   }
 
   authorisation = async (registrationID: string,
                          provider: string,
-                         grantUrl: string | undefined,
+                         grantUrlParam: string | undefined,
                          permissions: OBReadConsent1Data | undefined,
                          specificationID: string,
                          state: string,
                          nonce: string,
                          next: NextFunction) => {
     try {
-      const grantURL = grantUrl;
+      let grantURL = grantUrlParam;
+      if (provider) {
+        grantURL = await grantURLFromPlaternWeb(provider, specificationID, this.config, next);
+      }
+      if (!grantURL) {
+        next(unknownError(`error occurred calling Platern Web`));
+        return undefined;
+      }
       if (!Object.prototype.hasOwnProperty.call(operationMap, specificationID)) {
         next(badRequestError(`specification not supported by authz: ${specificationID}`));
         return undefined;
@@ -74,23 +85,12 @@ export class AuthService {
       const clientMetadata = clientRecord.metadata as ClientMetadata;
 
       const issuer = await Issuer.discover(clientRecord.openIDConfigUrl);
-      const client = new issuer.FAPI1Client(clientMetadata, {
+      const client = new issuer.FAPI1Client(clientMetadata, this.obSigningKey ? {
         keys: [
           {...this.obSigningKey.export({format: "jwk"})},
         ],
-      });
-      client[custom.http_options] = () => ({
-        cert: this.config.obTransportCert,
-        key: this.config.obTransportKey,
-        ca: [
-          this.config.obRootCA,
-          this.config.obIssuingCA,
-        ],
-        passphrase: this.config.obTransportPass,
-        agent: new Agent({
-          rejectUnauthorized: this.config.rejectUnauthorized,
-        }),
-      });
+      } : undefined);
+      client[custom.http_options] = () => (this.httpsAgentOpts);
 
       // authenticate client
       const tokenSet: TokenSet = await client.grant({
@@ -105,24 +105,20 @@ export class AuthService {
           headers: {
             "Authorization": `Bearer ${accessToken}`,
           },
-          httpsAgent: new Agent({
-            cert: this.config.obTransportCert,
-            key: this.config.obTransportKey,
-            ca: [
-              this.config.obRootCA,
-              this.config.obIssuingCA,
-            ],
-            passphrase: this.config.obTransportPass,
-            rejectUnauthorized: this.config.rejectUnauthorized,
-          }),
+          httpsAgent: this.httpsAgent,
         });
+      if (grantResp.status < 200 || grantResp.status > 299) {
+        next(externalCallError(`failed to complete grant request`));
+        return undefined;
+      }
       const consentID = grantResp.data.Data.ConsentId;
       const request = await client.requestObject({
+        jti: generateJti(),
         scope: getScope(specificationID),
         state: state ? state : uuidv4(),
         nonce: nonce ? nonce : uuidv4(),
         max_age: 86400,
-        redirect_uri: clientMetadata.redirect_uris?.at(0),
+        redirect_uri: clientMetadata.redirect_uris?.[0],
         claims:
           {
             "userinfo":

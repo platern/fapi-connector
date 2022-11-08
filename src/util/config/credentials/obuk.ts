@@ -1,7 +1,7 @@
-import {getEnvVar, hasEnvVar} from "../util";
+import {getEnvVar, getOptionalEnvVar, hasEnvVar} from "../util";
 
 export interface ObukCredentials {
-  obSigningKeyString: string,
+  obSigningKeyString: string | undefined,
   obSigningKeyId: string,
   obSigningAlgorithm: string,
   obSigningPass: string | undefined,
@@ -17,8 +17,8 @@ export interface ObukCredentials {
 export const obukCredentials: ObukCredentials = {
   obSigningKeyString: getEnvVar("OBUK_SIGNING_KEY"),
   obSigningKeyId: getEnvVar("OBUK_SIGNING_KEY_ID"),
-  obSigningAlgorithm: getEnvVar("OBUK_SIGNING_ALGORITHM"),
-  obSigningPass: getEnvVar("OBUK_SIGNING_PASS"),
+  obSigningAlgorithm: getEnvVar("OBUK_SIGNING_ALGORITHM", "none"),
+  obSigningPass: getOptionalEnvVar("OBUK_SIGNING_PASS"),
   obRootCA: getEnvVar("OBUK_ROOT_CA"),
   obIssuingCA: getEnvVar("OBUK_ISSUING_CA"),
   obTransportCert: getEnvVar("OBUK_TRANSPORT_CERT"),

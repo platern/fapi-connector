@@ -10,5 +10,8 @@
     "openid",
     "accounts"
   ],
-  "clientTokenSigningAlgo": "PS256"
+  "clientTokenSigningAlgo": "PS256",
+  "clientRedirectUris": [
+    "https://example.com/oauth/callback/"
+  ]
 }

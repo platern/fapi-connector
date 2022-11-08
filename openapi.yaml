@@ -862,6 +862,10 @@ components:
                 type: string
             authMethod:
               type: string
+            redirectUris:
+              type: array
+              items:
+                type: string
     Registrations:
       type: object
       properties:

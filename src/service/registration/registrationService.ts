@@ -89,6 +89,7 @@ export class RegistrationService {
                     providerID: string | undefined,
                     openIDConfigUrl0: string | undefined,
                     externalAud0: string | undefined,
+                    overrides: ClientOverrides | undefined,
                     next: NextFunction): Promise<RegistrationResult | undefined> => {
     const resolvedProviderID = resolveProviderID(providerID, openIDConfigUrl0);
     let openIDConfigUrl: string;
@@ -159,10 +160,11 @@ export class RegistrationService {
         // Required for TLS Client Auth
         "tls_client_auth_subject_dn": this.transportCert.CN,
       };
+    const redirectUris = overrides?.redirectUris
+      ? overrides.redirectUris
+      : this.config.clientRedirectUris
     const metadata: object = {
-      "redirect_uris": [
-        "https://cleargra.in/oauth/callback/",
-      ],
+      "redirect_uris": redirectUris,
       "client_name": this.config.clientName,
       "logo_uri": this.config.clientLogoUri,
       "jti": uuidv4(),

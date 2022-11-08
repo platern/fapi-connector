@@ -7,6 +7,7 @@ export interface ClientsConfig {
   clientTokenAuthMethod: string,
   clientGrantTypes: string[],
   clientScopes: string[],
+  clientRedirectUris: string[],
 }
 
 export interface PlaternWebConfig {

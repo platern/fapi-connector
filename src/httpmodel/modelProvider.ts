@@ -9,4 +9,5 @@ interface ClientOverrides {
   scopes?: string[],
   grantTypes?: string[],
   authMethod?: string,
+  redirectUris?: string[],
 }

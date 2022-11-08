@@ -78,6 +78,7 @@ const handlePut = (registerService: RegistrationService, path: string) => {
       registrationReq.provider,
       registrationReq.openIDConfigUrl,
       registrationReq.externalAud,
+      registrationReq.overrides,
       next).then(data => {
       if (!data) {
         next(unknownError(`failed to create or update registrations`));

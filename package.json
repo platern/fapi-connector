@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc && scripts/dereferenceApiSpec.js",
     "ci": "scripts/ci.js",
-    "postci": "npx prisma init && prisma generate && npx prisma migrate dev --name init",
+    "postci": "npx prisma generate && npx prisma migrate dev --name init",
     "lint": "eslint --ext .js,.ts .",
     "lint:fix": "eslint --fix --ext .js,.ts .",
     "serve": "NODE_ENV=production yarn run build",

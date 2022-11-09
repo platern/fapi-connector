@@ -11,7 +11,9 @@ for [open banking](https://dextersjab.medium.com/an-overview-of-open-banking-be3
 without ever sending your credentials to a gateway!
 
 Optionally, it can be used in conjunction
-with [Platern Web](https://platern.com) in open banking applications.
+with [Platern Web](https://platern.com) to
+power apps through automatic discovery of compatible
+data-sharing API providers (i.e. for open banking).
 
 It relies on a fork of the
 excellent [Node OpenID Client](https://github.com/panva/node-openid-client).
@@ -33,9 +35,6 @@ Use this service to:
 - exchange access tokens
 
 ## Getting started
-
-Client registrations are stored locally in a SQLite file at
-`prisma/clients.db`.
 
 ### Prerequisites
 
@@ -135,6 +134,11 @@ Once the service is up and running, you have two UI options.
     - `FAPI Connector - Ozone Sandbox.postman_environment.json`
 
 - open the [Swagger UI](http://localhost:5001/docs) in your browser.
+
+### Registrations 
+
+You can find all your client registrations stored locally in a SQLite file at
+`prisma/clients.db`.
 
 ## Upcoming enhancements
 

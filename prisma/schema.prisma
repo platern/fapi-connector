@@ -13,9 +13,9 @@ datasource db {
 
 model ClientRegistration {
   id                Int      @id @default(autoincrement())
-  registrationID          String   @unique
+  registrationID    String   @unique
   openIDConfigUrl   String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  metadata           Bytes
+  metadata          Bytes
 }

@@ -56,7 +56,7 @@ To run the server, you'll need:
    npm ci
    ```
 
-   This will generate `.env` files for you (which you'll populate in **step 5**).
+   This will additionally generate `.env` files for you (which you'll populate in **step 5**).
 
 2. Update `config/clients.json`:
 
@@ -124,25 +124,33 @@ With npm:
 npm serve
 ```
 
-### Postman / Swagger UI
+## Postman / Swagger UI
 
-Once the service is up and running, you have two UI options.
+Once the service is up and running, you have two UI-based options.
 
 - import the [Postman collection](/FAPI Connector.postman_collection.json)
   and environment file:
     - `FAPI Connector.postman_collection.json`
     - `FAPI Connector - Ozone Sandbox.postman_environment.json`
 
-- open the [Swagger UI](http://localhost:5001/docs) in your browser.
+- open the [Swagger UI](http://localhost:5001/docs) in your browser. 
+  Use the examples labelled with `(w/ OpenID Discovery URL)` to test the API with a single provider. 
 
-### Registrations 
+## Registration data
 
 You can find all your client registrations stored locally in a SQLite file at
 `prisma/clients.db`.
+
+## Troubleshooting
+
+| Error | Resolution |
+| --- | --- |
+| `TypeError [ERR_INVALID_OPT_VALUE]: The value "jwk" is invalid for option "format"` | Node version must be ≥16 |
+| `self signed certificate in certificate chain` | If a sandbox API presents self-signed certificates, <br/>you MAY choose to not verify by setting the environment variables<br/> `OB_REJECT_UNAUTHORIZED=false` and `NODE_TLS_REJECT_UNAUTHORIZED=0` |
 
 ## Upcoming enhancements
 
 - More tests.
 - More documentation.
-- See [issues](https://github.com/platern/fapi-connector/issues)
-  for upcoming changes.
+- Anything in that arrives in
+  [issues](https://github.com/platern/fapi-connector/issues)

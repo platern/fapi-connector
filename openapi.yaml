@@ -28,6 +28,32 @@ info:
     url: https://github.com/platern/openid-client/LICENCE
   version: '0.1'
 paths:
+
+  /registrations:
+    get:
+      tags:
+        - Client registrations
+      description: Get `registrationID` values for all provider registrations.
+      summary: Get `registrationID` values for all provider registrations.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registrations'
+              examples:
+                200:
+                  value:
+                    {
+                      kind: 'Collection',
+                      self: '/registrations',
+                      registrations: [
+                        'XXX',
+                        'YYY'
+                      ]
+                    }
+
   /registrations/{registrationID}:
     put:
       description: Create or update a client registration with an API provider.
@@ -258,31 +284,6 @@ paths:
                     {
                       error: "Not Found",
                       message: "client not found"
-                    }
-
-  /registrations:
-    get:
-      tags:
-        - Client registrations
-      description: Get `registrationID` values for all provider registrations.
-      summary: Get `registrationID` values for all provider registrations.
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Registrations'
-              examples:
-                200:
-                  value:
-                    {
-                      kind: 'Collection',
-                      self: '/registrations',
-                      registrations: [
-                        'XXX',
-                        'YYY'
-                      ]
                     }
 
   /authorization:

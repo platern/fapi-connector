@@ -15,17 +15,17 @@ export interface ObukCredentials {
 }
 
 export const obukCredentials: ObukCredentials = {
-  obSigningKeyString: getEnvVar("OBUK_SIGNING_KEY"),
-  obSigningKeyId: getEnvVar("OBUK_SIGNING_KEY_ID"),
-  obSigningAlgorithm: getEnvVar("OBUK_SIGNING_ALGORITHM", "none"),
-  obSigningPass: getOptionalEnvVar("OBUK_SIGNING_PASS"),
-  obRootCA: getEnvVar("OBUK_ROOT_CA"),
-  obIssuingCA: getEnvVar("OBUK_ISSUING_CA"),
-  obTransportCert: getEnvVar("OBUK_TRANSPORT_CERT"),
-  obTransportKey: getEnvVar("OBUK_TRANSPORT_KEY"),
-  obTransportPass: getEnvVar("OBUK_TRANSPORT_PASS"),
-  rejectUnauthorized: hasEnvVar("OBUK_REJECT_UNAUTHORIZED")
-    ? getEnvVar("OBUK_REJECT_UNAUTHORIZED").toLowerCase() !== "false"
+  obSigningKeyString: getEnvVar("OB_SIGNING_KEY"),
+  obSigningKeyId: getEnvVar("OB_SIGNING_KEY_ID"),
+  obSigningAlgorithm: getEnvVar("OB_SIGNING_ALGORITHM", "none"),
+  obSigningPass: getOptionalEnvVar("OB_SIGNING_PASS"),
+  obRootCA: getEnvVar("OB_ROOT_CA"),
+  obIssuingCA: getEnvVar("OB_ISSUING_CA"),
+  obTransportCert: getEnvVar("OB_TRANSPORT_CERT"),
+  obTransportKey: getEnvVar("OB_TRANSPORT_KEY"),
+  obTransportPass: getEnvVar("OB_TRANSPORT_PASS"),
+  rejectUnauthorized: hasEnvVar("OB_REJECT_UNAUTHORIZED")
+    ? getEnvVar("OB_REJECT_UNAUTHORIZED").toLowerCase() !== "false"
     : true,
-  softwareStatementAssertion: getEnvVar("OBUK_SSA_JWT"),
+  softwareStatementAssertion: getEnvVar("OB_SSA_JWT"),
 };

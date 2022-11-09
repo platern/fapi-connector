@@ -21,21 +21,29 @@ export const authz = (config: Config): rout => {
       return;
     }
     const provider = req.query?.provider as string;
-    const grantUrl = req.query?.oauth2GrantUrl as string;
+    const grantURL = req.query?.oauth2GrantUrl as string;
     const grantRequestB64 = req.query?.oauth2GrantRequest as string;
     const specification = req.query?.specification as string;
     const permissionsStr = Buffer.from(grantRequestB64, "base64").toString();
     const permissions = JSON.parse(permissionsStr);
     const state = req.query?.oauth2State as string;
     const nonce = req.query?.openIDNonce as string;
-    if (grantUrl && !grantRequestB64) {
+
+    // conditional parameter validation
+    if (grantURL && !grantRequestB64) {
       next(badRequestError("`oauth2GrantUrl` requires `oauth2GrantRequest` to work"));
       return;
+    }
+    if (!grantURL && !provider) {
+      if (!grantURL) {
+        next(badRequestError(Route.Authz + " requires either `oauth2GrantUrl` or `provider`"));
+        return;
+      }
     }
     authService.authorisation(
       registrationID,
       provider,
-      grantUrl,
+      grantURL,
       permissions,
       specification,
       state,

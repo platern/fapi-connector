@@ -64,6 +64,9 @@ node_modules/
 
 lib/
 
+# Local server files
+gen/
+
 # Local dev files
 local/
 prisma/clients.db

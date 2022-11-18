@@ -37,6 +37,10 @@ export const badRequestError = (message: string): HttpException => {
   return new HttpException(StatusCodes.BAD_REQUEST, message);
 };
 
+export const configError = (message: string): HttpException => {
+  return new HttpException(StatusCodes.INTERNAL_SERVER_ERROR, message);
+};
+
 export const dataError = (message: string): HttpException => {
   return new HttpException(StatusCodes.INTERNAL_SERVER_ERROR, message);
 };

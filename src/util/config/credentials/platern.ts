@@ -1,13 +1,13 @@
-import {getEnvVar} from "../util";
+import {getOptionalEnvVar} from "../util";
 
 export interface PlaternWebCredentials {
-  platernApiKeyHeaderKey: string,
-  platernApiKeyHeaderValue: string,
-  platernWebBaseURL: string,
+  platernApiKeyHeaderKey: string | undefined,
+  platernApiKeyHeaderValue: string | undefined,
+  platernWebBaseURL: string | undefined,
 }
 
 export const platernWebCredentials: PlaternWebCredentials = {
-  platernApiKeyHeaderKey: getEnvVar("PLATERN_WEB_HEADER_KEY"),
-  platernApiKeyHeaderValue: getEnvVar("PLATERN_WEB_HEADER_VALUE"),
-  platernWebBaseURL: getEnvVar("PLATERN_WEB_BASE_URL"),
+  platernApiKeyHeaderKey: getOptionalEnvVar("PLATERN_WEB_HEADER_KEY"),
+  platernApiKeyHeaderValue: getOptionalEnvVar("PLATERN_WEB_HEADER_VALUE"),
+  platernWebBaseURL: getOptionalEnvVar("PLATERN_WEB_BASE_URL"),
 };

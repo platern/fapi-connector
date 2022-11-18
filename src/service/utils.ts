@@ -1,5 +1,5 @@
 import axios, {AxiosError} from "axios";
-import {badRequestError, externalCallError} from "./error";
+import {badRequestError, configError, externalCallError} from "./error";
 import {NextFunction} from "express";
 import {Config} from "../util/config/config";
 import {operationMap} from "./operationMap";
@@ -21,6 +21,11 @@ export interface ProviderDetails {
 const fetchProviderDetails = async (providerID: string,
                                     config: Config,
                                     next: NextFunction): Promise<ProviderDetails | undefined> => {
+  // validate env vars
+  if (!config.platernApiKeyHeaderKey || !config.platernApiKeyHeaderValue) {
+    next(configError(`provider doesn't exist: ${providerID}`));
+    return undefined
+  }
   try {
     const rootResp = await axios.get(`${config.platernWebBaseURL}/`, {
       headers: {

@@ -3,11 +3,13 @@ import {
   Issuer,
   Client,
   custom,
-  TypeOfGenericClient, BaseClient, ClientMetadata,
+  TypeOfGenericClient, BaseClient, ClientMetadata, errors,
 } from "@dextersjab/openid-client";
 import {
+  badRequestError,
   dataError,
   openIDProviderError,
+  unknownError,
 } from "../error";
 import {Agent} from "https";
 import {createPrivateKey, KeyObject} from "crypto";
@@ -19,6 +21,7 @@ import {cert} from "../../util/certUtils";
 import {NextFunction} from "express";
 import {providerRegFromPlaternWeb, resolveProviderID} from "../utils";
 import * as tls from "tls";
+import OPError = errors.OPError;
 
 interface MyClient extends TypeOfGenericClient<Client> {
   register: typeof BaseClient.register;
@@ -162,7 +165,7 @@ export class RegistrationService {
       };
     const redirectUris = overrides?.redirectUris
       ? overrides.redirectUris
-      : this.config.clientRedirectUris
+      : this.config.clientRedirectUris;
     const metadata: object = {
       "redirect_uris": redirectUris,
       "client_name": this.config.clientName,
@@ -213,7 +216,19 @@ export class RegistrationService {
       };
     } catch (err) {
       console.error(err);
-      next(dataError("failed to save client metadata to database"));
+      if (err instanceof OPError) {
+        const errorMessage = `failed to register client`;
+        if (err.response?.statusCode === 400) {
+          next(badRequestError(errorMessage));
+          console.log(`failed registration response: ${
+            err.response.body ? JSON.stringify(err.response.body) : ""
+          }`);
+        } else {
+          next(unknownError(errorMessage));
+        }
+      } else {
+        next(dataError("failed to save client metadata to database"));
+      }
       return undefined;
     }
   };

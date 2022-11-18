@@ -39,5 +39,4 @@ const reduceParamsSchema = (method: string,
 };
 
 export const getRequestBodySchema = (method: string, path: string) => findRequestBodySchema(method, path);
-export const getPathParamsSchema = (method: string, path: string) => reduceParamsSchema(method, path, ParamType.Path);
 export const getQueryParamsSchema = (method: string, path: string) => reduceParamsSchema(method, path, ParamType.Query);

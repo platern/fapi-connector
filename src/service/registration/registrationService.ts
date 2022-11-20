@@ -51,6 +51,12 @@ const getSupportedAlgo =
     return undefined;
   };
 
+function providerErrMsg(err: errors.OPError): string {
+  const resp = err.response?.body
+  if (!resp) return ""
+  return resp instanceof Buffer ? resp.toString() : JSON.stringify(resp)
+}
+
 export interface RegistrationResult {
   openIDConfigUrl: string,
   metadata: ClientMetadata,
@@ -220,9 +226,7 @@ export class RegistrationService {
         const errorMessage = `failed to register client`;
         if (err.response?.statusCode === 400) {
           next(badRequestError(errorMessage));
-          console.log(`failed registration response: ${
-            err.response.body ? JSON.stringify(err.response.body) : ""
-          }`);
+          console.log(`failed registration response: ${providerErrMsg(err)}`);
         } else {
           next(unknownError(errorMessage));
         }

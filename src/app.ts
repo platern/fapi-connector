@@ -20,6 +20,7 @@ import {router as indexRouter} from "./route";
 import {tokenRequest} from "./route/token";
 import config from "./util/config/config";
 import {authz} from "./route/authz";
+import {openapi} from "./route/openapi";
 
 export const app = express();
 
@@ -30,6 +31,7 @@ export enum Route {
   Authz = "/authorization",
   Token = "/token",
   Resource = "/resource",
+  OpenApiJson = "/openapi.json",
 }
 
 const openAPIDocument =
@@ -40,13 +42,20 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
+
+// Swagger UI
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openAPIDocument));
+
+// feature endpoints
 app.use(
   Route.Root,
   indexRouter,
   registrations(config),
   authz(config),
   tokenRequest(config),
+
+  // OpenAPI spec
+  openapi()
 );
 
 // catch 404 and forward to error handler

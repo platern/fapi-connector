@@ -18,8 +18,7 @@ data-sharing API providers (i.e. for open banking).
 It relies on a fork of the
 excellent [Node OpenID Client](https://github.com/panva/node-openid-client).
 
-Similarly, it uses the MIT licence, allowing the most open usage possible,
-whether for:
+Similarly, it uses the MIT licence, allowing open usage whether for:
 
 - making modifications
 - commercial purposes
@@ -56,7 +55,7 @@ To run the server, you'll need:
    npm ci
    ```
 
-   This will additionally generate `.env` files for you (which you'll populate in **step 5**).
+   This will also generate `.env` files for you (which you'll populate in **step 5**).
 
 2. Update `config/clients.json`:
 
@@ -96,17 +95,15 @@ To run the server, you'll need:
 
 ### Running the server
 
-#### Setup
-
 #### Run locally
 
-With yarn:
+Run the server using either yarn,
 
 ```shell
 yarn start
 ```
 
-With npm:
+or npm.
 
 ```shell
 npm start

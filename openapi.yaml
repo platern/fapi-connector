@@ -25,7 +25,7 @@ info:
     email: hello@platern.com
   license:
     name: MIT
-    url: https://github.com/platern/openid-client/LICENCE
+    url: https://github.com/platern/fapi-connector/blob/main/LICENSE.txt
   version: '0.1'
 paths:
 

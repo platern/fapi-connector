@@ -108,16 +108,17 @@ export class AuthService {
           },
           httpsAgent: this.httpsAgent,
         });
-      if (grantResp.status < 200 || grantResp.status > 299) {
-        next(externalCallError(`failed to complete grant request`));
-        return undefined;
-      }
       const consentID = grantResp.data.Data.ConsentId;
+
+      const resolvedState = state ? state : uuidv4();
+      const resolvedNonce = nonce ? nonce : uuidv4();
+      const resolvedScope = getScope(specificationID);
+
       const request = await client.requestObject({
         jti: generateJti(),
-        scope: getScope(specificationID),
-        state: state ? state : uuidv4(),
-        nonce: nonce ? nonce : uuidv4(),
+        scope: resolvedScope,
+        state: resolvedState,
+        nonce: resolvedNonce,
         max_age: 86400,
         redirect_uri: clientMetadata.redirect_uris?.[0],
         claims:
@@ -145,18 +146,24 @@ export class AuthService {
       });
       const authzURL = client.authorizationUrl({
         request: request,
-        nonce: nonce,
+        nonce: resolvedNonce,
+        state: resolvedState,
+        scope: resolvedScope,
       });
       return {
         url: authzURL,
       };
     } catch (err) {
       if (err instanceof AxiosError) {
+        if (err.response?.status && (err.response?.status < 200 || err.response?.status > 299)) {
+          next(externalCallError(`failed to complete grant request`));
+          return undefined;
+        }
         console.error(`Axios error`);
         console.error(JSON.stringify(err.response?.status));
         console.error(JSON.stringify(err.response?.data));
         console.error(err);
-        next(externalCallError("error occurred connecting to Platern Web"));
+        next(externalCallError("error calling external API"));
       } else {
         console.error(err);
         next(externalCallError("error occurred trying to create authorization url"));

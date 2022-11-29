@@ -58,6 +58,7 @@ export class TokenService {
         clientMetadata.redirect_uris?.[0], {
           code: code,
           state: state,
+          nonce: nonce,
         }, {
           state: state,
           nonce: nonce,

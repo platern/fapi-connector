@@ -361,7 +361,6 @@ paths:
                      to the client.  The parameter SHOULD be used for preventing
                      cross-site request forgery as described in [RFC 6749 Section 10.12](https://www.rfc-editor.org/rfc/rfc6749#section-10.12).
           name: oauth2State
-          required: true
           schema:
             type: string
           examples:
@@ -373,7 +372,6 @@ paths:
               value: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
         - in: query
           name: openIDNonce
-          required: true
           schema:
             type: string
           examples:

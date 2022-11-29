@@ -24,8 +24,8 @@ export const authz = (config: Config): rout => {
     const grantURL = req.query?.oauth2GrantUrl as string;
     const grantRequestB64 = req.query?.oauth2GrantRequest as string;
     const specification = req.query?.specification as string;
-    const permissionsStr = Buffer.from(grantRequestB64, "base64").toString();
-    const permissions = JSON.parse(permissionsStr);
+    const permissionsStr = grantRequestB64 ? Buffer.from(grantRequestB64, "base64").toString() : undefined;
+    const permissions = permissionsStr ? JSON.parse(permissionsStr) : undefined;
     const state = req.query?.oauth2State as string;
     const nonce = req.query?.openIDNonce as string;
 

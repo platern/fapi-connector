@@ -11,7 +11,6 @@
 import * as request from "supertest";
 import * as fs from "fs";
 import * as yaml from "js-yaml";
-import * as nock from "nock";
 import axios from "axios";
 import clientData from "../src/data/clientData";
 import config from "../src/util/config/config";
@@ -23,12 +22,12 @@ import {app} from "../src/app";
 import {
   mockAPIResponses,
   mockDbResponses,
+  mockExternalApiCalls,
 } from "./util/mockUtils";
 import {
   extractTestCasesFromExamples,
   SchemaExample,
 } from "./util/openApiTestUtils";
-import {ClientMetadata} from "@dextersjab/openid-client";
 import * as authService from "../src/service/authz/authService";
 
 const openApiFilePath = "./gen/openapi.deref.yaml";
@@ -45,8 +44,6 @@ const openapi = yaml.load(fs.readFileSync(openApiFilePath).toString()) as any;
 
 jest.spyOn(authService, "generateJti").mockReturnValue("TEST-JTI");
 
-const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testClient.json").toString()) as ClientMetadata;
-const mockIssuerMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testIssuer.json").toString()) as ClientMetadata;
 
 describe("API requests and responses", () => {
   const testCases = extractTestCasesFromExamples(openapi);
@@ -88,54 +85,10 @@ describe("API requests and responses", () => {
       .then((resp: any) => {
         console.log(`response: ${JSON.stringify(resp.body)}`);
         expect(resp.statusCode).toBe(operationSchema.code);
-        expect(resp.body).toStrictEqual(operationSchema.exampleResponse);
+        if(operationSchema.code != 204) { // supertest changes it to
+          expect(resp.body).toStrictEqual(operationSchema.exampleResponse);
+        }
       });
   });
 });
 
-const idTokenHeader = Buffer.from(JSON.stringify({
-  "kid": "2hOxb7BSh3OFFzz8ag4Bf8DZkHP8jy8M43jDQWV0mFA",
-  "alg": "none",
-})).toString("base64");
-const idTokenPayload = Buffer.from(JSON.stringify({
-  "nonce": "96d3dd10-2dc7-4b93-835d-89ddd8665b06",
-  "sub": "jane doe",
-  "aud": "CLIENT_ID",
-  "iss": "http://server.example.com",
-  "iat": 1667891066,
-  "exp": 1667919866,
-})).toString("base64");
-const idToken = `${idTokenHeader}.${idTokenPayload}.`;
-
-function mockExternalApiCalls() {
-
-  nock("https://auth.abcbank.com")
-    .get("/.well-known/openid-configuration")
-    .reply(200, mockIssuerMetadata)
-    .persist(true);
-
-  nock("https://auth.abcbank.com")
-    .post("/register")
-    .reply(201, mockClientMetadata)
-    .persist(true);
-
-  nock("https://auth.abcbank.com")
-    .post("/token")
-    .reply(200, {
-      id_token: idToken,
-      access_token: "acb9a134-a13d-4a48-8089-1ae95e19612f",
-    })
-    .persist(true);
-
-  nock("https://auth.abcbank.com")
-    .get("/authorize")
-    .reply(200, {});
-
-  nock("https://ob19-rs1.o3bank.co.uk:4501")
-    .post("/open-banking/v3.1/aisp/account-access-consents")
-    .reply(201, {});
-
-  nock("https://keystore.ca.com")
-    .get("/testIssuer.jwks")
-    .reply(200, {});
-}

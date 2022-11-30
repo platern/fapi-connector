@@ -1051,6 +1051,38 @@ paths:
                   value:
                     error: Not Found
                     message: client not found
+    delete:
+      description: Delete a client registered with a provider.
+      summary: Delete a client registered with a provider.
+      tags:
+        - Client registrations
+      parameters:
+        - name: registrationID
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            '204':
+              summary: 204 No Content
+              value: XXX
+            x-404.MissingRegistration:
+              summary: 404 Not found
+              value: WWW
+      responses:
+        '204':
+          description: No Content
+        x-404.MissingRegistration:
+          description: Not Found
+          content:
+            application/json:
+              schema: *ref_3
+              examples:
+                x-404.MissingRegistration:
+                  summary: 404 Not found
+                  value:
+                    error: Not Found
+                    message: 'registration not found: WWW'
   /authorization:
     get:
       tags:

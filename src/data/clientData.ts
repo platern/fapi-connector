@@ -27,6 +27,7 @@ class ClientData {
         createdAt: new Date(),
         updatedAt: new Date(),
         metadata: Buffer.from(encrypted.toString()),
+        active: true,
       },
     });
     return true;
@@ -52,10 +53,24 @@ class ClientData {
 
   };
 
+  deactivateClient = async (registrationID: string): Promise<boolean> => {
+    await prisma.clientRegistration.update({
+      where: {
+        registrationID: registrationID,
+      },
+      data: {
+        active: false,
+      },
+    });
+    return true;
+  };
+
+
   getRegistrationIDs = async (): Promise<string[]> => {
     const clientRegistrationArr = await prisma.clientRegistration.findMany({
       select: {
         registrationID: true,
+        active: true,
       },
     });
     return clientRegistrationArr.map(d => d.registrationID);
@@ -77,6 +92,7 @@ class ClientData {
     const clientRegistration = await prisma.clientRegistration.findFirst({
       where: {
         registrationID: registrationID,
+        active: true,
       },
       select: {
         metadata: true,

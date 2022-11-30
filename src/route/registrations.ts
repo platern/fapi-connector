@@ -8,6 +8,7 @@ import {Route} from "../app";
 import {badRequestError, notFoundError, unknownError} from "../service/error";
 import {getQueryParamsSchema, getRequestBodySchema} from "../util/openapiUtils";
 import {isProviderValid} from "./utils";
+import {StatusCodes} from "http-status-codes";
 
 const router = rout();
 
@@ -18,6 +19,7 @@ export const registrations = (config: Config): rout => {
   handleGetAll(registerService, Route.Registrations);
   handleGet(registerService, Route.Registration);
   handlePut(registerService, Route.Registration);
+  handleDelete(registerService, Route.Registration);
   return router;
 };
 
@@ -33,7 +35,7 @@ const handleGetAll = (registerService: RegistrationService, path: string) => {
         kind: "Collection",
         registrations: data,
       };
-      resp.statusCode = 200;
+      resp.statusCode = StatusCodes.OK;
       resp.send(content);
     });
   });
@@ -53,7 +55,7 @@ const handleGet = (registerService: RegistrationService, path: string) => {
         openIDConfigUrl: data.openIDConfigUrl,
         metadata: data.metadata,
       };
-      resp.statusCode = 200;
+      resp.statusCode = StatusCodes.OK;
       resp.send(content);
     });
   });
@@ -90,8 +92,20 @@ const handlePut = (registerService: RegistrationService, path: string) => {
         openIDConfigUrl: data.openIDConfigUrl,
         metadata: data.metadata,
       };
-      resp.statusCode = data.isUpdate ? 200 : 201;
+      resp.statusCode = data.isUpdate ? StatusCodes.OK : StatusCodes.CREATED;
       resp.send(content);
     });
   });
 };
+
+const handleDelete = (registerService: RegistrationService, path: string) => {
+  router.delete(path, (req: Request, resp: Response, next: NextFunction) => {
+    const registrationID = req.params?.registrationID;
+    registerService.deleteRegistration(registrationID, next).then(success => {
+      if(success) {
+        resp.statusCode = StatusCodes.NO_CONTENT;
+        resp.end(undefined);
+      }
+    });
+  });
+}

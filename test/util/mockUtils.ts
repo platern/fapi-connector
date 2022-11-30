@@ -2,6 +2,7 @@ import * as fs from "fs";
 import {ClientMetadata} from "@dextersjab/openid-client";
 import axios from "axios";
 import clientData, {ClientRecord} from "../../src/data/clientData";
+import * as nock from "nock";
 
 const mockResponsesFilePath = "test/testdata/mockResponses.json";
 const mockResponses = JSON.parse(fs.readFileSync(mockResponsesFilePath).toString());
@@ -43,3 +44,59 @@ export const mockAPIResponses = (mockedAxios: jest.Mocked<typeof axios>) => {
     return Promise.resolve(mockResponse ? mockResponse : {status: 404});
   });
 };
+
+export const mockExternalApiCalls = () => {
+  const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testClient.json").toString()) as ClientMetadata;
+  const mockIssuerMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testIssuer.json").toString()) as ClientMetadata;
+
+  const idTokenHeader = Buffer.from(JSON.stringify({
+    "kid": "2hOxb7BSh3OFFzz8ag4Bf8DZkHP8jy8M43jDQWV0mFA",
+    "alg": "none",
+  })).toString("base64");
+
+  const idTokenPayload = Buffer.from(JSON.stringify({
+    "nonce": "96d3dd10-2dc7-4b93-835d-89ddd8665b06",
+    "sub": "jane doe",
+    "aud": "CLIENT_ID",
+    "iss": "http://server.example.com",
+    "iat": 1667891066,
+    "exp": 1667919866,
+  })).toString("base64");
+
+  const idToken = `${idTokenHeader}.${idTokenPayload}.`;
+
+  nock("https://auth.abcbank.com")
+    .get("/.well-known/openid-configuration")
+    .reply(200, mockIssuerMetadata)
+    .persist(true);
+
+  nock("https://auth.abcbank.com")
+    .post("/register")
+    .reply(201, mockClientMetadata)
+    .persist(true);
+
+  nock("https://auth.abcbank.com")
+    .delete(`/register/${mockClientMetadata.client_id}`)
+    .reply(204)
+    .persist(true);
+
+  nock("https://auth.abcbank.com")
+    .post("/token")
+    .reply(200, {
+      id_token: idToken,
+      access_token: "acb9a134-a13d-4a48-8089-1ae95e19612f",
+    })
+    .persist(true);
+
+  nock("https://auth.abcbank.com")
+    .get("/authorize")
+    .reply(200, {});
+
+  nock("https://ob19-rs1.o3bank.co.uk:4501")
+    .post("/open-banking/v3.1/aisp/account-access-consents")
+    .reply(201, {});
+
+  nock("https://keystore.ca.com")
+    .get("/testIssuer.jwks")
+    .reply(200, {});
+}

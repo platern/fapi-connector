@@ -3,11 +3,11 @@ import {
   Issuer,
   Client,
   custom,
-  TypeOfGenericClient, BaseClient, ClientMetadata, errors,
+  TypeOfGenericClient, BaseClient, ClientMetadata, errors, TokenSet,
 } from "@dextersjab/openid-client";
 import {
   badRequestError,
-  dataError,
+  dataError, notFoundError,
   openIDProviderError,
   unknownError,
 } from "../error";
@@ -23,8 +23,9 @@ import {providerRegFromPlaternWeb, resolveProviderID} from "../utils";
 import * as tls from "tls";
 import OPError = errors.OPError;
 
-interface MyClient extends TypeOfGenericClient<Client> {
+interface DcrClient extends TypeOfGenericClient<Client> {
   register: typeof BaseClient.register;
+  deleteRegistration: typeof BaseClient.deleteRegistration;
 }
 
 const hoursInMillis = (hours: number) => {
@@ -69,6 +70,7 @@ export class RegistrationService {
   ssaDecoded: JWTPayload;
   transportCert: tls.Certificate;
   axiosClient: AxiosInstance;
+  httpsAgentOpts: any;
   ssa: string;
 
   constructor(config: Config) {
@@ -80,17 +82,18 @@ export class RegistrationService {
     this.ssa = this.config.softwareStatementAssertion;
     this.ssaDecoded = decodeJwt(this.config.softwareStatementAssertion);
     this.transportCert = cert(config.obTransportCert);
+    this.httpsAgentOpts = {
+      cert: this.config.obTransportCert,
+      key: this.config.obTransportKey,
+      ca: [
+        this.config.obRootCA,
+        this.config.obIssuingCA,
+      ],
+      passphrase: this.config.obTransportPass,
+      rejectUnauthorized: this.config.rejectUnauthorized,
+    };
     this.axiosClient = axios.create({
-      httpsAgent: new Agent({
-        cert: this.config.obTransportCert,
-        key: this.config.obTransportKey,
-        ca: [
-          this.config.obRootCA,
-          this.config.obIssuingCA,
-        ],
-        passphrase: this.config.obTransportPass,
-        rejectUnauthorized: this.config.rejectUnauthorized,
-      }),
+      httpsAgent: new Agent(this.httpsAgentOpts),
     });
   }
 
@@ -114,13 +117,7 @@ export class RegistrationService {
     }
     const issuer: Issuer<Client> = await Issuer.discover(openIDConfigUrl as string);
     issuer.FAPI1Client[custom.http_options] = () => ({
-      cert: this.config.obTransportCert,
-      key: this.config.obTransportKey,
-      ca: [
-        this.config.obRootCA,
-        this.config.obIssuingCA,
-      ],
-      passphrase: this.config.obTransportPass,
+      ...this.httpsAgentOpts,
       headers: {"content-type": "application/jose"},
     });
     if (!("scopes_supported" in issuer)) {
@@ -197,13 +194,13 @@ export class RegistrationService {
       if (this.obSigningKey) {
         const jwk = {...this.obSigningKey.export({format: "jwk"})};
         const jwsOpts = {jwks: {keys: [jwk]}};
-        registrationResp = await (issuer.FAPI1Client as MyClient).register(metadata, jwsOpts, {
+        registrationResp = await (issuer.FAPI1Client as DcrClient).register(metadata, jwsOpts, {
           signingKey: this.obSigningKey,
           keyId: this.config.obSigningKeyId,
           algorithm: this.config.obSigningAlgorithm,
         });
       } else {
-        registrationResp = await (issuer.FAPI1Client as MyClient).register(metadata, undefined, undefined);
+        registrationResp = await (issuer.FAPI1Client as DcrClient).register(metadata, undefined, undefined);
       }
       if (!registrationResp.metadata) {
         next(dataError("invalid client metadata returned"));
@@ -225,8 +222,8 @@ export class RegistrationService {
       if (err instanceof OPError) {
         const errorMessage = `failed to register client`;
         if (err.response?.statusCode === 400) {
-          next(badRequestError(errorMessage));
           console.log(`failed registration response: ${providerErrMsg(err)}`);
+          next(badRequestError(errorMessage));
         } else {
           next(unknownError(errorMessage));
         }
@@ -244,5 +241,64 @@ export class RegistrationService {
   getClient = async (providerID: string): Promise<ClientRecord | undefined> => {
     return await clientData.getClient(providerID);
   };
+
+  /**
+   *
+   * @param registrationID
+   * @param next
+   * @return flags whether deletion succeeded or failed
+   */
+  deleteRegistration = async (registrationID: string,
+                      next: NextFunction): Promise<boolean> => {
+    try {
+      const clientRecord = await clientData.getClient(registrationID)
+      if (!clientRecord) {
+        next(notFoundError(`registration not found: ${registrationID}`));
+        return false;
+      }
+
+      // client credentials boilerplate
+      const issuer: Issuer<Client> = await Issuer.discover(<string>clientRecord?.openIDConfigUrl);
+      issuer.FAPI1Client[custom.http_options] = () => ({
+        ...this.httpsAgentOpts,
+        rejectUnauthorized: this.config.rejectUnauthorized,
+        headers: {"content-type": "application/jose"},
+      });
+      const client = new issuer.FAPI1Client(clientRecord.metadata, this.obSigningKey ? {
+        keys: [
+          {...this.obSigningKey.export({format: "jwk"})},
+        ],
+      } : undefined);
+      client[custom.http_options] = () => (this.httpsAgentOpts);
+
+      // authenticate client
+      const tokenSet: TokenSet = await client.grant({
+        grant_type: "client_credentials",
+        scope: "openid accounts",
+      });
+      const clientAccessToken = tokenSet.access_token;
+      await (issuer.FAPI1Client as DcrClient)
+        .deleteRegistration(
+          clientRecord?.metadata.client_id,
+          {initialAccessToken: clientAccessToken},
+          undefined);
+      await clientData.deactivateClient(registrationID);
+      return true;
+    } catch (err) {
+      console.error(err);
+      if (err instanceof OPError) {
+        const errorMessage = `failed to delete registered client`;
+        if (err.response?.statusCode === 400) {
+          console.log(`failed de-registration response: ${providerErrMsg(err)}`);
+          next(badRequestError(errorMessage));
+        } else {
+          next(unknownError(errorMessage));
+        }
+      } else {
+        next(dataError("failed to deactivate client metadata in database"));
+      }
+      return false;
+    }
+  }
 
 }

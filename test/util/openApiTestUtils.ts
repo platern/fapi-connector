@@ -63,9 +63,7 @@ export const extractTestCasesFromExamples =
             exampleQueryParams: getParamExample(opObj.obj.parameters, codeDetail, "query"),
             examplePathParams: getParamExample(opObj.obj.parameters, codeDetail, "path"),
             exampleRequest: requests?.content["application/json"].examples[codeDetail].value,
-
-            // currently, every response expects to contain an example with a matching `codeDetail`
-            exampleResponse: responses[codeDetail].content["application/json"].examples[codeDetail].value,
+            exampleResponse: responses[codeDetail].content?.["application/json"].examples[codeDetail].value,
           };
           return [
             opObj.method.toUpperCase(),

@@ -22,6 +22,7 @@ export class ResourceService {
         httpsAgent: new Agent({
           cert: this.config.obTransportCert,
           key: this.config.obTransportKey,
+          requestCert: true,
           ca: `${this.config.obIssuingCA}\n${this.config.obRootCA}`,
           passphrase: this.config.obTransportPass,
           rejectUnauthorized: this.config.rejectUnauthorized,

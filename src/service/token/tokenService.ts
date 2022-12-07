@@ -45,10 +45,7 @@ export class TokenService {
       client[custom.http_options] = () => ({
         cert: this.config.obTransportCert,
         key: this.config.obTransportKey,
-        ca: [
-          this.config.obRootCA,
-          this.config.obIssuingCA,
-        ],
+        ca: `${this.config.obIssuingCA}\n${this.config.obRootCA}`,
         passphrase: this.config.obTransportPass,
         agent: new Agent({
           rejectUnauthorized: this.config.rejectUnauthorized,

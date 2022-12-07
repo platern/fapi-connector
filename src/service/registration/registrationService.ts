@@ -85,10 +85,7 @@ export class RegistrationService {
     this.httpsAgentOpts = {
       cert: this.config.obTransportCert,
       key: this.config.obTransportKey,
-      ca: [
-        this.config.obRootCA,
-        this.config.obIssuingCA,
-      ],
+      ca: `${this.config.obIssuingCA}\n${this.config.obRootCA}`,
       passphrase: this.config.obTransportPass,
       rejectUnauthorized: this.config.rejectUnauthorized,
     };
@@ -249,7 +246,7 @@ export class RegistrationService {
    * @return flags whether deletion succeeded or failed
    */
   deleteRegistration = async (registrationID: string,
-                      next: NextFunction): Promise<boolean> => {
+                              next: NextFunction): Promise<boolean> => {
     try {
       const clientRecord = await clientData.getClient(registrationID)
       if (!clientRecord) {

@@ -47,10 +47,7 @@ export class AuthService {
     this.httpsAgentOpts = {
       cert: this.config.obTransportCert,
       key: this.config.obTransportKey,
-      ca: [
-        this.config.obRootCA,
-        this.config.obIssuingCA,
-      ],
+      ca: `${this.config.obIssuingCA}\n${this.config.obRootCA}`,
       passphrase: this.config.obTransportPass,
       rejectUnauthorized: this.config.rejectUnauthorized,
     };

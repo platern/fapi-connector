@@ -131,11 +131,14 @@ export class RegistrationService {
     const issuerGrantTypes = issuer.metadata["grant_types_supported"] as string[];
     const resolvedGrantTypes = this.config.clientGrantTypes.filter(grantType => issuerGrantTypes.includes(grantType));
     const issuerAuthMethods = issuer.metadata.token_endpoint_auth_methods_supported;
+    const resolvedIssuerAuthMethod = overrides?.authMethod
+      ? overrides.authMethod
+      : this.config.clientTokenAuthMethod;
     if (!issuerAuthMethods) {
       next(openIDProviderError(`no token_endpoint_auth_methods_supported present in OpenID discovery response`));
       return undefined;
     }
-    if (!issuerAuthMethods.includes(this.config.clientTokenAuthMethod)) {
+    if (!issuerAuthMethods.includes(resolvedIssuerAuthMethod)) {
       next(openIDProviderError(`token auth by ${this.config.clientTokenAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
       return undefined;
     }

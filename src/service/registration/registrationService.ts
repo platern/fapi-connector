@@ -6,7 +6,7 @@ import {
   TypeOfGenericClient, BaseClient, ClientMetadata, errors, TokenSet,
 } from "@dextersjab/openid-client";
 import {
-  badRequestError,
+  badRequestError, configError,
   dataError, notFoundError,
   openIDProviderError,
   unknownError,
@@ -113,6 +113,14 @@ export class RegistrationService {
       openIDConfigUrl = openIDConfigUrl0 as string;
       externalAud = externalAud0 as string;
     }
+
+    const resolvedAuthMethod = overrides?.authMethod
+      ? overrides.authMethod
+      : this.config.clientTokenAuthMethod;
+    if(resolvedAuthMethod === "private_key_jwt" && !this.obSigningKey) {
+      next(configError("set env var OB_SIGNING_KEY to use private_key_jwt"));
+      return undefined
+    }
     const issuer: Issuer<Client> = await Issuer.discover(openIDConfigUrl as string);
     issuer.FAPI1Client[custom.http_options] = () => ({
       ...this.httpsAgentOpts,
@@ -131,14 +139,11 @@ export class RegistrationService {
     const issuerGrantTypes = issuer.metadata["grant_types_supported"] as string[];
     const resolvedGrantTypes = this.config.clientGrantTypes.filter(grantType => issuerGrantTypes.includes(grantType));
     const issuerAuthMethods = issuer.metadata.token_endpoint_auth_methods_supported;
-    const resolvedIssuerAuthMethod = overrides?.authMethod
-      ? overrides.authMethod
-      : this.config.clientTokenAuthMethod;
     if (!issuerAuthMethods) {
       next(openIDProviderError(`no token_endpoint_auth_methods_supported present in OpenID discovery response`));
       return undefined;
     }
-    if (!issuerAuthMethods.includes(resolvedIssuerAuthMethod)) {
+    if (!issuerAuthMethods.includes(resolvedAuthMethod)) {
       next(openIDProviderError(`token auth by ${this.config.clientTokenAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
       return undefined;
     }
@@ -158,7 +163,7 @@ export class RegistrationService {
       next(openIDProviderError(`neither configured nor default request object signing algorithms are supported by ${resolvedProviderID}`));
       return undefined;
     }
-    const authMethodDetails = this.config.clientTokenAuthMethod === "private_key_jwt"
+    const authMethodDetails = resolvedAuthMethod === "private_key_jwt"
       ? {
         // Required for Private Key JWT
         "token_endpoint_auth_method": "private_key_jwt", //'tls_client_auth',
@@ -192,11 +197,11 @@ export class RegistrationService {
     };
     try {
       let registrationResp;
-      if (this.obSigningKey) {
-        const jwk = {...this.obSigningKey.export({format: "jwk"})};
+      if (resolvedAuthMethod === "private_key_jwt") {
+        const jwk = {...(this.obSigningKey as KeyObject).export({format: "jwk"})};
         const jwsOpts = {jwks: {keys: [jwk]}};
         registrationResp = await (issuer.FAPI1Client as DcrClient).register(metadata, jwsOpts, {
-          signingKey: this.obSigningKey,
+          signingKey: this.obSigningKey as KeyObject,
           keyId: this.config.obSigningKeyId,
           algorithm: this.config.obSigningAlgorithm,
         });

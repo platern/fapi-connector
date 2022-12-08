@@ -16,8 +16,7 @@ import clientData from "../src/data/clientData";
 import config from "../src/util/config/config";
 
 config.platernWebBaseURL = "";
-config.obSigningAlgorithm = "none";
-config.obSigningKeyString = undefined;
+
 import {app} from "../src/app";
 import {
   mockAPIResponses,
@@ -38,8 +37,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 jest.mock("../src/data/clientData");
 const mockedClientData = clientData as jest.Mocked<typeof clientData>;
 
-jest.mock("../src/util/certUtils");
-jest.fn().mockName("cert");
+// jest.mock("../src/util/certUtils");
 const openapi = yaml.load(fs.readFileSync(openApiFilePath).toString()) as any;
 
 jest.spyOn(authService, "generateJti").mockReturnValue("TEST-JTI");

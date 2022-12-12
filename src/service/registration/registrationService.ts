@@ -5,12 +5,6 @@ import {
   custom,
   TypeOfGenericClient, BaseClient, ClientMetadata, errors, TokenSet,
 } from "@dextersjab/openid-client";
-import {
-  badRequestError, configError,
-  dataError, notFoundError,
-  openIDProviderError,
-  unknownError,
-} from "../error";
 import {Agent} from "https";
 import {createPrivateKey, KeyObject} from "crypto";
 import {decodeJwt, JWTPayload} from "jose";
@@ -21,7 +15,20 @@ import {cert} from "../../util/certUtils";
 import {NextFunction} from "express";
 import {providerRegFromPlaternWeb, resolveProviderID} from "../utils";
 import * as tls from "tls";
+import {pki} from "node-forge";
 import OPError = errors.OPError;
+import {
+  badRequestError, configError,
+  dataError, notFoundError,
+  openIDProviderError,
+  unknownError,
+} from "../error";
+import {
+  PrismaClientInitializationError,
+  PrismaClientKnownRequestError,
+  PrismaClientRustPanicError,
+  PrismaClientUnknownRequestError, PrismaClientValidationError,
+} from "@prisma/client/runtime";
 
 interface DcrClient extends TypeOfGenericClient<Client> {
   register: typeof BaseClient.register;
@@ -53,15 +60,24 @@ const getSupportedAlgo =
   };
 
 function providerErrMsg(err: errors.OPError): string {
-  const resp = err.response?.body
-  if (!resp) return ""
-  return resp instanceof Buffer ? resp.toString() : JSON.stringify(resp)
+  const resp = err.response?.body;
+  if (!resp) return "";
+  return resp instanceof Buffer ? resp.toString() : JSON.stringify(resp);
 }
 
 export interface RegistrationResult {
   openIDConfigUrl: string,
   metadata: ClientMetadata,
   isUpdate: boolean,
+}
+
+function subjectDN(transportCert: string) {
+  const cert = pki.certificateFromPem(transportCert);
+  const C = cert.subject.getField("C").value;
+  const O = cert.subject.getField("O").value;
+  const objectIdentifier = cert.subject.attributes.find(a => a.type === "2.5.4.97")?.value
+  const CN = cert.subject.getField("CN").value;
+  return `CN=${CN},O=${O},2.5.4.97=${objectIdentifier},C=${C}`;
 }
 
 export class RegistrationService {
@@ -101,113 +117,108 @@ export class RegistrationService {
                     externalAud0: string | undefined,
                     overrides: ClientOverrides | undefined,
                     next: NextFunction): Promise<RegistrationResult | undefined> => {
-    const resolvedProviderID = resolveProviderID(providerID, openIDConfigUrl0);
-    let openIDConfigUrl: string;
-    let externalAud: string;
-    if (providerID) {
-      const providerDetails = await providerRegFromPlaternWeb(providerID, this.config, next);
-      if (!providerDetails) return undefined;
-      openIDConfigUrl = providerDetails.openIDConfigUrl;
-      externalAud = providerDetails.provider.extras.externalAud;
-    } else {
-      openIDConfigUrl = openIDConfigUrl0 as string;
-      externalAud = externalAud0 as string;
-    }
-
-    const resolvedAuthMethod = overrides?.authMethod
-      ? overrides.authMethod
-      : this.config.clientTokenAuthMethod;
-    if(resolvedAuthMethod === "private_key_jwt" && !this.obSigningKey) {
-      next(configError("set env var OB_SIGNING_KEY to use private_key_jwt"));
-      return undefined
-    }
-    const issuer: Issuer<Client> = await Issuer.discover(openIDConfigUrl as string);
-    issuer.FAPI1Client[custom.http_options] = () => ({
-      ...this.httpsAgentOpts,
-      headers: {"content-type": "application/jose"},
-    });
-    if (!("scopes_supported" in issuer)) {
-      next(openIDProviderError(`supported scopes missing from openID config for ${resolvedProviderID}`));
-      return undefined;
-    }
-    const issuerScopes = issuer.metadata["scopes_supported"] as string[];
-    const resolvedScopes = this.config.clientScopes?.filter(scope => issuerScopes.includes(scope));
-    if (!("grant_types_supported" in issuer)) {
-      next(openIDProviderError(`supported grant types missing from openID config for ${resolvedProviderID}`));
-      return undefined;
-    }
-    const issuerGrantTypes = issuer.metadata["grant_types_supported"] as string[];
-    const resolvedGrantTypes = this.config.clientGrantTypes.filter(grantType => issuerGrantTypes.includes(grantType));
-    const issuerAuthMethods = issuer.metadata.token_endpoint_auth_methods_supported;
-    if (!issuerAuthMethods) {
-      next(openIDProviderError(`no token_endpoint_auth_methods_supported present in OpenID discovery response`));
-      return undefined;
-    }
-    if (!issuerAuthMethods.includes(resolvedAuthMethod)) {
-      next(openIDProviderError(`token auth by ${this.config.clientTokenAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
-      return undefined;
-    }
-    if (!issuer.metadata?.token_endpoint_auth_signing_alg_values_supported) {
-      next(openIDProviderError(`missing \`token_endpoint_auth_signing_alg_values_supported\` for ${resolvedProviderID}`));
-      return undefined;
-    }
-    const supportedTokenAlgos = issuer.metadata.token_endpoint_auth_signing_alg_values_supported;
-    const tokenSigningAlgo = getSupportedAlgo(supportedTokenAlgos, this.config.clientTokenSigningAlgo);
-    if (!tokenSigningAlgo) {
-      next(openIDProviderError(`neither configured nor default token auth signing algorithms are supported by ${resolvedProviderID}`));
-      return undefined;
-    }
-    const supportedReqObjAlgos = issuer.metadata.request_object_signing_alg_values_supported;
-    const reqObjSigningAlgo = supportedReqObjAlgos ? getSupportedAlgo(supportedReqObjAlgos, this.config.clientTokenSigningAlgo) : [];
-    if (!reqObjSigningAlgo) {
-      next(openIDProviderError(`neither configured nor default request object signing algorithms are supported by ${resolvedProviderID}`));
-      return undefined;
-    }
-    const authMethodDetails = resolvedAuthMethod === "private_key_jwt"
-      ? {
-        // Required for Private Key JWT
-        "token_endpoint_auth_method": "private_key_jwt", //'tls_client_auth',
-        "token_endpoint_auth_signing_alg": tokenSigningAlgo,
-      } : {
-        // Required for TLS Client Auth
-        "tls_client_auth_subject_dn": this.transportCert.CN,
-      };
-    const redirectUris = overrides?.redirectUris
-      ? overrides.redirectUris
-      : this.config.clientRedirectUris;
-    const metadata: object = {
-      "redirect_uris": redirectUris,
-      "client_name": this.config.clientName,
-      "logo_uri": this.config.clientLogoUri,
-      "jti": uuidv4(),
-      "iat": Math.round(Date.now() / 1000),
-      "aud": externalAud ? externalAud : issuer.metadata.token_endpoint,
-      "exp": Math.round(Date.now() / 1000 + hoursInMillis(1)),
-      "iss": this.ssaDecoded["software_id"],
-      "application_type": "web",
-      "grant_types": resolvedGrantTypes,
-      "id_token_signed_response_alg": tokenSigningAlgo,
-      "request_object_signing_alg": reqObjSigningAlgo,
-
-      // this is an anomaly of the Open Banking UK specification
-      "scope": resolvedScopes.join(" "),
-
-      "software_statement": this.ssa,
-      ...authMethodDetails,
-    };
     try {
-      let registrationResp;
-      if (resolvedAuthMethod === "private_key_jwt") {
-        const jwk = {...(this.obSigningKey as KeyObject).export({format: "jwk"})};
-        const jwsOpts = {jwks: {keys: [jwk]}};
-        registrationResp = await (issuer.FAPI1Client as DcrClient).register(metadata, jwsOpts, {
-          signingKey: this.obSigningKey as KeyObject,
-          keyId: this.config.obSigningKeyId,
-          algorithm: this.config.obSigningAlgorithm,
-        });
+      const resolvedProviderID = resolveProviderID(providerID, openIDConfigUrl0);
+      let openIDConfigUrl: string;
+      let externalAud: string;
+      if (providerID) {
+        const providerDetails = await providerRegFromPlaternWeb(providerID, this.config, next);
+        if (!providerDetails) return undefined;
+        openIDConfigUrl = providerDetails.openIDConfigUrl;
+        externalAud = providerDetails.provider.extras.externalAud;
       } else {
-        registrationResp = await (issuer.FAPI1Client as DcrClient).register(metadata, undefined, undefined);
+        openIDConfigUrl = openIDConfigUrl0 as string;
+        externalAud = externalAud0 as string;
       }
+
+      const resolvedAuthMethod = overrides?.authMethod
+        ? overrides.authMethod
+        : this.config.clientTokenAuthMethod;
+      if (resolvedAuthMethod === "private_key_jwt" && !this.obSigningKey) {
+        next(configError("set env var OB_SIGNING_KEY to use private_key_jwt"));
+        return undefined;
+      }
+      const issuer: Issuer<Client> = await Issuer.discover(openIDConfigUrl as string);
+      issuer.FAPI1Client[custom.http_options] = () => ({
+        ...this.httpsAgentOpts,
+        headers: {"content-type": "application/jose"},
+      });
+      if (!("scopes_supported" in issuer)) {
+        next(openIDProviderError(`supported scopes missing from openID config for ${resolvedProviderID}`));
+        return undefined;
+      }
+      const issuerScopes = issuer.metadata["scopes_supported"] as string[];
+      const resolvedScopes = this.config.clientScopes?.filter(scope => issuerScopes.includes(scope));
+      if (!("grant_types_supported" in issuer)) {
+        next(openIDProviderError(`supported grant types missing from openID config for ${resolvedProviderID}`));
+        return undefined;
+      }
+      const issuerGrantTypes = issuer.metadata["grant_types_supported"] as string[];
+      const resolvedGrantTypes = this.config.clientGrantTypes.filter(grantType => issuerGrantTypes.includes(grantType));
+      const issuerAuthMethods = issuer.metadata.token_endpoint_auth_methods_supported;
+      if (!issuerAuthMethods) {
+        next(openIDProviderError(`no token_endpoint_auth_methods_supported present in OpenID discovery response`));
+        return undefined;
+      }
+      if (!issuerAuthMethods.includes(resolvedAuthMethod)) {
+        next(openIDProviderError(`token auth by ${this.config.clientTokenAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
+        return undefined;
+      }
+      if (!issuer.metadata?.token_endpoint_auth_signing_alg_values_supported) {
+        next(openIDProviderError(`missing \`token_endpoint_auth_signing_alg_values_supported\` for ${resolvedProviderID}`));
+        return undefined;
+      }
+      const supportedTokenAlgos = issuer.metadata.token_endpoint_auth_signing_alg_values_supported;
+      const tokenSigningAlgo = getSupportedAlgo(supportedTokenAlgos, this.config.clientTokenSigningAlgo);
+      if (!tokenSigningAlgo) {
+        next(openIDProviderError(`neither configured nor default token auth signing algorithms are supported by ${resolvedProviderID}`));
+        return undefined;
+      }
+      const supportedReqObjAlgos = issuer.metadata.request_object_signing_alg_values_supported;
+      const reqObjSigningAlgo = supportedReqObjAlgos ? getSupportedAlgo(supportedReqObjAlgos, this.config.clientTokenSigningAlgo) : [];
+      if (!reqObjSigningAlgo) {
+        next(openIDProviderError(`neither configured nor default request object signing algorithms are supported by ${resolvedProviderID}`));
+        return undefined;
+      }
+      const authMethodSpecifics = resolvedAuthMethod === "private_key_jwt"
+        ? {
+          // Required for Private Key JWT
+          "token_endpoint_auth_signing_alg": tokenSigningAlgo,
+        } : {
+          // Required for TLS Client Auth
+          "tls_client_auth_subject_dn": subjectDN(this.config.obTransportCert),
+        };
+      const redirectUris = overrides?.redirectUris
+        ? overrides.redirectUris
+        : this.config.clientRedirectUris;
+      const metadata: object = {
+        "redirect_uris": redirectUris,
+        "client_name": this.config.clientName,
+        "logo_uri": this.config.clientLogoUri,
+        "jti": uuidv4(),
+        "iat": Math.round(Date.now() / 1000),
+        "aud": externalAud ? externalAud : issuer.metadata.token_endpoint,
+        "exp": Math.round(Date.now() / 1000 + hoursInMillis(1)),
+        "iss": this.ssaDecoded["software_id"],
+        "application_type": "web",
+        "grant_types": resolvedGrantTypes,
+        "id_token_signed_response_alg": tokenSigningAlgo,
+        "request_object_signing_alg": reqObjSigningAlgo,
+        "token_endpoint_auth_method": resolvedAuthMethod,
+
+        // this is an anomaly of the Open Banking UK specification
+        "scope": resolvedScopes.join(" "),
+
+        "software_statement": this.ssa,
+        ...authMethodSpecifics,
+      };
+      const jwk = {...(this.obSigningKey as KeyObject).export({format: "jwk"})};
+      const jwsOpts = {jwks: {keys: [jwk]}};
+      const registrationResp = await (issuer.FAPI1Client as DcrClient).register(metadata, jwsOpts, {
+        signingKey: this.obSigningKey as KeyObject,
+        keyId: this.config.obSigningKeyId,
+        algorithm: this.config.obSigningAlgorithm,
+      });
       if (!registrationResp.metadata) {
         next(dataError("invalid client metadata returned"));
         return undefined;
@@ -226,15 +237,23 @@ export class RegistrationService {
     } catch (err) {
       console.error(err);
       if (err instanceof OPError) {
-        const errorMessage = `failed to register client`;
+        const errorMessage = `failed to register client: ${err.message}`;
         if (err.response?.statusCode === 400) {
           console.log(`failed registration response: ${providerErrMsg(err)}`);
           next(badRequestError(errorMessage));
         } else {
           next(unknownError(errorMessage));
         }
-      } else {
+      } else if ([
+        PrismaClientKnownRequestError,
+        PrismaClientUnknownRequestError,
+        PrismaClientRustPanicError,
+        PrismaClientInitializationError,
+        PrismaClientValidationError,
+      ].some(prismaErr => err instanceof prismaErr)) {
         next(dataError("failed to save client metadata to database"));
+      } else {
+        next(unknownError("failed to register client"));
       }
       return undefined;
     }
@@ -257,7 +276,7 @@ export class RegistrationService {
   deleteRegistration = async (registrationID: string,
                               next: NextFunction): Promise<boolean> => {
     try {
-      const clientRecord = await clientData.getClient(registrationID)
+      const clientRecord = await clientData.getClient(registrationID);
       if (!clientRecord) {
         next(notFoundError(`registration not found: ${registrationID}`));
         return false;
@@ -305,6 +324,6 @@ export class RegistrationService {
       }
       return false;
     }
-  }
+  };
 
 }

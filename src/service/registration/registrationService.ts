@@ -162,7 +162,7 @@ export class RegistrationService {
         return undefined;
       }
       if (!issuerAuthMethods.includes(resolvedAuthMethod)) {
-        next(openIDProviderError(`token auth by ${resolvedAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
+        next(openIDProviderError(`token auth by ${this.config.clientTokenAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
         return undefined;
       }
       const supportedTokenAlgos = issuer.metadata.token_endpoint_auth_signing_alg_values_supported ?? [];

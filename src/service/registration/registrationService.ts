@@ -31,7 +31,6 @@ import {
 } from "@prisma/client/runtime";
 
 interface DcrClient extends TypeOfGenericClient<Client> {
-  options: typeof BaseClient.options;
   register: typeof BaseClient.register;
   deleteRegistration: typeof BaseClient.deleteRegistration;
 }
@@ -162,12 +161,16 @@ export class RegistrationService {
         return undefined;
       }
       if (!issuerAuthMethods.includes(resolvedAuthMethod)) {
-        next(openIDProviderError(`token auth by ${this.config.clientTokenAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
+        next(openIDProviderError(`token auth by ${resolvedAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
         return undefined;
       }
-      const supportedTokenAlgos = issuer.metadata.token_endpoint_auth_signing_alg_values_supported ?? [];
+      if (!issuer.metadata?.token_endpoint_auth_signing_alg_values_supported) {
+        next(openIDProviderError(`missing \`token_endpoint_auth_signing_alg_values_supported\` for ${resolvedProviderID}`));
+        return undefined;
+      }
+      const supportedTokenAlgos = issuer.metadata.token_endpoint_auth_signing_alg_values_supported;
       const tokenSigningAlgo = getSupportedAlgo(supportedTokenAlgos, this.config.clientTokenSigningAlgo);
-      if (supportedTokenAlgos.length > 0 && !tokenSigningAlgo) {
+      if (!tokenSigningAlgo) {
         next(openIDProviderError(`neither configured nor default token auth signing algorithms are supported by ${resolvedProviderID}`));
         return undefined;
       }

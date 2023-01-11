@@ -52,6 +52,7 @@ To run the server, you'll need:
 
    With npm:
    ```shell
+   npm install
    npm ci
    ```
 

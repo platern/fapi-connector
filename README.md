@@ -60,13 +60,14 @@ To run the server, you'll need:
 
 2. Update `config/clients.json`:
 
-| field                  | possible values                                                                                                | description                                                                           | 
-|------------------------|----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| clientName             | string                                                                                                         | Often used by API providers to display your application or company name.              |
-| clientTokenAuthMethod  | `private_key_jwt`, `tls_client_auth`                                                                           | The method by which your client will authenticate with API providers.                 |
-| clientGrantTypes       | - `authorization_code`<br/>- `client_credentials`<br/>- `refresh_token`<br/>-`urn:openid:params:grant-type:ciba` | The types of authentication and authorization requests that your API client will use. |
-| clientScopes           | [specification-specific]                                                                                       | The OAuth2 scopes of data/service your application will request access to.            |
-| clientTokenSigningAlgo | `RS256`, `PS256`, `ES256`                                                                                      | The algorithm used to sign JWS payloads (applies only to `private_key_jwt` clients).  |
+| field                  | possible values                                                                                                  | description                                                                                            | 
+|------------------------|------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| clientName             | string                                                                                                           | Often used by API providers to display your application or company name.                               |
+| clientTokenAuthMethod  | `private_key_jwt`, `tls_client_auth`                                                                             | The method by which your client will authenticate with API providers.                                  |
+| clientGrantTypes       | - `authorization_code`<br/>- `client_credentials`<br/>- `refresh_token`<br/>-`urn:openid:params:grant-type:ciba` | The types of authentication and authorization requests that your API client will use.                  |
+| clientScopes           | [specification-specific]                                                                                         | The OAuth2 scopes of data/service your application will request access to.                             |
+| clientRedirectUris     | [client-specific]                                                                                                | The URL users will return to after completing the authorization journey in the provider's app/website. |
+| clientTokenSigningAlgo | `RS256`, `PS256`, `ES256`                                                                                        | The algorithm used to sign JWS payloads (applies only to `private_key_jwt` clients).                   |
 
 3. [Conditional] If you're using this service with Platern Web, configure the
    options in `config/platernweb.json`:

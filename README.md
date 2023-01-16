@@ -37,9 +37,10 @@ Use this service to:
 
 ### Prerequisites
 
-To run the server, you'll need:
-
-- Node (v16+)
+To run the server, you'll need to run Node (v16+). It must be a 64-bit version
+because Prisma doesn't currently support the 32-bit version. Their team is 
+currently looking at the
+[issue](https://github.com/prisma/prisma/issues/11781).
 
 ### Setup (local)
 
@@ -48,11 +49,13 @@ To run the server, you'll need:
    With yarn:
    ```shell
    yarn install
+   yarn run hard-init
    ```
 
    With npm:
    ```shell
    npm install
+   npm run hard-init
    ```
 
    This will also generate `.env` files for you (which you'll populate in **step 5**).

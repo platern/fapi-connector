@@ -12,6 +12,13 @@ import * as request from "supertest";
 import * as fs from "fs";
 import * as yaml from "js-yaml";
 import axios from "axios";
+
+import {config as dotenvConfig} from "dotenv";
+
+dotenvConfig({
+  path: `.env.${(process.env.NODE_ENV as string) === "test" ? "test" : ""}`,
+});
+
 import clientData from "../src/data/clientData";
 import config from "../src/util/config/config";
 

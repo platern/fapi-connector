@@ -2,8 +2,8 @@
   "name": "fapi-connector",
   "version": "0.1.0",
   "scripts": {
-    "build": "tsc && scripts/dereferenceApiSpec.js",
-    "postinstall": "scripts/ci.js && npx prisma generate && npx prisma migrate dev --name init",
+    "build": "tsc && ./scripts/dereferenceApiSpec.js",
+    "hard-init": "node ./scripts/setupEnv.js && npx prisma generate && npx prisma migrate dev --name init",
     "lint": "eslint --ext .js,.ts .",
     "lint:fix": "eslint --fix --ext .js,.ts .",
     "serve": "NODE_ENV=production yarn run build",
@@ -70,6 +70,7 @@
     "jose2": "npm:jose@^2.0.5",
     "nock": "^13.2.9",
     "pre-commit": "^1.2.2",
+    "shx": "^0.3.4",
     "ts-jest": "^29.0.3",
     "typescript": "^4.8.4"
   }

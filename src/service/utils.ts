@@ -23,7 +23,7 @@ const fetchProviderDetails = async (providerID: string,
                                     next: NextFunction): Promise<ProviderDetails | undefined> => {
   // validate env vars
   if (!config.platernApiKeyHeaderKey || !config.platernApiKeyHeaderValue) {
-    next(configError(`provider doesn't exist: ${providerID}`));
+    next(configError("Missing required env vars. Set PLATERN_WEB_HEADER_KEY and PLATERN_WEB_HEADER_VALUE to use provider IDs."));
     return undefined
   }
   try {

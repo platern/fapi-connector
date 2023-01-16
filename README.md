@@ -47,13 +47,12 @@ To run the server, you'll need:
 
    With yarn:
    ```shell
-   yarn ci
+   yarn install
    ```
 
    With npm:
    ```shell
    npm install
-   npm ci
    ```
 
    This will also generate `.env` files for you (which you'll populate in **step 5**).

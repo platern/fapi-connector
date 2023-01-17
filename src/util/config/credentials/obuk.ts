@@ -9,7 +9,7 @@ export interface ObukCredentials {
   obIssuingCA: string,
   obTransportCert: string,
   obTransportKey: string,
-  obTransportPass: string,
+  obTransportPass: string | undefined,
   rejectUnauthorized: boolean,
   softwareStatementAssertion: string,
 }
@@ -23,7 +23,7 @@ export const obukCredentials: ObukCredentials = {
   obIssuingCA: getEnvVar("OB_ISSUING_CA"),
   obTransportCert: getEnvVar("OB_TRANSPORT_CERT"),
   obTransportKey: getEnvVar("OB_TRANSPORT_KEY"),
-  obTransportPass: getEnvVar("OB_TRANSPORT_PASS"),
+  obTransportPass: getOptionalEnvVar("OB_TRANSPORT_PASS"),
   rejectUnauthorized: hasEnvVar("OB_REJECT_UNAUTHORIZED")
     ? getEnvVar("OB_REJECT_UNAUTHORIZED").toLowerCase() !== "false"
     : true,

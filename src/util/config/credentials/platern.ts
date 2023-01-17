@@ -1,4 +1,4 @@
-import {getOptionalEnvVar} from "../util";
+import {getOptionalEnvVar} from "../envUtils";
 
 export interface PlaternWebCredentials {
   platernApiKeyHeaderKey: string | undefined,

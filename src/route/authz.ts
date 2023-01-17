@@ -12,7 +12,7 @@ const validate = new Validator({}).validate;
 
 export const authz = (config: Config): rout => {
   const authService = new AuthService(config);
-  const route = Route.Authz;
+  const route = Route.Authorization;
   const paramsSchema = getQueryParamsSchema("get", route);
   router.get(route, validate({query: paramsSchema}), (req: Request, resp: Response, next: NextFunction) => {
     const registrationID = req.headers?.registration as string;
@@ -36,7 +36,7 @@ export const authz = (config: Config): rout => {
     }
     if (!grantURL && !provider) {
       if (!grantURL) {
-        next(badRequestError(Route.Authz + " requires either `oauth2GrantUrl` or `provider`"));
+        next(badRequestError(Route.Authorization + " requires either `oauth2GrantUrl` or `provider`"));
         return;
       }
     }

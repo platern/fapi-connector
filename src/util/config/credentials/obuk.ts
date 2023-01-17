@@ -1,4 +1,4 @@
-import {getEnvVar, getOptionalEnvVar, hasEnvVar} from "../util";
+import {getEnvVar, getOptionalEnvVar, hasEnvVar} from "../envUtils";
 
 export interface ObukCredentials {
   obSigningKeyString: string | undefined,

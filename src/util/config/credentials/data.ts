@@ -1,4 +1,4 @@
-import {getEnvVar} from "../util";
+import {getEnvVar} from "../envUtils";
 
 export interface DataCredentials {
   aesKey: string,

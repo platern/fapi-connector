@@ -9,6 +9,7 @@ import {badRequestError, notFoundError, unknownError} from "../service/error";
 import {getQueryParamsSchema, getRequestBodySchema} from "../util/openapiUtils";
 import {isProviderValid} from "./utils";
 import {StatusCodes} from "http-status-codes";
+import {baseUrl} from "../util/urlUtils";
 
 const router = rout();
 
@@ -31,7 +32,7 @@ const handleGetAll = (registerService: RegistrationService, path: string) => {
         return;
       }
       const content: RegistrationsResponse = {
-        self: path,
+        self: `${baseUrl}${path}`,
         kind: "Collection",
         registrations: data,
       };

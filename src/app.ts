@@ -28,7 +28,7 @@ export enum Route {
   Root = "/",
   Registrations = "/registrations",
   Registration = "/registrations/:registrationID",
-  Authz = "/authorization",
+  Authorization = "/authorization",
   Token = "/token",
   Resource = "/resource",
   OpenApiJson = "/openapi.json",

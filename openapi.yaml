@@ -47,7 +47,7 @@ paths:
                   value:
                     {
                       kind: 'Collection',
-                      self: '/registrations',
+                      self: 'http://localhost:5001/registrations',
                       registrations: [
                         'XXX',
                         'YYY'

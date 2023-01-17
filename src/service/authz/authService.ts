@@ -73,7 +73,7 @@ export class AuthService {
         }
       }
       if (!Object.prototype.hasOwnProperty.call(operationMap, specificationID)) {
-        next(badRequestError(`specification not supported by ${Route.Authz}: ${specificationID}`));
+        next(badRequestError(`specification not supported by ${Route.Authorization}: ${specificationID}`));
         return undefined;
       }
       const clientRecord = await clientData.getClient(registrationID);

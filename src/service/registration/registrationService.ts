@@ -59,6 +59,11 @@ const getSupportedAlgo =
     return undefined;
   };
 
+const supportedTokenAuthMethods = [
+  "private_key_jwt",
+  "tls_client_auth",
+]
+
 function providerErrMsg(err: errors.OPError): string {
   const resp = err.response?.body;
   if (!resp) return "";
@@ -131,7 +136,7 @@ export class RegistrationService {
         externalAud = externalAud0 as string;
       }
 
-      const resolvedAuthMethod = overrides?.authMethod
+      let resolvedAuthMethod = overrides?.authMethod
         ? overrides.authMethod
         : this.config.clientTokenAuthMethod;
       if (resolvedAuthMethod === "private_key_jwt" && !this.obSigningKey) {
@@ -161,8 +166,19 @@ export class RegistrationService {
         return undefined;
       }
       if (!issuerAuthMethods.includes(resolvedAuthMethod)) {
-        next(openIDProviderError(`token auth by ${resolvedAuthMethod} is not one of the supported methods: [${issuerAuthMethods.join(", ")}]`));
-        return undefined;
+        const fallbackMethods = supportedTokenAuthMethods.reduce((intersectMethods: string[], meth) => {
+          if(issuerAuthMethods.includes(meth)) {
+            intersectMethods.push(meth);
+          }
+          return intersectMethods;
+        }, []);
+        if(fallbackMethods.length === 0) {
+          next(openIDProviderError(`no issuer token auth methods are supported by fapi-connector 
+          - issuer methods: [${issuerAuthMethods.join(", ")}]
+          - supported methods: [${supportedTokenAuthMethods.join(", ")}]`));
+          return undefined;
+        }
+        resolvedAuthMethod = fallbackMethods[0];
       }
       if (!issuer.metadata?.token_endpoint_auth_signing_alg_values_supported) {
         next(openIDProviderError(`missing \`token_endpoint_auth_signing_alg_values_supported\` for ${resolvedProviderID}`));

@@ -12,6 +12,6 @@
   ],
   "clientTokenSigningAlgo": "PS256",
   "clientRedirectUris": [
-    "https://example.com/oauth/callback/"
+    "https://example.com/oauth/callback"
   ]
 }

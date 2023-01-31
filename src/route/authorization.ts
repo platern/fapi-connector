@@ -10,7 +10,7 @@ const router = rout();
 
 const validate = new Validator({}).validate;
 
-export const authz = (config: Config): rout => {
+export const authorization = (config: Config): rout => {
   const authService = new AuthService(config);
   const route = Route.Authorization;
   const paramsSchema = getQueryParamsSchema("get", route);
@@ -20,7 +20,6 @@ export const authz = (config: Config): rout => {
       next(badRequestError("invalid request: missing `registration` header"));
       return;
     }
-    const provider = req.query?.provider as string;
     const grantURL = req.query?.oauth2GrantUrl as string;
     const grantRequestB64 = req.query?.oauth2GrantRequest as string;
     const specification = req.query?.specification as string;
@@ -28,21 +27,8 @@ export const authz = (config: Config): rout => {
     const permissions = permissionsStr ? JSON.parse(permissionsStr) : undefined;
     const state = req.query?.oauth2State as string;
     const nonce = req.query?.openIDNonce as string;
-
-    // conditional parameter validation
-    if (grantURL && !grantRequestB64) {
-      next(badRequestError("`oauth2GrantUrl` requires `oauth2GrantRequest` to work"));
-      return;
-    }
-    if (!grantURL && !provider) {
-      if (!grantURL) {
-        next(badRequestError(Route.Authorization + " requires either `oauth2GrantUrl` or `provider`"));
-        return;
-      }
-    }
     authService.authorisation(
       registrationID,
-      provider,
       grantURL,
       permissions,
       specification,

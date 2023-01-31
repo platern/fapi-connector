@@ -1,4 +1,3 @@
-import {AxiosError} from "axios";
 import {
   ClientMetadata,
   custom,
@@ -66,16 +65,8 @@ export class TokenService {
         oauth2TokenSet: tokenSet,
       };
     } catch (err) {
-      if (err instanceof AxiosError) {
-        console.error(`Axios error`);
-        console.error(JSON.stringify(err.response?.status));
-        console.error(JSON.stringify(err.response?.data));
-        console.error(err);
-        next(externalCallError("error occurred connecting to Platern Web"));
-      } else {
-        console.error(err);
-        next(externalCallError("error occured while trying to fetch token"));
-      }
+      console.error(err);
+      next(externalCallError("error occurred while trying to fetch token"));
       return undefined;
     }
   };

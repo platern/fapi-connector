@@ -14,7 +14,6 @@ import {Config} from "../../util/config/config";
 import {badRequestError, externalCallError} from "../error";
 import {NextFunction} from "express";
 import clientData from "../../data/clientData";
-import {grantURLFromPlaternWeb} from "../utils";
 import {Route} from "../../app";
 
 function getScope(specification: string) {
@@ -56,22 +55,13 @@ export class AuthService {
   }
 
   authorisation = async (registrationID: string,
-                         provider: string,
-                         grantUrlParam: string | undefined,
+                         grantURL: string,
                          permissions: OBReadConsent1Data | undefined,
                          specificationID: string,
                          state: string,
                          nonce: string,
                          next: NextFunction) => {
     try {
-      let grantURL = grantUrlParam;
-      if (provider) {
-        grantURL = await grantURLFromPlaternWeb(provider, specificationID, this.config, next);
-        if (!grantURL) {
-          next(badRequestError(`error occurred connecting to Platern Web`));
-          return undefined;
-        }
-      }
       if (!Object.prototype.hasOwnProperty.call(operationMap, specificationID)) {
         next(badRequestError(`specification not supported by ${Route.Authorization}: ${specificationID}`));
         return undefined;

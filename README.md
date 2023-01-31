@@ -65,21 +65,14 @@ currently looking at the
 | field                  | possible values                                                                                                  | description                                                                                            | 
 |------------------------|------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
 | clientName             | string                                                                                                           | Often used by API providers to display your application or company name.                               |
-| clientTokenAuthMethod  | `private_key_jwt`, `tls_client_auth`                                                                             | The method by which your client will authenticate with API providers.                                  |
+| clientTokenAuthMethod  | `private_key_jwt`, `tls_client_auth`                                                                             | The preferred method by which your client will authenticate with API providers.                        |
 | clientGrantTypes       | - `authorization_code`<br/>- `client_credentials`<br/>- `refresh_token`<br/>-`urn:openid:params:grant-type:ciba` | The types of authentication and authorization requests that your API client will use.                  |
 | clientScopes           | [specification-specific]                                                                                         | The OAuth2 scopes of data/service your application will request access to.                             |
 | clientRedirectUris     | [client-specific]                                                                                                | The URL users will return to after completing the authorization journey in the provider's app/website. |
 | clientTokenSigningAlgo | `RS256`, `PS256`, `ES256`                                                                                        | The algorithm used to sign JWS payloads (applies only to `private_key_jwt` clients).                   |
 
-3. [Conditional] If you're using this service with Platern Web, configure the
-   options in `config/platernweb.json`:
-
-| field                  | possible values                                                                                                   | description                                      |
-|------------------------|-------------------------------------------------------------------------------------------------------------------|--------------------------------------------------|
-| trusts             | `trust:openbanking:obuk`, `trust:openbanking:eidas` | The `trust` types that your application can use. |
-
-4. [Recommended] To encrypt your client registrations, securely generate a
-   256-bit AES key on the command line:
+3. Client registrations are encrypted using a 256-bit AES key. Use the following
+   command to securely generate yours:
 
    ```shell 
    openssl enc -aes-256-cbc -k secret -P -md sha1
@@ -94,7 +87,7 @@ currently looking at the
    Use the generated `key` and `iv` values to set the `AES_KEY` and `AES_IV`
    environment variables in `.env` and `.env.test` at the root of the project.
 
-5. Set up the rest of your environment variables.
+4. Set up the rest of your environment variables.
    Use the comments in these files for guidance.
 
 ### Running the server

@@ -7,7 +7,6 @@ import {Config} from "../util/config/config";
 import {Route} from "../app";
 import {badRequestError, notFoundError, unknownError} from "../service/error";
 import {getQueryParamsSchema, getRequestBodySchema} from "../util/openapiUtils";
-import {isProviderValid} from "./utils";
 import {StatusCodes} from "http-status-codes";
 import {baseUrl} from "../util/urlUtils";
 
@@ -72,13 +71,12 @@ const handlePut = (registerService: RegistrationService, path: string) => {
   }), (req: Request, resp: Response, next: NextFunction) => {
     const registrationID = req.params?.registrationID as string;
     const registrationReq = req.body as RegistrationRequest;
-    if (!isProviderValid(registrationReq.provider, registrationReq.openIDConfigUrl)) {
-      next(badRequestError("payload must include either a valid Platern `provider` or OpenID discovery URL (`openIDConfigUrl`)"));
+    if (!registrationReq.openIDConfigUrl) {
+      next(badRequestError("payload must include a valid OpenID discovery URL (`openIDConfigUrl`)"));
       return;
     }
     registerService.register(
       registrationID,
-      registrationReq.provider,
       registrationReq.openIDConfigUrl,
       registrationReq.externalAud,
       registrationReq.overrides,

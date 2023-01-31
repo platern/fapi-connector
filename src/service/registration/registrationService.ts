@@ -13,7 +13,6 @@ import {v4 as uuidv4} from "uuid";
 import clientData, {ClientRecord} from "../../data/clientData";
 import {cert} from "../../util/certUtils";
 import {NextFunction} from "express";
-import {providerRegFromPlaternWeb, resolveProviderID} from "../utils";
 import * as tls from "tls";
 import {pki} from "node-forge";
 import OPError = errors.OPError;
@@ -62,7 +61,7 @@ const getSupportedAlgo =
 const supportedTokenAuthMethods = [
   "private_key_jwt",
   "tls_client_auth",
-]
+];
 
 function providerErrMsg(err: errors.OPError): string {
   const resp = err.response?.body;
@@ -80,7 +79,7 @@ function subjectDN(transportCert: string) {
   const cert = pki.certificateFromPem(transportCert);
   const C = cert.subject.getField("C").value;
   const O = cert.subject.getField("O").value;
-  const objectIdentifier = cert.subject.attributes.find(a => a.type === "2.5.4.97")?.value
+  const objectIdentifier = cert.subject.attributes.find(a => a.type === "2.5.4.97")?.value;
   const CN = cert.subject.getField("CN").value;
   return `CN=${CN},O=${O},2.5.4.97=${objectIdentifier},C=${C}`;
 }
@@ -117,25 +116,11 @@ export class RegistrationService {
   }
 
   register = async (registrationID: string,
-                    providerID: string | undefined,
-                    openIDConfigUrl0: string | undefined,
-                    externalAud0: string | undefined,
+                    openIDConfigUrl: string,
+                    externalAud: string,
                     overrides: ClientOverrides | undefined,
                     next: NextFunction): Promise<RegistrationResult | undefined> => {
     try {
-      const resolvedProviderID = resolveProviderID(providerID, openIDConfigUrl0);
-      let openIDConfigUrl: string;
-      let externalAud: string;
-      if (providerID) {
-        const providerDetails = await providerRegFromPlaternWeb(providerID, this.config, next);
-        if (!providerDetails) return undefined;
-        openIDConfigUrl = providerDetails.openIDConfigUrl;
-        externalAud = providerDetails.provider.extras.externalAud;
-      } else {
-        openIDConfigUrl = openIDConfigUrl0 as string;
-        externalAud = externalAud0 as string;
-      }
-
       let resolvedAuthMethod = overrides?.authMethod
         ? overrides.authMethod
         : this.config.clientTokenAuthMethod;
@@ -149,13 +134,13 @@ export class RegistrationService {
         headers: {"content-type": "application/jose"},
       });
       if (!("scopes_supported" in issuer)) {
-        next(openIDProviderError(`supported scopes missing from openID config for ${resolvedProviderID}`));
+        next(openIDProviderError(`supported scopes missing from openID config for ${openIDConfigUrl}`));
         return undefined;
       }
       const issuerScopes = issuer.metadata["scopes_supported"] as string[];
       const resolvedScopes = this.config.clientScopes?.filter(scope => issuerScopes.includes(scope));
       if (!("grant_types_supported" in issuer)) {
-        next(openIDProviderError(`supported grant types missing from openID config for ${resolvedProviderID}`));
+        next(openIDProviderError(`supported grant types missing from openID config for ${openIDConfigUrl}`));
         return undefined;
       }
       const issuerGrantTypes = issuer.metadata["grant_types_supported"] as string[];
@@ -167,12 +152,12 @@ export class RegistrationService {
       }
       if (!issuerAuthMethods.includes(resolvedAuthMethod)) {
         const fallbackMethods = supportedTokenAuthMethods.reduce((intersectMethods: string[], meth) => {
-          if(issuerAuthMethods.includes(meth)) {
+          if (issuerAuthMethods.includes(meth)) {
             intersectMethods.push(meth);
           }
           return intersectMethods;
         }, []);
-        if(fallbackMethods.length === 0) {
+        if (fallbackMethods.length === 0) {
           next(openIDProviderError(`no issuer token auth methods are supported by fapi-connector 
           - issuer methods: [${issuerAuthMethods.join(", ")}]
           - supported methods: [${supportedTokenAuthMethods.join(", ")}]`));
@@ -181,19 +166,19 @@ export class RegistrationService {
         resolvedAuthMethod = fallbackMethods[0];
       }
       if (!issuer.metadata?.token_endpoint_auth_signing_alg_values_supported) {
-        next(openIDProviderError(`missing \`token_endpoint_auth_signing_alg_values_supported\` for ${resolvedProviderID}`));
+        next(openIDProviderError(`missing \`token_endpoint_auth_signing_alg_values_supported\` for ${openIDConfigUrl}`));
         return undefined;
       }
       const supportedTokenAlgos = issuer.metadata.token_endpoint_auth_signing_alg_values_supported;
       const tokenSigningAlgo = getSupportedAlgo(supportedTokenAlgos, this.config.clientTokenSigningAlgo);
       if (!tokenSigningAlgo) {
-        next(openIDProviderError(`neither configured nor default token auth signing algorithms are supported by ${resolvedProviderID}`));
+        next(openIDProviderError(`neither configured nor default token auth signing algorithms are supported by ${openIDConfigUrl}`));
         return undefined;
       }
       const supportedReqObjAlgos = issuer.metadata.request_object_signing_alg_values_supported;
       const reqObjSigningAlgo = supportedReqObjAlgos ? getSupportedAlgo(supportedReqObjAlgos, this.config.clientTokenSigningAlgo) : [];
       if (!reqObjSigningAlgo) {
-        next(openIDProviderError(`neither configured nor default request object signing algorithms are supported by ${resolvedProviderID}`));
+        next(openIDProviderError(`neither configured nor default request object signing algorithms are supported by ${openIDConfigUrl}`));
         return undefined;
       }
       const authMethodSpecifics = resolvedAuthMethod === "private_key_jwt"
@@ -279,8 +264,8 @@ export class RegistrationService {
     return await clientData.getRegistrationIDs();
   };
 
-  getClient = async (providerID: string): Promise<ClientRecord | undefined> => {
-    return await clientData.getClient(providerID);
+  getClient = async (registrationID: string): Promise<ClientRecord | undefined> => {
+    return await clientData.getClient(registrationID);
   };
 
   /**

@@ -15,6 +15,7 @@ model ClientRegistration {
   id                Int      @id @default(autoincrement())
   registrationID    String   @unique
   openIDConfigUrl   String
+  trust             String?  @default(null)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   metadata          Bytes

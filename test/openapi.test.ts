@@ -20,9 +20,6 @@ dotenvConfig({
 });
 
 import clientData from "../src/data/clientData";
-import config from "../src/util/config/config";
-
-config.platernWebBaseURL = "";
 
 import {app} from "../src/app";
 import {

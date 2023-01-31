@@ -1,7 +1,6 @@
 interface RegistrationRequest {
-  provider?: string,
-  openIDConfigUrl?: string,
-  externalAud?: string,
+  openIDConfigUrl: string,
+  externalAud: string,
   overrides?: ClientOverrides
 }
 

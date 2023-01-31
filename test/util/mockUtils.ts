@@ -6,7 +6,7 @@ import * as nock from "nock";
 
 const mockResponsesFilePath = "test/testdata/mockResponses.json";
 const mockResponses = JSON.parse(fs.readFileSync(mockResponsesFilePath).toString());
-const providerIDs = ["XXX", "YYY"];
+const registrationIDs = ["XXX", "YYY"];
 
 export const mockDbResponses = (mockedClientData: jest.Mocked<typeof clientData>) => {
   mockedClientData.createClient = jest.fn((_, __, ___) => {
@@ -16,17 +16,17 @@ export const mockDbResponses = (mockedClientData: jest.Mocked<typeof clientData>
   mockedClientData.updateClient = jest.fn((_, __, ___) => {
     return Promise.resolve(true);
   });
-  const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testClient.json").toString()) as ClientMetadata;
+  const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/mockClient.json").toString()) as ClientMetadata;
   const mockClientRecord: ClientRecord = {
     registrationID: "",
     openIDConfigUrl: "https://auth.abcbank.com/.well-known/openid-configuration",
     metadata: mockClientMetadata,
   };
   mockedClientData.getClient = jest.fn((registrationID) => {
-    return Promise.resolve(providerIDs.includes(registrationID) ? mockClientRecord : undefined);
+    return Promise.resolve(registrationIDs.includes(registrationID) ? mockClientRecord : undefined);
   });
-  mockedClientData.clientExists = jest.fn((provider) => {
-    return Promise.resolve(provider === "XXX");
+  mockedClientData.clientExists = jest.fn((registrationID) => {
+    return Promise.resolve(registrationID === "XXX");
   });
   mockedClientData.getRegistrationIDs = jest.fn(() => {
     return Promise.resolve(["XXX", "YYY"]);
@@ -35,19 +35,19 @@ export const mockDbResponses = (mockedClientData: jest.Mocked<typeof clientData>
 
 export const mockAPIResponses = (mockedAxios: jest.Mocked<typeof axios>) => {
   mockedAxios.get = jest.fn((url, c) => {
-    const mockResponse = mockResponses[url];
+    const mockResponse = mockResponses[url]['GET'];
     return Promise.resolve(mockResponse ? mockResponse : {status: 404});
   });
   mockedAxios.create = jest.fn((config) => mockedAxios);
   mockedAxios.post = jest.fn((url, c) => {
-    const mockResponse = mockResponses[url];
+    const mockResponse = mockResponses[url]['POST'];
     return Promise.resolve(mockResponse ? mockResponse : {status: 404});
   });
 };
 
 export const mockExternalApiCalls = () => {
-  const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testClient.json").toString()) as ClientMetadata;
-  const mockIssuerMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/testIssuer.json").toString()) as ClientMetadata;
+  const mockClientMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/mockClient.json").toString()) as ClientMetadata;
+  const mockIssuerMetadata: ClientMetadata = JSON.parse(fs.readFileSync("test/testdata/mockIssuer.json").toString()) as ClientMetadata;
 
   const idTokenHeader = Buffer.from(JSON.stringify({
     "kid": "2hOxb7BSh3OFFzz8ag4Bf8DZkHP8jy8M43jDQWV0mFA",
@@ -92,7 +92,7 @@ export const mockExternalApiCalls = () => {
     .get("/authorize")
     .reply(200, {});
 
-  nock("https://ob19-rs1.o3bank.co.uk:4501")
+  nock("https://api.abcbank.com")
     .post("/open-banking/v3.1/aisp/account-access-consents")
     .reply(201, {});
 

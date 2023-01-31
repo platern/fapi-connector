@@ -19,7 +19,7 @@ import {registrations} from "./route/registrations";
 import {router as indexRouter} from "./route";
 import {tokenRequest} from "./route/token";
 import config from "./util/config/config";
-import {authz} from "./route/authz";
+import {authorization} from "./route/authorization";
 import {openapi} from "./route/openapi";
 
 export const app = express();
@@ -51,7 +51,7 @@ app.use(
   Route.Root,
   indexRouter,
   registrations(config),
-  authz(config),
+  authorization(config),
   tokenRequest(config),
 
   // OpenAPI spec

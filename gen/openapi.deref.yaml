@@ -88,10 +88,6 @@ paths:
             new client with an API provider.
 
 
-            If you're using Platern Web, we recommend using the `providerID`
-            from the Providers API.
-
-
             Warning: currently, registering with the same `registrationID` will
             override any previous registrations.
           in: path
@@ -100,23 +96,14 @@ paths:
             type: string
           examples:
             '200':
-              summary: 200 Updated (w/ provider ID)
+              summary: 200 Updated
               value: XXX
             '201':
-              summary: 201 Created (w/ provider ID)
-              value: YYY
-            x-201.WithOIDD:
-              summary: 201 Created (w/ OpenID Discovery URL)
+              summary: 201 Created
               value: YYY
             x-201.WithOverrides:
-              summary: 201 Created (w/ provider-specific overrides)
+              summary: 201 Created (w/ overrides)
               value: YYY
-            x-400.NoProviderIdentifiers:
-              summary: 400 No valid provider identifiers
-              value: nonexistent-provider
-            x-400.ProviderNotFound:
-              summary: 400 ProviderID not found
-              value: nonexistent-provider
         - name: specification
           in: query
           required: true
@@ -124,22 +111,13 @@ paths:
             type: string
           examples:
             '200':
-              summary: 200 Updated (w/ provider ID)
+              summary: 200 Updated
               value: obieAis
             '201':
-              summary: 201 Created (w/ provider ID)
-              value: obieAis
-            x-201.WithOIDD:
-              summary: 201 Created (w/ OpenID Discovery URL)
+              summary: 201 Created
               value: obieAis
             x-201.WithOverrides:
-              summary: 201 Created (w/ provider-specific overrides)
-              value: obieAis
-            x-400.NoProviderIdentifiers:
-              summary: 400 No valid provider identifiers
-              value: obieAis
-            x-400.ProviderNotFound:
-              summary: 400 ProviderID not found
+              summary: 201 Created (w/ overrides)
               value: obieAis
       operationId: updateClientRegistrations
       requestBody:
@@ -149,9 +127,6 @@ paths:
             schema:
               type: object
               properties:
-                provider:
-                  description: A `provider` obtained from Platern Web.
-                  type: string
                 openIDConfigUrl:
                   description: A provider's OpenID Discovery URL (aka well-known endpoint).
                   type: string
@@ -174,39 +149,29 @@ paths:
                       type: string
             examples:
               '200':
-                summary: 200 Updated (w/ provider ID)
+                summary: 200 Updated
                 value:
-                  provider: XXX
+                  openIDConfigUrl: https://auth.abcbank.com/.well-known/openid-configuration
+                  externalAud: 0015800001041RHAAY
               '201':
-                summary: 201 Created (w/ provider ID)
-                value:
-                  provider: YYY
-              x-201.WithOIDD:
-                summary: 201 Created (w/ OpenID Discovery URL)
+                summary: 201 Created
                 value:
                   openIDConfigUrl: https://auth.abcbank.com/.well-known/openid-configuration
                   externalAud: 0015800001041RHAAY
               x-201.WithOverrides:
-                summary: 201 Created (w/ provider-specific overrides)
+                summary: 201 Created (w/ overrides)
                 value:
-                  provider: YYY
+                  openIDConfigUrl: https://auth.abcbank.com/.well-known/openid-configuration
+                  externalAud: 0015800001041RHAAY
                   overrides:
                     authMethod: tls_client_auth
-              x-400.NoProviderIdentifiers:
-                summary: 400 No valid provider identifiers
-                value:
-                  badKey: inconsequential value
-              x-400.ProviderNotFound:
-                summary: 400 ProviderID not found
-                value:
-                  provider: nonexistent-provider
         required: true
       responses:
         '200':
-          description: 200 Updated (w/ provider ID)
+          description: 200 Updated
           content:
             application/json:
-              schema: &ref_0
+              schema: &ref_2
                 type: object
                 properties:
                   kind:
@@ -892,7 +857,7 @@ paths:
 
                           longer valid.
               examples:
-                '200': &ref_4
+                '200': &ref_3
                   summary: 200 OK
                   value:
                     kind: RegisteredClient
@@ -926,13 +891,21 @@ paths:
                       token_endpoint_auth_method: tls_client_auth
                       token_endpoint_auth_signing_alg: none
         '201':
-          description: 201 Created (w/ provider ID)
+          description: 201 Created
           content:
             application/json:
-              schema: *ref_0
+              schema: &ref_0
+                type: object
+                properties:
+                  self:
+                    type: string
+                example:
+                  self:
+                    - XXX
+                  registration: {}
               examples:
                 '201': &ref_1
-                  summary: 201 (w/ provider ID)
+                  summary: 201 Created
                   value:
                     kind: RegisteredClient
                     self: /registrations/YYY
@@ -964,56 +937,13 @@ paths:
                       tls_client_certificate_bound_access_tokens: true
                       token_endpoint_auth_method: tls_client_auth
                       token_endpoint_auth_signing_alg: none
-        x-201.WithOIDD:
-          description: 201 Created (w/ OpenID Discovery URL)
-          content:
-            application/json:
-              schema: &ref_2
-                type: object
-                properties:
-                  self:
-                    type: string
-                example:
-                  self:
-                    - XXX
-                  registration: {}
-              examples:
-                x-201.WithOIDD: *ref_1
         x-201.WithOverrides:
-          description: 201 Created (w/ provider-specific overrides)
+          description: 201 Created (w/ overrides)
           content:
             application/json:
-              schema: *ref_2
+              schema: *ref_0
               examples:
                 x-201.WithOverrides: *ref_1
-        x-400.NoProviderIdentifiers:
-          description: Bad Request
-          content:
-            application/json:
-              schema: &ref_3
-                type: object
-                properties:
-                  error:
-                    type: string
-                  message:
-                    type: string
-              examples:
-                x-400.NoProviderIdentifiers: &ref_12
-                  value:
-                    error: Bad Request
-                    message: >-
-                      payload must include either a valid Platern `provider` or
-                      OpenID discovery URL (`openIDConfigUrl`)
-        x-400.ProviderNotFound:
-          description: Bad Request
-          content:
-            application/json:
-              schema: *ref_3
-              examples:
-                x-400.ProviderNotFound: &ref_13
-                  value:
-                    error: Bad Request
-                    message: 'provider doesn''t exist: nonexistent-provider'
     get:
       description: Get a client registered with a provider.
       summary: Get a client registered with a provider.
@@ -1037,14 +967,20 @@ paths:
           description: OK
           content:
             application/json:
-              schema: *ref_0
+              schema: *ref_2
               examples:
-                '200': *ref_4
+                '200': *ref_3
         x-404.MissingRegistration:
           description: Not Found
           content:
             application/json:
-              schema: *ref_3
+              schema: &ref_4
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
               examples:
                 x-404.MissingRegistration:
                   summary: 404 Not found
@@ -1076,7 +1012,7 @@ paths:
           description: Not Found
           content:
             application/json:
-              schema: *ref_3
+              schema: *ref_4
               examples:
                 x-404.MissingRegistration:
                   summary: 404 Not found
@@ -1087,18 +1023,7 @@ paths:
     get:
       tags:
         - Authorization
-      description: |-
-        Generate an authorization URL for the data owner to grant access.
-
-        The query parameters you need to send to this endpoint depend on
-        how you're using *fapi-connector*.
-
-        If you're using Platern Web, use:
-          - `providerID`
-
-        If you're connecting without Platern Web (e.g. to Open Banking), use:
-          - `oauth2Grant`
-          - `oauth2GrantRequest`
+      description: Generate an authorization URL for the data owner to grant access.
       summary: Generate an authorization URL for the data owner to grant access.
       parameters:
         - in: header
@@ -1109,23 +1034,11 @@ paths:
             type: string
           examples:
             '200':
-              summary: 200 (w/ provider ID)
+              summary: 200 OK
               value: XXX
-            x-200.WithOIDD:
-              summary: 200 (w/ OpenID Discovery URL)
+            x-400.MissingGrantUrl:
+              summary: 400 Missing Grant URL
               value: XXX
-        - in: query
-          description: If you're using Platern Web, pass the `provider`.
-          name: provider
-          schema:
-            type: string
-          examples:
-            '200':
-              summary: 200 (w/ provider ID)
-              value: XXX
-            x-200.WithOIDD:
-              summary: 200 (w/ OpenID Discovery URL)
-              value: null
         - in: query
           description: |-
             Currently supports the following Open Banking UK specifications:
@@ -1141,10 +1054,10 @@ paths:
             type: string
           examples:
             '200':
-              summary: 200 (w/ provider ID)
+              summary: 200 OK
               value: obieAis
-            x-200.WithOIDD:
-              summary: 200 (w/ OpenID Discovery URL)
+            x-400.MissingGrantUrl:
+              summary: 400 Missing Grant URL
               value: obieAis
         - in: query
           description: |-
@@ -1160,10 +1073,10 @@ paths:
             type: string
           examples:
             '200':
-              summary: 200 (w/ provider ID)
+              summary: 200 OK
               value: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
-            x-200.WithOIDD:
-              summary: 200 (w/ OpenID Discovery URL)
+            x-400.MissingGrantUrl:
+              summary: 400 Missing Grant URL
               value: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
         - in: query
           name: openIDNonce
@@ -1171,10 +1084,10 @@ paths:
             type: string
           examples:
             '200':
-              summary: 200 (w/ provider ID)
+              summary: 200 OK
               value: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
-            x-200.WithOIDD:
-              summary: 200 (w/ OpenID Discovery URL)
+            x-400.MissingGrantUrl:
+              summary: 400 Missing Grant URL
               value: 96d3dd10-2dc7-4b93-835d-89ddd8665b06
         - in: query
           description: >-
@@ -1187,14 +1100,15 @@ paths:
           name: oauth2GrantUrl
           schema:
             type: string
+          required: true
           examples:
             '200':
-              summary: 200 (w/ provider ID)
-              value: null
-            x-200.WithOIDD:
-              summary: 200 (w/ OpenID Discovery URL)
+              summary: 200 OK
               value: >-
-                https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/account-access-consents
+                https://api.abcbank.com/open-banking/v3.1/aisp/account-access-consents
+            x-400.MissingGrantUrl:
+              summary: 400 Missing Grant URL
+              value: null
         - in: query
           description: >-
             Base64-encoded grant request payload.
@@ -1208,13 +1122,14 @@ paths:
           name: oauth2GrantRequest
           schema:
             type: string
+          required: true
           examples:
             '200':
-              summary: 200 (w/ provider ID)
+              summary: 200 OK
               value: >-
                 eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ==
-            x-200.WithOIDD:
-              summary: 200 (w/ OpenID Discovery URL)
+            x-400.MissingGrantUrl:
+              summary: 400 Missing Grant URL
               value: >-
                 eyJEYXRhIjp7IlBlcm1pc3Npb25zIjpbIlJlYWRBY2NvdW50c0RldGFpbCIsIlJlYWRCYWxhbmNlcyIsIlJlYWRCZW5lZmljaWFyaWVzRGV0YWlsIiwiUmVhZERpcmVjdERlYml0cyIsIlJlYWRQcm9kdWN0cyIsIlJlYWRTdGFuZGluZ09yZGVyc0RldGFpbCIsIlJlYWRUcmFuc2FjdGlvbnNDcmVkaXRzIiwiUmVhZFRyYW5zYWN0aW9uc0RlYml0cyIsIlJlYWRUcmFuc2FjdGlvbnNEZXRhaWwiLCJSZWFkT2ZmZXJzIiwiUmVhZFBBTiIsIlJlYWRQYXJ0eSIsIlJlYWRQYXJ0eVBTVSIsIlJlYWRTY2hlZHVsZWRQYXltZW50c0RldGFpbCIsIlJlYWRTdGF0ZW1lbnRzRGV0YWlsIl0sIkV4cGlyYXRpb25EYXRlVGltZSI6IjIwMjMtMTItMDFUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvbkZyb21EYXRlVGltZSI6IjIwMTYtMTAtMTVUMDA6MDA6MDArMDA6MDAiLCJUcmFuc2FjdGlvblRvRGF0ZVRpbWUiOiIyMDIyLTEyLTE1VDAwOjAwOjAwKzAwOjAwIn0sIlJpc2siOnt9fQ==
       responses:
@@ -1231,12 +1146,12 @@ paths:
                   - url
               examples:
                 '200':
-                  summary: 200 (w/ provider ID)
+                  summary: 200 OK
                   value:
                     url: >-
                       https://auth.abcbank.com/authorize?client_id=CLIENT_ID&scope=openid%20accounts&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Foauth%2Fcallback%2F&request=eyJhbGciOiJub25lIiwidHlwIjoib2F1dGgtYXV0aHotcmVxK2p3dCJ9.eyJqdGkiOiJURVNULUpUSSIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIiwic3RhdGUiOiJjZDQ0NGNiMy02OGI4LTQyYjQtYTlkZC1hYTNjNzVjY2FkZTIiLCJub25jZSI6Ijk2ZDNkZDEwLTJkYzctNGI5My04MzVkLTg5ZGRkODY2NWIwNiIsIm1heF9hZ2UiOjg2NDAwLCJyZWRpcmVjdF91cmkiOiJodHRwczovL2V4YW1wbGUuY29tL29hdXRoL2NhbGxiYWNrLyIsImNsYWltcyI6eyJ1c2VyaW5mbyI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJDVVNUT01FUl9BQ0NPVU5UX0NPTlNFTlQiLCJlc3NlbnRpYWwiOnRydWV9fSwiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7InZhbHVlIjoiQ1VTVE9NRVJfQUNDT1VOVF9DT05TRU5UIiwiZXNzZW50aWFsIjp0cnVlfSwiYWNyIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWVzIjpbInVybjpvcGVuYmFua2luZzpwc2QyOnNjYSIsInVybjpvcGVuYmFua2luZzpwc2QyOmNhIl19fX0sImlzcyI6IkNMSUVOVF9JRCIsImF1ZCI6Imh0dHA6Ly9zZXJ2ZXIuZXhhbXBsZS5jb20iLCJjbGllbnRfaWQiOiJDTElFTlRfSUQiLCJpYXQiOjE2NjYxMzc2MDAsImV4cCI6MTY2NjEzNzkwMCwibmJmIjoxNjY2MTM3NjAwfQ.&nonce=96d3dd10-2dc7-4b93-835d-89ddd8665b06&state=cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
-                x-200.WithOIDD:
-                  summary: 200 (w/ OpenID Discovery URL)
+                x-400.MissingGrantUrl:
+                  summary: 400 Missing Grant URL
                   value:
                     url: >-
                       https://auth.abcbank.com/authorize?client_id=CLIENT_ID&scope=openid%20accounts&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Foauth%2Fcallback%2F&request=eyJhbGciOiJub25lIiwidHlwIjoib2F1dGgtYXV0aHotcmVxK2p3dCJ9.eyJqdGkiOiJURVNULUpUSSIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIiwic3RhdGUiOiJjZDQ0NGNiMy02OGI4LTQyYjQtYTlkZC1hYTNjNzVjY2FkZTIiLCJub25jZSI6Ijk2ZDNkZDEwLTJkYzctNGI5My04MzVkLTg5ZGRkODY2NWIwNiIsIm1heF9hZ2UiOjg2NDAwLCJyZWRpcmVjdF91cmkiOiJodHRwczovL2V4YW1wbGUuY29tL29hdXRoL2NhbGxiYWNrLyIsImNsYWltcyI6eyJ1c2VyaW5mbyI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJDVVNUT01FUl9BQ0NPVU5UX0NPTlNFTlQiLCJlc3NlbnRpYWwiOnRydWV9fSwiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7InZhbHVlIjoiQ1VTVE9NRVJfQUNDT1VOVF9DT05TRU5UIiwiZXNzZW50aWFsIjp0cnVlfSwiYWNyIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWVzIjpbInVybjpvcGVuYmFua2luZzpwc2QyOnNjYSIsInVybjpvcGVuYmFua2luZzpwc2QyOmNhIl19fX0sImlzcyI6IkNMSUVOVF9JRCIsImF1ZCI6Imh0dHA6Ly9zZXJ2ZXIuZXhhbXBsZS5jb20iLCJjbGllbnRfaWQiOiJDTElFTlRfSUQiLCJpYXQiOjE2NjYxMzc2MDAsImV4cCI6MTY2NjEzNzkwMCwibmJmIjoxNjY2MTM3NjAwfQ.&nonce=96d3dd10-2dc7-4b93-835d-89ddd8665b06&state=cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
@@ -1279,7 +1194,7 @@ paths:
                   type: string
             examples:
               '200':
-                summary: 200 (w/ provider ID)
+                summary: 200
                 value:
                   oauth2State: cd444cb3-68b8-42b4-a9dd-aa3c75ccade2
                   oauth2Code: 295f8dfa-11f1-4424-9c8a-c498e0e6b8cd
@@ -1379,12 +1294,12 @@ paths:
                         eyJraWQiOiIyaE94YjdCU2gzT0ZGeno4YWc0QmY4RFprSFA4ank4TTQzakRRV1YwbUZBIiwiYWxnIjoibm9uZSJ9.eyJub25jZSI6Ijk2ZDNkZDEwLTJkYzctNGI5My04MzVkLTg5ZGRkODY2NWIwNiIsInN1YiI6ImphbmUgZG9lIiwiYXVkIjoiQ0xJRU5UX0lEIiwiaXNzIjoiaHR0cDovL3NlcnZlci5leGFtcGxlLmNvbSIsImlhdCI6MTY2Nzg5MTA2NiwiZXhwIjoxNjY3OTE5ODY2fQ==.
 components:
   schemas:
-    Client: *ref_0
+    Client: *ref_2
     DcrClientMetadata: *ref_5
-    NewRegistrationUpdates: *ref_2
+    NewRegistrationUpdates: *ref_0
     RegistrationRequest: &ref_7
       description: >-
-        Requires either the Platern Web `provider` or the API provider's
+        Requires the API provider's
 
         OpenID Discovery endpoint (`openIDConfigUrl`).
 
@@ -1392,11 +1307,9 @@ components:
         Optionally, you can override various
         [configuration](config/clients.json)
 
-        values on the fly.
+        values on the fly using the `overrides` field.
       type: object
       properties:
-        provider:
-          type: string
         openIDConfigUrl:
           type: string
         overrides:
@@ -1433,9 +1346,7 @@ components:
     TokenRequest: *ref_9
     TokenResponse: *ref_10
     OAuth2Token: *ref_11
-    StandardError: *ref_3
+    StandardError: *ref_4
   examples:
-    ClientUpdated: *ref_4
+    ClientUpdated: *ref_3
     ClientCreated: *ref_1
-    Registration400NoProviderIDs: *ref_12
-    Registration400ProviderNotFound: *ref_13

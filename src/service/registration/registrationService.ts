@@ -214,8 +214,8 @@ export class RegistrationService {
         ...authMethodSpecifics,
       };
       const jwk = {...(this.obSigningKey as KeyObject).export({format: "jwk"})};
-      const jwsOpts = {jwks: {keys: [jwk]}};
-      const registrationResp = await (issuer.FAPI1Client as DcrClient).register(metadata, jwsOpts, {
+      const opts = {jwks: {keys: [jwk]}};
+      const registrationResp = await (issuer.FAPI1Client as DcrClient).register(metadata, opts, {
         signingKey: this.obSigningKey as KeyObject,
         keyId: this.config.obSigningKeyId,
         algorithm: this.config.obSigningAlgorithm,

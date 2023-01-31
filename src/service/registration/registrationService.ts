@@ -132,6 +132,7 @@ export class RegistrationService {
       issuer.FAPI1Client[custom.http_options] = () => ({
         ...this.httpsAgentOpts,
         headers: {"content-type": "application/jose"},
+        timeout: 30_000,
       });
       if (!("scopes_supported" in issuer)) {
         next(openIDProviderError(`supported scopes missing from openID config for ${openIDConfigUrl}`));

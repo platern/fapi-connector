@@ -34,8 +34,8 @@ interface DcrClient extends TypeOfGenericClient<Client> {
   deleteRegistration: typeof BaseClient.deleteRegistration;
 }
 
-const hoursInMillis = (hours: number) => {
-  return hours * 60 * 60 * 1000;
+const hoursInSeconds = (hours: number) => {
+  return hours * 60 * 60;
 };
 
 const getSupportedAlgo =
@@ -200,7 +200,7 @@ export class RegistrationService {
         "jti": uuidv4(),
         "iat": Math.round(Date.now() / 1000),
         "aud": externalAud ? externalAud : issuer.metadata.token_endpoint,
-        "exp": Math.round(Date.now() / 1000 + hoursInMillis(1)),
+        "exp": Math.round(Date.now() / 1000 + hoursInSeconds(1)),
         "iss": this.ssaDecoded["software_id"],
         "application_type": "web",
         "grant_types": resolvedGrantTypes,

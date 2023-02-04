@@ -126,8 +126,10 @@ export class AuthService {
                 },
                 "acr": {
                   "essential": true,
-                  "values": ["urn:openbanking:psd2:sca",
-                    "urn:openbanking:psd2:ca"],
+                  "values": [
+                    "urn:openbanking:psd2:sca",
+                    "urn:openbanking:psd2:ca"
+                  ],
                 },
               },
           },

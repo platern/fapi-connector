@@ -33,6 +33,10 @@ export class ErrorResponse {
 
 }
 
+export const opError = (code: number, message: string): HttpException => {
+  return new HttpException(code, message);
+}
+
 export const badRequestError = (message: string): HttpException => {
   return new HttpException(StatusCodes.BAD_REQUEST, message);
 };

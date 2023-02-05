@@ -19,7 +19,7 @@ import OPError = errors.OPError;
 import {
   badRequestError, configError,
   dataError, notFoundError,
-  openIDProviderError,
+  openIDProviderError, opError,
   unknownError,
 } from "../error";
 import {
@@ -245,7 +245,7 @@ export class RegistrationService {
           console.log(`failed registration response: ${providerErrMsg(err)}`);
           next(badRequestError(errorMessage));
         } else {
-          next(unknownError(errorMessage));
+          next(opError(err.response?.statusCode ?? -1, errorMessage));
         }
       } else if ([
         PrismaClientKnownRequestError,

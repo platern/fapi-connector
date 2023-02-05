@@ -9,4 +9,5 @@ interface ClientOverrides {
   grantTypes?: string[],
   authMethod?: string,
   redirectUris?: string[],
+  applicationJose: boolean,
 }

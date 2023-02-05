@@ -220,6 +220,7 @@ export class RegistrationService {
         signingKey: this.obSigningKey as KeyObject,
         keyId: this.config.obSigningKeyId,
         algorithm: this.config.obSigningAlgorithm,
+        applicationJose: overrides ? overrides.applicationJose : false,
       });
       if (!registrationResp.metadata) {
         next(dataError("invalid client metadata returned"));

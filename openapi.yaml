@@ -123,6 +123,12 @@ paths:
                         type: string
                     authMethod:
                       type: string
+                    redirectUris:
+                      type: array
+                      items:
+                        type: string
+                    applicationJose:
+                      type: boolean
             examples:
               200:
                 summary: 200 Updated

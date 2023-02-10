@@ -58,6 +58,13 @@ app.use(
   openapi()
 );
 
+app.use((req, res, next) => {
+  res.status(404).json({
+    message: 'Ohh you are lost, read the API documentation to find your way back home :)'
+  })
+});
+
+
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(createError(404));
